@@ -14,14 +14,14 @@ public record TicketResponse(
         int seatNumber,
         String seatSection
 ) {
-    public static TicketResponse of(Ticket ticket, Seat seat) {
+    public static TicketResponse from(Ticket ticket) {
         return TicketResponse.builder()
                 .ticketId(ticket.getId())
                 .ticketStatus(ticket.getStatus())
                 .eventTitle("test") // 해당부분 구현 기다림
-                .rowName(seat.getRowName())
-                .seatNumber(seat.getSeatNumber())
-                .seatSection(seat.getSeatSection())
+                .rowName(ticket.getSeat().getRowName())
+                .seatNumber(ticket.getSeat().getSeatNumber())
+                .seatSection(ticket.getSeat().getSeatSection())
                 .build();
     }
 }

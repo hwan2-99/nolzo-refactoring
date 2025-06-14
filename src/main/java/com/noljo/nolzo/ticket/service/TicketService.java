@@ -11,6 +11,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.webjars.NotFoundException;
 
 @Transactional
 @Service
@@ -28,8 +29,14 @@ public class TicketService {
         List<Ticket> tickets = ticketRepository.findByReservationIdIn(reservationIdList);
 
         return tickets.stream()
-                .map(ticket -> TicketResponse.of(ticket, ticket.getSeat()))
+                .map(TicketResponse::from)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public TicketResponse findTicket(Long ticketId) {
+        Ticket ticket = findTicketById(ticketId);
+
     }
 
     private List<Long> findReservationIdListByMemberId(Member member) {
@@ -37,5 +44,10 @@ public class TicketService {
                 .stream()
                 .map(Reservation::getId)
                 .toList();
+    }
+
+    private Ticket findTicketById(Long ticketId) {
+        return ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new IllegalArgumentException("Ticket Not Found"));
     }
 }
