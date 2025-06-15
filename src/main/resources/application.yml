@@ -39,7 +39,7 @@ spring:
         keep-alive: 60s
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         default_batch_fetch_size: 500

@@ -51,23 +51,19 @@ class TicketServiceTest {
     void 티켓을_생성할_수_있다() {
         Member member = MemberFixture.회원();
         memberRepository.save(member);
-        System.out.println(member.getId());
 
         Event event = EventFixture.캣츠();
         eventRepository.save(event);
-        System.out.println(event.getId());
 
         Seat seat = SeatFixture.일반좌석(event);
         seatRepository.save(seat);
-        System.out.println("Seat ID: " + seat.getId());
 
         Reservation reservation = ReservationFixture.예약(member);
         reservationRepository.save(reservation);
-        System.out.println(reservation.getId());
+
 
         Ticket ticket = TicketFixture.미사용티켓(reservation, seat);
         ticketRepository.save(ticket);
-        System.out.println(ticket.getId());
 
         assertThat(ticketRepository.findAll()).hasSize(1);
     }
