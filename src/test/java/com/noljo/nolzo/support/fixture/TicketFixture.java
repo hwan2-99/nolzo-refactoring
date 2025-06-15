@@ -17,6 +17,6 @@ public enum TicketFixture {
     }
 
     public static Ticket 미사용티켓(Reservation reservation, Seat seat) {
-        return new Ticket(미사용티켓.status, reservation, seat);
+        return new Ticket(null,미사용티켓.status, reservation, seat);
     }
 }
