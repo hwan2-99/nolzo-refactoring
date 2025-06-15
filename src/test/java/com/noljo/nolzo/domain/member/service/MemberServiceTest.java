@@ -38,7 +38,7 @@ public class MemberServiceTest {
     }
 
     @Test
-    void 회원은_저장_가능하다(){
+    void 회원은_저장_가능하다() {
         Member member = MemberFixture.회원();
         memberRepository.save(member);
         assertThat(memberRepository.findAll()).hasSize(1);

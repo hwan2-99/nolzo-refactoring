@@ -39,7 +39,7 @@ public class SeatServiceTest {
     }
 
     @Test
-    void 좌석은_저장_가능하다(){
+    void 좌석은_저장_가능하다() {
         Event event = EventFixture.캣츠();
         eventRepository.save(event);
         Seat seat = SeatFixture.일반좌석(event);
