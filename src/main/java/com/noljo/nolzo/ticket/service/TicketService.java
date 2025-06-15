@@ -36,7 +36,7 @@ public class TicketService {
     @Transactional(readOnly = true)
     public TicketResponse findTicket(Long ticketId) {
         Ticket ticket = findTicketById(ticketId);
-
+        return TicketResponse.from(ticket);
     }
 
     private List<Long> findReservationIdListByMemberId(Member member) {
