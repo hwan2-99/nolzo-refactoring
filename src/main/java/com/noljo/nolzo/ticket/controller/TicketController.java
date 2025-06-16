@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/tickets")  // baseurl 통일 필요
+@RequestMapping("/tickets")
 @RequiredArgsConstructor
 public class TicketController {
     private final TicketService ticketService;
 
-    // 회원정보 어떻게 넘겨주는지에 따라 파라미터 추후 수정
+    //todo 회원정보 어떻게 넘겨주는지에 따라 파라미터 추후 수정
     @GetMapping
     public ResponseEntity<List<TicketResponse>> findTickets(Long memberId) {
         List<TicketResponse> response = ticketService.findTickets(memberId);
