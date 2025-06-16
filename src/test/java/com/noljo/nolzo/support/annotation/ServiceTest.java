@@ -1,23 +1,19 @@
-//package com.noljo.nolzo.support.annotation;
-//
-//import java.lang.annotation.ElementType;
-//import java.lang.annotation.Retention;
-//import java.lang.annotation.RetentionPolicy;
-//import java.lang.annotation.Target;
-//import org.junit.jupiter.api.extension.ExtendWith;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-//import org.springframework.context.annotation.PropertySource;
-//import org.springframework.test.context.ActiveProfiles;
-//
-//@Target(ElementType.TYPE)
-//@ActiveProfiles("test")
-//@Retention(RetentionPolicy.RUNTIME)
-//@SpringBootTest(webEnvironment = WebEnvironment.NONE, classes = TestConfig.class)
-//@ExtendWith({DatabaseCleanerExtension.class})
-//@PropertySource("classpath:/application-test.yml")
-//public @interface ServiceTest {
-//}
+package com.noljo.nolzo.support.annotation;
 
+import com.noljo.nolzo.support.DatabaseCleanerExtension;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.test.context.ActiveProfiles;
 
-// 추후 추가예정
+@ActiveProfiles("test")
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
+@Retention(RetentionPolicy.RUNTIME)
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+@ExtendWith(DatabaseCleanerExtension.class)
+public @interface ServiceTest {
+}

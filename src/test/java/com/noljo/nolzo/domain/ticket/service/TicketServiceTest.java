@@ -8,6 +8,7 @@ import com.noljo.nolzo.reservation.entity.Reservation;
 import com.noljo.nolzo.reservation.repository.ReservationRepository;
 import com.noljo.nolzo.seat.entity.Seat;
 import com.noljo.nolzo.seat.repository.SeatRepository;
+import com.noljo.nolzo.support.annotation.ServiceTest;
 import com.noljo.nolzo.support.fixture.EventFixture;
 import com.noljo.nolzo.support.fixture.MemberFixture;
 import com.noljo.nolzo.support.fixture.ReservationFixture;
@@ -16,14 +17,12 @@ import com.noljo.nolzo.support.fixture.TicketFixture;
 import com.noljo.nolzo.ticket.entity.Ticket;
 import com.noljo.nolzo.ticket.repository.TicketRepository;
 import com.noljo.nolzo.ticket.service.TicketService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@ServiceTest
 class TicketServiceTest {
     @Autowired
     private TicketService ticketService;
@@ -38,15 +37,6 @@ class TicketServiceTest {
     @Autowired
     private EventRepository eventRepository;
 
-    @BeforeEach
-    void setUp() {
-        ticketRepository.deleteAll();
-        reservationRepository.deleteAll();
-        seatRepository.deleteAll();
-        eventRepository.deleteAll();
-        memberRepository.deleteAll();
-    }
-
     @Test
     void 티켓을_생성할_수_있다() {
         Member member = MemberFixture.회원();
@@ -60,7 +50,6 @@ class TicketServiceTest {
 
         Reservation reservation = ReservationFixture.예약(member);
         reservationRepository.save(reservation);
-
 
         Ticket ticket = TicketFixture.미사용티켓(reservation, seat);
         ticketRepository.save(ticket);
