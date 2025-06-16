@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -40,4 +41,17 @@ public class Seat extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "event_id")
     private Event event;
+
+    @Builder
+    public Seat(Long id, String rowName, int seatNumber, String seatSection, String floor, int price, SeatStatus status,
+                Event event) {
+        this.id = id;
+        this.rowName = rowName;
+        this.seatNumber = seatNumber;
+        this.seatSection = seatSection;
+        this.floor = floor;
+        this.price = price;
+        this.status = status;
+        this.event = event;
+    }
 }

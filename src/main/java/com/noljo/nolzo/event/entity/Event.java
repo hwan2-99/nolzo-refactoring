@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -42,4 +43,20 @@ public class Event {
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.PERSIST)
     private List<Seat> seats = new ArrayList<>();
+
+    @Builder
+    public Event(Long id, String title, String venue, String description, LocalDate startDate, LocalDate endDate,
+                 EventCategory eventCategory, int ageLimit, int rating, int reviewCount) {
+        this.id = id;
+        this.title = title;
+        this.venue = venue;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.eventCategory = eventCategory;
+        this.ageLimit = ageLimit;
+        this.rating = rating;
+        this.reviewCount = reviewCount;
+        this.seats = new ArrayList<>();
+    }
 }

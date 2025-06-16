@@ -5,6 +5,7 @@ import com.noljo.nolzo.reservation.entity.Reservation;
 import com.noljo.nolzo.seat.entity.Seat;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,4 +29,12 @@ public class Ticket extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "seat_id")
     private Seat seat;
+
+    @Builder
+    public Ticket(Long id, TicketStatus status, Reservation reservation, Seat seat) {
+        this.id = id;
+        this.status = status;
+        this.reservation = reservation;
+        this.seat = seat;
+    }
 }

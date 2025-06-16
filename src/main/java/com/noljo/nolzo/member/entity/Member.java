@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -35,4 +36,13 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.PERSIST)
     private List<Payment> payments = new ArrayList<>();
+
+    @Builder
+    public Member(Long id, String name, String email, String password, LocalDate birth) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.birth = birth;
+    }
 }
