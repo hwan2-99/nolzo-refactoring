@@ -1,5 +1,6 @@
 package com.noljo.nolzo.support.fixture;
 
+import com.noljo.nolzo.event.dto.EventRequestDto;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.entity.EventCategory;
 import java.time.LocalDate;
@@ -36,4 +37,15 @@ public enum EventFixture {
         return new Event(null, 캣츠.title, 캣츠.venue, 캣츠.description, 캣츠.startDate, 캣츠.endDate, 캣츠.eventCategory,
                 캣츠.ageLimit, 캣츠.rating, 캣츠.reviewCount);
     }
+    public static EventRequestDto 캣츠dto() {
+    return EventRequestDto.builder()
+            .title(캣츠.title)
+            .venue(캣츠.venue)
+            .description(캣츠.description)
+            .startDate(캣츠.startDate)
+            .endDate(캣츠.endDate)
+            .eventCategory(캣츠.eventCategory)
+            .ageLimit(캣츠.ageLimit)
+            .build();
+}
 }
