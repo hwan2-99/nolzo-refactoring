@@ -20,6 +20,6 @@ public enum MemberFixture {
     }
 
     public static Member 회원() {
-        return new Member(null, 회원.name, 회원.email, 회원.password, 회원.birth);
+        return Member.of(회원.name, 회원.email, 회원.password, 회원.birth);
     }
 }
