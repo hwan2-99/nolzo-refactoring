@@ -9,7 +9,7 @@ import java.time.LocalDate;
 
 @Getter
 @Builder
-public class EventResponseDto {
+public class EventResponse {
 
     private Long id;
     private String title;
@@ -22,8 +22,8 @@ public class EventResponseDto {
     private int rating;
     private int reviewCount;
 
-    public static EventResponseDto from(Event event) {
-        return EventResponseDto.builder()
+    public static EventResponse from(Event event) {
+        return EventResponse.builder()
                 .id(event.getId())
                 .title(event.getTitle())
                 .venue(event.getVenue())

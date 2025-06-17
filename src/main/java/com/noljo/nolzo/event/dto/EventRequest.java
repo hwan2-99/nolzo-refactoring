@@ -11,7 +11,7 @@ import java.time.LocalDate;
 
 @Getter
 @Builder
-public class EventRequestDto {
+public class EventRequest {
     @NotBlank(message = "제목 지정 필수")
     private String title;
 
