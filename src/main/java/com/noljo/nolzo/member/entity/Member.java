@@ -45,6 +45,12 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private LocalDate birth;
 
+    @NotNull
+    @Column(nullable = false)
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     @OneToMany(mappedBy = "member", cascade = CascadeType.PERSIST)
     private List<Reservation> reservations = new ArrayList<>();
 
