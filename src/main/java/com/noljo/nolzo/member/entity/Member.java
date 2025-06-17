@@ -47,7 +47,6 @@ public class Member extends BaseEntity {
 
     @NotNull
     @Column(nullable = false)
-
     @Enumerated(EnumType.STRING)
     private Role role;
 
