@@ -58,12 +58,13 @@ public class Member extends BaseEntity {
     private List<Payment> payments = new ArrayList<>();
 
     // 정적 팩토리 메서드
-    public static Member of(String name, String email, String password, LocalDate birth) {
+    public static Member of(String name, String email, String password, LocalDate birth, Role role) {
         Member member = new Member();
         member.name = name;
         member.email = email;
         member.password = password;
         member.birth = birth;
+        member.role = role;
         return member;
     }
 }

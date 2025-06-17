@@ -40,6 +40,10 @@ public class JwtUtil {
         return createToken(member, refreshTokenValidityInMillis);
     }
 
+    public Long getMemberId(String token) {
+        return Long.parseLong(parseClaims(token).getSubject());
+    }
+
     public String getEmail(String token) {
         return parseClaims(token).get("email", String.class);
     }
