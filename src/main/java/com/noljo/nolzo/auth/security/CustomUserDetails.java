@@ -1,6 +1,5 @@
 package com.noljo.nolzo.auth.security;
 
-import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.entity.Role;
 import java.util.Collection;
 import java.util.Collections;
