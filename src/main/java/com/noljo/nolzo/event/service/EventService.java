@@ -33,5 +33,23 @@ public class EventService {
         return EventResponse.from(saved);
     }
 
+    @Transactional(readOnly = true)
+    public EventResponse findById(Long id) {
+        Event event = getEvent(id);
+        return EventResponse.from(event);
+    }
+    public EventResponse update(Long id, EventRequest dto) {
+        getEvent(id);
+        Event updated = dto.toEntity(id);
+        Event saved = eventRepository.save(updated);
+        return EventResponse.from(saved);
+    }
+
+    public void delete(Long id) {
+        getEvent(id);
+
+        eventRepository.deleteById(id);
+    }
+
 
 }

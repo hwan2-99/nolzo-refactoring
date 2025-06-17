@@ -1,8 +1,7 @@
 package com.noljo.nolzo.event.controller;
 
-import com.noljo.nolzo.event.dto.EventRequestDto;
-import com.noljo.nolzo.event.dto.EventResponseDto;
-import com.noljo.nolzo.event.entity.Event;
+import com.noljo.nolzo.event.dto.EventRequest;
+import com.noljo.nolzo.event.dto.EventResponse;
 import com.noljo.nolzo.event.service.EventService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,15 +17,35 @@ public class EventController {
     private final EventService eventService;
 
     @GetMapping
-    public ResponseEntity<List<EventResponseDto>> getAllEvents() {
+    public ResponseEntity<List<EventResponse>> getAllEvents() {
         return ResponseEntity.ok(eventService.findAll());
     }
 
-
-
-    @PostMapping("/create")
-    public ResponseEntity<EventResponseDto> createEvent(@RequestBody @Valid EventRequestDto dto) {
+    @PostMapping("/")
+    public ResponseEntity<EventResponse> createEvent(@RequestBody @Valid EventRequest dto) {
         return ResponseEntity.ok(eventService.save(dto));
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<EventResponse> getEvent(@PathVariable Long id) {
+        return ResponseEntity.ok(eventService.findById(id));
+    }
+    @PostMapping("/update/{id}")
+    public ResponseEntity<EventResponse> updateEvent(@PathVariable Long id, @RequestBody @Valid EventRequest dto) {
+        return ResponseEntity.ok(eventService.update(id, dto));
+    }
+
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
+        eventService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+    //    @DeleteMapping("/{id}")
+//    public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
+//        eventService.delete(id);
+//        return ResponseEntity.noContent().build();
+//    }
+
+
 
 }
