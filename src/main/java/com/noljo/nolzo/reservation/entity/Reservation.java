@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,7 +25,7 @@ public class Reservation extends BaseEntity {
 
     private int totalPrice;
 
-    private Long reservationNumber;
+    private String reservationNumber;
 
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.PERSIST)
     private List<Ticket> tickets = new ArrayList<>();
@@ -35,12 +34,17 @@ public class Reservation extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Builder
-    public Reservation(Long id, ReservationStatus status, int totalPrice, Long reservationNumber, Member member) {
+    public Reservation(Long id, ReservationStatus status, int totalPrice, String reservationNumber,
+                       Member member) {
         this.id = id;
         this.status = status;
         this.totalPrice = totalPrice;
         this.reservationNumber = reservationNumber;
         this.member = member;
+    }
+
+    public Reservation(ReservationStatus status, int totalPrice, String reservationNumber,
+                       Member member) {
+        this(null, status, totalPrice, reservationNumber, member);
     }
 }
