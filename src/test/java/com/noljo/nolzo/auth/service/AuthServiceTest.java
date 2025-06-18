@@ -6,14 +6,13 @@ import com.noljo.nolzo.auth.dto.RegisterRequest;
 import com.noljo.nolzo.auth.dto.RegisterResponse;
 import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.repository.MemberRepository;
+import com.noljo.nolzo.support.annotation.ServiceTest;
 import com.noljo.nolzo.support.fixture.MemberFixture;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@SpringBootTest
+@ServiceTest
 class AuthServiceTest {
 
     @Autowired
@@ -28,7 +27,8 @@ class AuthServiceTest {
     @Test
     void 회원가입시_비밀번호가_암호화되서_회원이_저장된다() {
         Member member = MemberFixture.회원();
-        RegisterRequest request = new RegisterRequest(member.getEmail(), member.getPassword(), member.getName(), member.getBirth());
+        RegisterRequest request = new RegisterRequest(member.getEmail(), member.getPassword(), member.getName(),
+                member.getBirth());
         RegisterResponse response = authService.register(request);
 
         Member savedMember = memberRepository.findByEmail(request.email()).get();
