@@ -4,10 +4,6 @@ import com.noljo.nolzo.global.BaseEntity;
 import com.noljo.nolzo.payment.entity.Payment;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,26 +22,18 @@ public class Member extends BaseEntity {
     @Column(name = "member_id")
     private Long id;
 
-    @NotBlank
-    @Size(min = 2, max = 50)
     @Column(nullable = false)
     private String name;
 
-    @Email
-    @NotBlank
     @Column(nullable = false, unique = true)
     private String email;
 
-    @NotBlank
-    @Size(min = 8)
     @Column(nullable = false)
     private String password;
 
-    @NotNull
     @Column(nullable = false)
     private LocalDate birth;
 
-    @NotNull
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
