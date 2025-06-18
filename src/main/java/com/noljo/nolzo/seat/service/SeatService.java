@@ -3,7 +3,6 @@ package com.noljo.nolzo.seat.service;
 import com.noljo.nolzo.seat.entity.Seat;
 import com.noljo.nolzo.seat.entity.SeatStatus;
 import com.noljo.nolzo.seat.repository.SeatRepository;
-import jakarta.persistence.LockModeType;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +17,7 @@ public class SeatService {
 
     public void updateWithReservation(List<Seat> seats) {
         seats.forEach(seat -> {
+            ValidateIsAvailable(seat);
             Seat lockedSeat = findSeatByIdWithPessimisticLock(seat.getId());
             lockedSeat.updateStatus(SeatStatus.WAITING);
             seatRepository.save(lockedSeat);
@@ -27,5 +27,11 @@ public class SeatService {
     private Seat findSeatByIdWithPessimisticLock(Long id) {
         return seatRepository.findByIdWithPessimisticLock(id)
                 .orElseThrow(() -> new NotFoundException("Seat with id " + id + " not found"));
+    }
+
+    private void ValidateIsAvailable(Seat seat) {
+        if (seat.getStatus() != SeatStatus.AVAILABLE) {
+            throw new IllegalArgumentException("Seat with id " + seat.getId() + " is not available");
+        }
     }
 }
