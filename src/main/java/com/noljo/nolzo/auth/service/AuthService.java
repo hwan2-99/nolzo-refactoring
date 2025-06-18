@@ -20,9 +20,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     public RegisterResponse register(RegisterRequest request) {
-        if (memberRepository.findByEmail(request.email()).isPresent()) {
-            throw new IllegalArgumentException("이미 존재하는 회원입니다.");
-        }
+        checkDuplicateEmail(request.email());
 
         Member member = Member.of(
                 request.name(),
@@ -34,5 +32,11 @@ public class AuthService {
 
         Member savedMember = memberRepository.save(member);
         return RegisterResponse.from(savedMember);
+    }
+
+    private void checkDuplicateEmail(String email) {
+        if (memberRepository.findByEmail(email).isPresent()) {
+            throw new IllegalArgumentException("이미 존재하는 회원입니다.");
+        }
     }
 }
