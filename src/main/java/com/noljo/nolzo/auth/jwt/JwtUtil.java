@@ -7,6 +7,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,8 +29,8 @@ public class JwtUtil {
                 secret.getBytes(StandardCharsets.UTF_8),
                 SIG.HS256.key().build().getAlgorithm()
         );
-        this.accessTokenValidityInMillis = accessTokenValidityInSeconds * 1000;
-        this.refreshTokenValidityInMillis = refreshTokenValidityInSeconds * 1000;
+        this.accessTokenValidityInMillis = TimeUnit.SECONDS.toMillis(accessTokenValidityInSeconds);
+        this.refreshTokenValidityInMillis = TimeUnit.SECONDS.toMillis(accessTokenValidityInSeconds);
     }
 
     public String createAccessToken(Member member) {
