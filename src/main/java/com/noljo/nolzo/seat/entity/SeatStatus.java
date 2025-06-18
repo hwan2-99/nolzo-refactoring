@@ -1,5 +1,7 @@
 package com.noljo.nolzo.seat.entity;
 
 public enum SeatStatus {
-    CANCELED;
+    RESERVED,
+    AVAILABLE,
+    WAITING;
 }
