@@ -7,8 +7,6 @@ import com.noljo.nolzo.reservation.dto.ReservationResponse;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import com.noljo.nolzo.reservation.entity.ReservationStatus;
 import com.noljo.nolzo.reservation.repository.ReservationRepository;
-import com.noljo.nolzo.seat.entity.Seat;
-import com.noljo.nolzo.seat.entity.SeatStatus;
 import com.noljo.nolzo.seat.service.SeatService;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
@@ -34,12 +32,6 @@ public class ReservationService {
                 createReservationNumber(), member);
 
         seatService.updateWithReservation(request.seats());
-        for (int i = 0; i < request.seats().size(); i++) {
-            System.out.println("-____________-------");
-            System.out.println("-____________-------");
-            System.out.println("-____________-------");
-            System.out.println(request.seats().get(i).getStatus());
-        }
         return ReservationResponse.from(reservationRepository.save(reservation));
     }
 
