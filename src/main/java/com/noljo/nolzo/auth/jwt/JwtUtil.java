@@ -7,8 +7,8 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,8 +18,8 @@ import org.springframework.stereotype.Component;
 public class JwtUtil {
 
     private final SecretKey secretKey;
-    private final long accessTokenValidityInMillis;
-    private final long refreshTokenValidityInMillis;
+    private final Duration accessTokenValidity;
+    private final Duration refreshTokenValidity;
 
     public JwtUtil(
             @Value("${jwt.secret}") String secret,
@@ -30,16 +30,16 @@ public class JwtUtil {
                 secret.getBytes(StandardCharsets.UTF_8),
                 SIG.HS256.key().build().getAlgorithm()
         );
-        this.accessTokenValidityInMillis = TimeUnit.SECONDS.toMillis(accessTokenValidityInSeconds);
-        this.refreshTokenValidityInMillis = TimeUnit.SECONDS.toMillis(refreshTokenValidityInSeconds);
+        this.accessTokenValidity = Duration.ofSeconds(accessTokenValidityInSeconds);
+        this.refreshTokenValidity = Duration.ofSeconds(refreshTokenValidityInSeconds);
     }
 
     public String createAccessToken(Member member) {
-        return createToken(member, accessTokenValidityInMillis);
+        return createToken(member, accessTokenValidity);
     }
 
     public String createRefreshToken(Member member) {
-        return createToken(member, refreshTokenValidityInMillis);
+        return createToken(member, refreshTokenValidity);
     }
 
     public Long getMemberId(String token) {
@@ -70,14 +70,14 @@ public class JwtUtil {
         }
     }
 
-    private String createToken(Member member, Long validityInMillis) {
+    private String createToken(Member member, Duration validity) {
         Date now = new Date();
         return Jwts.builder()
                 .subject(member.getId().toString())
                 .claim("email", member.getEmail())
                 .claim("role", member.getRole().name())
                 .issuedAt(now)
-                .expiration(new Date(now.getTime() + validityInMillis))
+                .expiration(Date.from(now.toInstant().plus(validity)))
                 .signWith(secretKey)
                 .compact();
     }
