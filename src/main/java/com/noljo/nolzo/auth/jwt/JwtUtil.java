@@ -3,6 +3,7 @@ package com.noljo.nolzo.auth.jwt;
 import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.entity.Role;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;
 import java.nio.charset.StandardCharsets;
@@ -55,6 +56,18 @@ public class JwtUtil {
 
     public boolean isExpired(String token) {
         return parseClaims(token).getExpiration().before(new Date());
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
     }
 
     private String createToken(Member member, Long validityInMillis) {
