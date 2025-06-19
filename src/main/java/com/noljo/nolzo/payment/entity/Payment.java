@@ -5,6 +5,7 @@ import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -30,4 +31,11 @@ public class Payment extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "reservation_id")
     private Reservation reservation;
+
+    public Payment(PaymentMethod paymentMethod, Member member, Reservation reservation) {
+        this.price = reservation.getTotalPrice();
+        this.paymentMethod = paymentMethod;
+        this.member = member;
+        this.reservation = reservation;
+    }
 }

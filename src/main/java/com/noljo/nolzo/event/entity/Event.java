@@ -28,12 +28,19 @@ public class Event {
 
     private String description;
 
+    private String posterImageUrl;
+
     private LocalDate startDate;
 
     private LocalDate endDate;
 
+    @Embedded
+    private Schedule schedule;
+
     @Enumerated(EnumType.STRING)
     private EventCategory eventCategory;
+
+    private int runtime;
 
     private int ageLimit;
 
@@ -45,15 +52,18 @@ public class Event {
     private List<Seat> seats = new ArrayList<>();
 
     @Builder
-    public Event(Long id, String title, String venue, String description, LocalDate startDate, LocalDate endDate,
-                 EventCategory eventCategory, int ageLimit, int rating, int reviewCount) {
+    public Event(Long id, String title, String venue, String description, String posterImageUrl, LocalDate startDate, LocalDate endDate, Schedule schedule,
+                 EventCategory eventCategory, int runtime, int ageLimit, int rating, int reviewCount) {
         this.id = id;
         this.title = title;
         this.venue = venue;
         this.description = description;
+        this.posterImageUrl = posterImageUrl;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.schedule = schedule;
         this.eventCategory = eventCategory;
+        this.runtime = runtime;
         this.ageLimit = ageLimit;
         this.rating = rating;
         this.reviewCount = reviewCount;

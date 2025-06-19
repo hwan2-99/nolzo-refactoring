@@ -1,6 +1,5 @@
 package com.noljo.nolzo.ticket.dto;
 
-import com.noljo.nolzo.seat.entity.Seat;
 import com.noljo.nolzo.ticket.entity.Ticket;
 import com.noljo.nolzo.ticket.entity.TicketStatus;
 import lombok.Builder;
