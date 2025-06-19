@@ -59,7 +59,7 @@ class JwtUtilTest {
                 .signWith(secretKey)
                 .compact();
 
-        assertThat(jwtUtil.validateToken(expiredToken)).isFalse();
+        assertThat(jwtUtil.isTokenValid(expiredToken)).isFalse();
     }
 
     @Test
@@ -82,6 +82,6 @@ class JwtUtilTest {
                 .signWith(wrongKey)
                 .compact();
 
-        assertThat(jwtUtil.validateToken(invalidSignatureToken)).isFalse();
+        assertThat(jwtUtil.isTokenValid(invalidSignatureToken)).isFalse();
     }
 }

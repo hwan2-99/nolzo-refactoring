@@ -58,7 +58,7 @@ public class JwtUtil {
         return parseClaims(token).getExpiration().before(new Date());
     }
 
-    public boolean validateToken(String token) {
+    public boolean isTokenValid(String token) {
         try {
             Jwts.parser()
                     .verifyWith(secretKey)
