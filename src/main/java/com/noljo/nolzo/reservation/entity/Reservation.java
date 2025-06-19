@@ -26,7 +26,7 @@ public class Reservation extends BaseEntity {
 
     private int totalPrice;
 
-    private Long reservationNumber;
+    private String reservationNumber;
 
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.PERSIST)
     private List<Ticket> tickets = new ArrayList<>();
@@ -36,7 +36,7 @@ public class Reservation extends BaseEntity {
     private Member member;
 
     @Builder
-    public Reservation(Long id, ReservationStatus status, int totalPrice, Long reservationNumber, Member member) {
+    public Reservation(Long id, ReservationStatus status, int totalPrice, String reservationNumber, Member member) {
         this.id = id;
         this.status = status;
         this.totalPrice = totalPrice;
