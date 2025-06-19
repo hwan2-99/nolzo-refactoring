@@ -2,12 +2,12 @@ package com.noljo.nolzo.event.controller;
 
 import com.noljo.nolzo.event.dto.EventRequest;
 import com.noljo.nolzo.event.dto.EventResponse;
+import com.noljo.nolzo.event.entity.EventCategory;
 import com.noljo.nolzo.event.service.EventService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -24,6 +24,11 @@ public class EventController {
     @PostMapping("/")
     public ResponseEntity<EventResponse> createEvent(@RequestBody @Valid EventRequest dto) {
         return ResponseEntity.ok(eventService.save(dto));
+    }
+
+    @GetMapping("/category/{category}")
+    public ResponseEntity<List<EventResponse>> getEventsByCategory(@PathVariable EventCategory category) {
+        return ResponseEntity.ok(eventService.findAllByCategory(category));
     }
 
     @GetMapping("/{id}")
