@@ -22,6 +22,7 @@ public class JwtTokenService {
     }
 
     public String reissueAccessToken(Member member, String refreshToken) {
+        validateRefreshToken(refreshToken);
         validateRefreshTokenExists(member);
         validateRefreshTokenNotExpired(member, refreshToken);
         validateRefreshTokenMatches(member, refreshToken);
@@ -32,6 +33,12 @@ public class JwtTokenService {
     public void removeRefreshToken(Member member) {
         validateRefreshTokenExists(member);
         refreshTokenRepository.deleteByMemberId(member.getId());
+    }
+
+    private void validateRefreshToken(String refreshToken) {
+        if (!jwtUtil.isTokenValid(refreshToken)) {
+            throw new IllegalStateException("유효하지 않은 Token 입니다.");
+        }
     }
 
     private void validateRefreshTokenExists(Member member) {
@@ -50,7 +57,7 @@ public class JwtTokenService {
     private void validateRefreshTokenMatches(Member member, String refreshToken) {
         String saved = refreshTokenRepository.findByMemberId(member.getId());
         if (!refreshToken.equals(saved)) {
-            throw new IllegalStateException("RefreshToken이 유효하지 않습니다.");
+            throw new IllegalStateException("RefreshToken이 일치하지 않습니다.");
         }
     }
 }
