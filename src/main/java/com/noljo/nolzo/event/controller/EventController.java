@@ -26,8 +26,8 @@ public class EventController {
         return ResponseEntity.ok(eventService.save(dto));
     }
 
-    @GetMapping("/category/{category}")
-    public ResponseEntity<List<EventResponse>> getEventsByCategory(@PathVariable EventCategory category) {
+    @GetMapping
+    public ResponseEntity<List<EventResponse>> getEventsByCategory(@RequestParam EventCategory category) {
         return ResponseEntity.ok(eventService.findAllByCategory(category));
     }
 
