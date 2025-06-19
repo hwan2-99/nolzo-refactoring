@@ -16,7 +16,7 @@ import java.util.List;
 public class EventController {
     private final EventService eventService;
 
-    @GetMapping
+    @GetMapping(params = "!category")
     public ResponseEntity<List<EventResponse>> getAllEvents() {
         return ResponseEntity.ok(eventService.findAll());
     }
@@ -26,7 +26,7 @@ public class EventController {
         return ResponseEntity.ok(eventService.save(dto));
     }
 
-    @GetMapping
+    @GetMapping(params = "category")
     public ResponseEntity<List<EventResponse>> getEventsByCategory(@RequestParam EventCategory category) {
         return ResponseEntity.ok(eventService.findAllByCategory(category));
     }
