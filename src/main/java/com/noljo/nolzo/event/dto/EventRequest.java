@@ -2,6 +2,7 @@ package com.noljo.nolzo.event.dto;
 
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.entity.EventCategory;
+import com.noljo.nolzo.event.entity.Schedule;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -20,15 +21,21 @@ public class EventRequest {
 
     private String description;
 
+    private String posterImageUrl;
+
     @NotNull(message = "시작일 지정 필수")
     private LocalDate startDate;
 
     @NotNull(message = "종료일 지정 필수")
     private LocalDate endDate;
 
+    private Schedule schedule;
+
     //콤보박스여도 notnull?
     @NotNull(message = "카테고리 지정 필수")
     private EventCategory eventCategory;
+
+    private int runtime;
 
     private int ageLimit;
     public Event toEntity(Long id) {
@@ -37,9 +44,12 @@ public class EventRequest {
                 .title(title)
                 .venue(venue)
                 .description(description)
+                .posterImageUrl(posterImageUrl)
                 .startDate(startDate)
                 .endDate(endDate)
+                .schedule(schedule)
                 .eventCategory(eventCategory)
+                .runtime(runtime)
                 .ageLimit(ageLimit)
                 .rating(0)
                 .reviewCount(0)
