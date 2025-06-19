@@ -37,7 +37,7 @@ public class ReservationService {
 
     private String createReservationNumber() {
         String yearSuffix = String.valueOf(LocalDate.now().getYear()).substring(YEAR_SUFFIX_LENGTH);
-        int reservationNumber = reservationRepository.findAll().size() + RESERVATION_NUMBER_COUNT;
+        int reservationNumber = (int)reservationRepository.count() + RESERVATION_NUMBER_COUNT;
         String reservationId = String.format("%05d", reservationNumber);
 
         return RESERVATION_NUMBER_PREFIX + yearSuffix + reservationId;
