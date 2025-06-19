@@ -17,10 +17,9 @@ public class SeatService {
 
     public void updateWithReservation(List<Seat> seats) {
         seats.forEach(seat -> {
-            ValidateIsAvailable(seat);
+            validateIsAvailable(seat);
             Seat lockedSeat = findSeatByIdWithPessimisticLock(seat.getId());
             lockedSeat.updateStatus(SeatStatus.WAITING);
-            seatRepository.save(lockedSeat);
         });
     }
 
@@ -29,7 +28,7 @@ public class SeatService {
                 .orElseThrow(() -> new NotFoundException("Seat with id " + id + " not found"));
     }
 
-    private void ValidateIsAvailable(Seat seat) {
+    private void validateIsAvailable(Seat seat) {
         if (seat.getStatus() != SeatStatus.AVAILABLE) {
             throw new IllegalArgumentException("Seat with id " + seat.getId() + " is not available");
         }
