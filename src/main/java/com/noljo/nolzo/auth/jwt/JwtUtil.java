@@ -31,7 +31,7 @@ public class JwtUtil {
                 SIG.HS256.key().build().getAlgorithm()
         );
         this.accessTokenValidityInMillis = TimeUnit.SECONDS.toMillis(accessTokenValidityInSeconds);
-        this.refreshTokenValidityInMillis = TimeUnit.SECONDS.toMillis(accessTokenValidityInSeconds);
+        this.refreshTokenValidityInMillis = TimeUnit.SECONDS.toMillis(refreshTokenValidityInSeconds);
     }
 
     public String createAccessToken(Member member) {
