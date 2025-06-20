@@ -71,7 +71,7 @@ public class ReservationService {
                 .toList();
     }
 
-    public List<ReservationEventInfo> findReservationsUsed(Long memberId) {
+    public List<ReservationEventInfo> findTicketsUsed(Long memberId) {
 
         List<Reservation> reservations = reservationRepository.findTicketStatusUsedByMemberId(memberId);
 

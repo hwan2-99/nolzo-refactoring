@@ -34,9 +34,9 @@ public class ReservationController {
     }
 
     @GetMapping("/used")
-    public ResponseEntity<List<ReservationEventInfo>> getReservationUsed(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<List<ReservationEventInfo>> getTicketsUsed(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Long memberId = userDetails.getMemberId();
-        List<ReservationEventInfo> reservationDetails = reservationService.findReservationsUsed(memberId);
+        List<ReservationEventInfo> reservationDetails = reservationService.findTicketsUsed(memberId);
         return ResponseEntity.ok(reservationDetails);
     }
 
