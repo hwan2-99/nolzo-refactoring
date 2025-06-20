@@ -16,7 +16,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final EventRepository eventRepository;
 
-    public EventDateTimeResponse getSelectedEventDateTime(Long eventId) {
+    public EventDateTimeResponse readSelectedEventDateTime(Long eventId) {
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이벤트가 존재하지 않습니다"));
