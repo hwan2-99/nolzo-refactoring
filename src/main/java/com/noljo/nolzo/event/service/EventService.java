@@ -1,7 +1,9 @@
 package com.noljo.nolzo.event.service;
 
+import com.noljo.nolzo.event.dto.EventDetailResponse;
 import com.noljo.nolzo.event.dto.EventRequest;
 import com.noljo.nolzo.event.dto.EventResponse;
+import com.noljo.nolzo.event.dto.internal.ScheduleInfo;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.entity.EventCategory;
 import com.noljo.nolzo.event.repository.EventRepository;
@@ -59,5 +61,19 @@ public class EventService {
         eventRepository.deleteById(id);
     }
 
-
+    public List<EventResponse> findDistinctEventByCategory(EventCategory category){
+        return eventRepository.findDistinctEventByCategory(category).stream()
+                .map(EventResponse::from)
+                .toList();
+    }
+    public EventDetailResponse findEventDetail(Long id){
+        Event event = getEvent(id);
+        List<Event> events = eventRepository.findAllByTitle(event.getTitle());
+        List<ScheduleInfo> scheduleInfos = events
+                .stream()
+                .map(ScheduleInfo::from)
+                .toList();
+        return
+                EventDetailResponse.from(scheduleInfos,event);
+    }
 }
