@@ -7,7 +7,9 @@ import lombok.Getter;
 
 @Getter
 public enum ReservationFixture {
+
     예약(ReservationStatus.PENDING, 15000, "12313123L"); // 추후 총합가격 로직 추가시 수정
+
     private ReservationStatus reservationStatus;
     private int totalPrice;
     private String reservationNumber;

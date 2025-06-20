@@ -34,6 +34,7 @@ public class Reservation extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+
     public Reservation(Long id, ReservationStatus status, int totalPrice, String reservationNumber,
                        Member member) {
         this.id = id;

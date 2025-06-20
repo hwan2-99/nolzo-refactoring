@@ -1,5 +1,9 @@
 package com.noljo.nolzo.reservation.service;
 
+
+import com.noljo.nolzo.event.entity.Event;
+import com.noljo.nolzo.event.repository.EventRepository;
+import com.noljo.nolzo.reservation.dto.EventDateTimeResponse;
 import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.repository.MemberRepository;
 import com.noljo.nolzo.reservation.dto.ReservationRequest;
@@ -12,6 +16,8 @@ import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+
 
 @Transactional
 @Service
@@ -41,5 +47,12 @@ public class ReservationService {
         String reservationId = String.format("%05d", reservationNumber);
 
         return RESERVATION_NUMBER_PREFIX + yearSuffix + reservationId;
+    }
+  
+    public EventDateTimeResponse readSelectedEventDateTime(Long eventId) {
+
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 이벤트가 존재하지 않습니다"));
+        return EventDateTimeResponse.fromEvent(event);
     }
 }
