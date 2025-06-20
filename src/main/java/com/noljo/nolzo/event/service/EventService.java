@@ -76,7 +76,4 @@ public class EventService {
         return
                 EventDetailResponse.from(scheduleInfos,event);
     }
-//    public List<Event> findEventByTitle(String title){
-//        return eventRepository
-//    }
 }
