@@ -54,4 +54,8 @@ public class Seat extends BaseEntity {
         this.status = status;
         this.event = event;
     }
+
+    public void updateStatus(SeatStatus status) {
+        this.status = status;
+    }
 }

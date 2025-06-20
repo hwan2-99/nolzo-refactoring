@@ -2,12 +2,15 @@ package com.noljo.nolzo.domain.event.service;
 
 import com.noljo.nolzo.event.dto.EventRequest;
 import com.noljo.nolzo.event.dto.EventResponse;
+import com.noljo.nolzo.event.entity.EventCategory;
 import com.noljo.nolzo.event.service.EventService;
 import com.noljo.nolzo.support.annotation.ServiceTest;
 import com.noljo.nolzo.support.fixture.EventFixture;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
 
 @ServiceTest
 class EventServiceTest {
@@ -40,6 +43,32 @@ class EventServiceTest {
 
         Assertions.assertThat("Cats").isEqualTo(eventService.findById(id).getTitle());
     }
+
+    @Test
+    void 카테고리별_이벤트를_조회할_수_있다() {
+        EventRequest concertEvent = EventFixture.캣츠dto();
+        EventRequest hamletEvent = EventFixture.햄릿dto();
+        eventService.save(concertEvent);
+        eventService.save(hamletEvent);
+
+        List<EventResponse> concertEvents = eventService.findAllByCategory(EventCategory.CONCERT);
+
+        Assertions.assertThat(concertEvents).hasSize(2);
+        Assertions.assertThat(concertEvents)
+                .extracting("eventCategory")
+                .containsOnly(EventCategory.CONCERT);
+    }
+
+    @Test
+    void 존재하지_않는_카테고리의_이벤트_조회시_빈_리스트를_반환한다() {
+        EventRequest concertEvent = EventFixture.캣츠dto();  // CONCERT 카테고리
+        eventService.save(concertEvent);
+
+        List<EventResponse> otherEvents = eventService.findAllByCategory(EventCategory.MUSICAL);
+
+        Assertions.assertThat(otherEvents).isEmpty();
+    }
+
 
     @Test
     void 이벤트를_삭제할_수_있다(){
