@@ -58,6 +58,11 @@ public enum EventFixture {
                 캣츠.startDate, 캣츠.endDate, 캣츠.schedule, 캣츠.eventCategory, 캣츠.runtime, 캣츠.ageLimit, 캣츠.rating, 캣츠.reviewCount);
     }
 
+    public static Event 햄릿() {
+        return new Event(null, 햄릿.title, 햄릿.venue, 햄릿.description, 햄릿.posterImageUrl,
+                햄릿.startDate, 햄릿.endDate, 햄릿.schedule, 햄릿.eventCategory, 햄릿.runtime, 햄릿.ageLimit, 햄릿.rating, 햄릿.reviewCount);
+    }
+
     public static EventRequest 캣츠dto() {
         return EventRequest.builder()
                 .title(캣츠.title)

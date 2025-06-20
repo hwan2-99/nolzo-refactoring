@@ -1,9 +1,9 @@
 package com.noljo.nolzo.reservation.service;
 
-
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.repository.EventRepository;
 import com.noljo.nolzo.reservation.dto.EventDateTimeResponse;
+import com.noljo.nolzo.reservation.dto.ReservationEventInfo;
 import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.repository.MemberRepository;
 import com.noljo.nolzo.reservation.dto.ReservationRequest;
@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
+import java.util.List;
 
 @Transactional
 @Service
@@ -29,6 +29,7 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
+    private final EventRepository eventRepository;
     private final SeatService seatService;
 
     //todo Permistic lock을 사용해서 구현한 내용 추후 multi-thread or Optimistic Lock or Redis 사용후 비교예정
@@ -55,4 +56,17 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 이벤트가 존재하지 않습니다"));
         return EventDateTimeResponse.fromEvent(event);
     }
+  
+    @Transactional(readOnly = true)
+    public List<ReservationEventInfo> findReservations(Long memberId) {
+
+        List<Reservation> reservationList = reservationRepository.findReservationsByMemberId(memberId);
+
+        return reservationList.stream()
+                .map(reservation ->{
+                    Event event = reservation.getTickets().get(0).getSeat().getEvent();
+                        return ReservationEventInfo.of(event,reservation);
+                        }
+                        )
+                .toList();
 }

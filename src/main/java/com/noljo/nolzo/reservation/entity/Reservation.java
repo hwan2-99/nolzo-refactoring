@@ -4,6 +4,8 @@ import com.noljo.nolzo.global.BaseEntity;
 import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.ticket.entity.Ticket;
 import jakarta.persistence.*;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -27,13 +29,13 @@ public class Reservation extends BaseEntity {
 
     private String reservationNumber;
 
-    @OneToMany(mappedBy = "reservation", cascade = CascadeType.PERSIST)
+    //todo fetch타입 lazy로 변경 후 fetch join으로 jpql 작성 예정
+    @OneToMany(mappedBy = "reservation", cascade = CascadeType.PERSIST ,fetch = FetchType.EAGER)
     private List<Ticket> tickets = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
-
 
     public Reservation(Long id, ReservationStatus status, int totalPrice, String reservationNumber,
                        Member member) {

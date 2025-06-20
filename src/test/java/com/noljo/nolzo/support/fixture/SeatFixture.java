@@ -21,6 +21,7 @@ public enum SeatFixture {
     private SeatStatus status;
     private Event event;
 
+
     SeatFixture(String rowName, int seatNumber, String seatSection, String floor, int price, SeatStatus status) {
         this.rowName = rowName;
         this.seatNumber = seatNumber;

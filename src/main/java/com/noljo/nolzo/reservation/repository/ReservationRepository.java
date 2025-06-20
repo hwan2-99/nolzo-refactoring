@@ -14,4 +14,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
         return findById(id)
                 .orElseThrow(() -> new NotFoundException("not found")); // 에러코드 추후 통일화 필요
     }
+
+    List<Reservation> findReservationsByMemberId(Long memberId);
 }
