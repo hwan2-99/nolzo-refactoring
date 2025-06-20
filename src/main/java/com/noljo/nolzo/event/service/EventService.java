@@ -3,6 +3,7 @@ package com.noljo.nolzo.event.service;
 import com.noljo.nolzo.event.dto.EventRequest;
 import com.noljo.nolzo.event.dto.EventResponse;
 import com.noljo.nolzo.event.entity.Event;
+import com.noljo.nolzo.event.entity.EventCategory;
 import com.noljo.nolzo.event.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,13 @@ public class EventService {
     @Transactional(readOnly = true)
     public List<EventResponse> findAll() {
         return eventRepository.findAll().stream()
+                .map(EventResponse::from)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<EventResponse> findAllByCategory(EventCategory category) {
+        return eventRepository.findAllByEventCategory(category).stream()
                 .map(EventResponse::from)
                 .toList();
     }

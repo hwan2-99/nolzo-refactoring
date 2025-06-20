@@ -9,21 +9,25 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class CustomUserDetails implements UserDetails {
 
+    private final Long memberId;
     private final String email;
+    private final String password;
     private final Role role;
 
-    private CustomUserDetails(String email, Role role) {
+    public CustomUserDetails(Long memberId, String email, String password, Role role) {
+        this.memberId = memberId;
         this.email = email;
+        this.password = password;
         this.role = role;
     }
 
-    public static CustomUserDetails fromJwtClaims(String email, Role role) {
-        return new CustomUserDetails(email, role);
+    public Long getMemberId() {
+        return memberId;
     }
 
     @Override
     public String getPassword() {
-        return null;
+        return password;
     }
 
     @Override
