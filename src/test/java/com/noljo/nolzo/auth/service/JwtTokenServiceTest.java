@@ -46,7 +46,6 @@ class JwtTokenServiceTest {
 
         String refreshToken = tokenResponse.refreshToken();
 
-        assertThat(refreshTokenRepository.hasRefreshToken(member.getId())).isTrue();
         assertThat(refreshTokenRepository.findByMemberId(member.getId())).isEqualTo(refreshToken);
     }
 

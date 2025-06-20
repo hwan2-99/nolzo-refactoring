@@ -42,7 +42,7 @@ public class JwtTokenService {
     }
 
     private void validateRefreshTokenExists(Member member) {
-        if (!refreshTokenRepository.hasRefreshToken(member.getId())) {
+        if (refreshTokenRepository.findByMemberId(member.getId()) == null) {
             throw new IllegalStateException("저장된 RefreshToken이 없습니다.");
         }
     }

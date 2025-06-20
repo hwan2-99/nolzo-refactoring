@@ -6,6 +6,4 @@ public interface RefreshTokenRepository {
     String findByMemberId(Long memberId);
 
     void deleteByMemberId(Long memberId);
-
-    boolean hasRefreshToken(Long memberId);
 }
