@@ -70,4 +70,17 @@ public class ReservationService {
                 )
                 .toList();
     }
+
+    public List<ReservationEventInfo> findReservationsUsed(Long memberId) {
+
+        List<Reservation> reservations = reservationRepository.findTicketStatusUsedByMemberId(memberId);
+
+        return reservations.stream()
+                .map(reservation -> {
+                            Event event = reservation.getTickets().get(0).getSeat().getEvent();
+                            return ReservationEventInfo.of(event, reservation);
+                        }
+                )
+                .toList();
+    }
 }
