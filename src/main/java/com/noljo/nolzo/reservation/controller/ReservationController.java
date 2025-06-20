@@ -22,7 +22,7 @@ public class ReservationController {
     @PostMapping("/{eventId}")
     public ResponseEntity<EventDateTimeResponse> chooseEventDateTime(@PathVariable Long eventId) {
 
-        EventDateTimeResponse event = reservationService.chooseEventDateTime(eventId);
+        EventDateTimeResponse event = reservationService.readSelectedEventDateTime(eventId);
         return ResponseEntity.ok(event);
     }
   

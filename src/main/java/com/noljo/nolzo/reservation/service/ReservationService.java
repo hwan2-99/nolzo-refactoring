@@ -44,29 +44,30 @@ public class ReservationService {
 
     private String createReservationNumber() {
         String yearSuffix = String.valueOf(LocalDate.now().getYear()).substring(YEAR_SUFFIX_LENGTH);
-        int reservationNumber = (int)reservationRepository.count() + RESERVATION_NUMBER_COUNT;
+        int reservationNumber = (int) reservationRepository.count() + RESERVATION_NUMBER_COUNT;
         String reservationId = String.format("%05d", reservationNumber);
 
         return RESERVATION_NUMBER_PREFIX + yearSuffix + reservationId;
     }
-  
+
     public EventDateTimeResponse readSelectedEventDateTime(Long eventId) {
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이벤트가 존재하지 않습니다"));
         return EventDateTimeResponse.fromEvent(event);
     }
-  
+
     @Transactional(readOnly = true)
     public List<ReservationEventInfo> findReservations(Long memberId) {
 
         List<Reservation> reservationList = reservationRepository.findReservationsByMemberId(memberId);
 
         return reservationList.stream()
-                .map(reservation ->{
-                    Event event = reservation.getTickets().get(0).getSeat().getEvent();
-                        return ReservationEventInfo.of(event,reservation);
+                .map(reservation -> {
+                            Event event = reservation.getTickets().get(0).getSeat().getEvent();
+                            return ReservationEventInfo.of(event, reservation);
                         }
-                        )
+                )
                 .toList();
+    }
 }

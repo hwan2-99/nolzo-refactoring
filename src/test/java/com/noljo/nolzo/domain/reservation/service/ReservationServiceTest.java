@@ -7,6 +7,7 @@ import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.repository.EventRepository;
 import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.repository.MemberRepository;
+import com.noljo.nolzo.reservation.dto.EventDateTimeResponse;
 import com.noljo.nolzo.reservation.dto.ReservationEventInfo;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import com.noljo.nolzo.reservation.dto.ReservationRequest;
@@ -23,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ServiceTest
 public class ReservationServiceTest {
@@ -71,7 +74,22 @@ public class ReservationServiceTest {
                 new ReservationRequest(event.getId(), seatRepository.findAll())))
                 .isInstanceOf(IllegalArgumentException.class);
     }
-  
+
+    @Test
+    public void 공연에_대한_날짜_시간_선택할_수_있다() throws Exception {
+        //given
+        Event event = eventRepository.save(EventFixture.캣츠());
+
+        //when
+        EventDateTimeResponse response = reservationService.readSelectedEventDateTime(event.getId());
+
+        //then
+        assertNotNull(response);
+        assertEquals(event.getId(), response.getId());
+        assertNotNull(response.getShowdate());
+        assertNotNull(response.getShowTime());
+    }
+
     @Test
     public void 전체_예약_조회() throws Exception {
         //given
