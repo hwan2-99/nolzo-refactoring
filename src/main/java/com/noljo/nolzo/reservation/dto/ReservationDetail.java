@@ -1,17 +1,13 @@
 package com.noljo.nolzo.reservation.dto;
 
-import com.noljo.nolzo.event.entity.Event;
-import com.noljo.nolzo.payment.entity.PaymentMethod;
 import com.noljo.nolzo.reservation.entity.Reservation;
-import com.noljo.nolzo.reservation.entity.ReservationStatus;
 import com.noljo.nolzo.seat.entity.Seat;
 import com.noljo.nolzo.ticket.entity.Ticket;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;

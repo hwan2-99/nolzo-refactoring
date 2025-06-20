@@ -4,7 +4,8 @@ import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.repository.EventRepository;
 import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.repository.MemberRepository;
-import com.noljo.nolzo.reservation.dto.ReservationResponse;
+import com.noljo.nolzo.reservation.dto.ReservationEventInfo;
+
 import com.noljo.nolzo.reservation.entity.Reservation;
 import com.noljo.nolzo.reservation.repository.ReservationRepository;
 import com.noljo.nolzo.reservation.service.ReservationService;
@@ -50,7 +51,7 @@ public class ReservationServiceTest {
         ticketRepository.save(TicketFixture.미사용티켓(reservation2,seat2));
 
         //when
-        List<ReservationResponse> reservations = reservationService.findReservations(user.getId());
+        List<ReservationEventInfo> reservations = reservationService.findReservations(user.getId());
 
         //then
         assertThat(reservations).hasSize(2);

@@ -8,12 +8,12 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ReservationResponse {
+public class ReservationEventInfo {
     private ReservationEvent event;
     private ReservationDetail detail;
 
-    public static ReservationResponse of(Event event, Reservation reservation) {
-        return ReservationResponse.builder()
+    public static ReservationEventInfo of(Event event, Reservation reservation) {
+        return ReservationEventInfo.builder()
                 .event(ReservationEvent.from(event))
                 .detail(ReservationDetail.from(reservation))
                 .build();
