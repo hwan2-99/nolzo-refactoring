@@ -30,7 +30,8 @@ public class Reservation extends BaseEntity {
 
     private String reservationNumber;
 
-    @OneToMany(mappedBy = "reservation", cascade = CascadeType.PERSIST)
+    //todo fetch타입 lazy로 변경 후 fetch join으로 jpql 작성 예정
+    @OneToMany(mappedBy = "reservation", cascade = CascadeType.PERSIST ,fetch = FetchType.EAGER)
     private List<Ticket> tickets = new ArrayList<>();
 
     @ManyToOne
