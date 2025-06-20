@@ -33,4 +33,11 @@ public class ReservationController {
         return ResponseEntity.ok(reservationDetails);
     }
 
+    @GetMapping("/used")
+    public ResponseEntity<List<ReservationEventInfo>> getReservationUsed(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long memberId = userDetails.getMemberId();
+        List<ReservationEventInfo> reservationDetails = reservationService.findReservationsUsed(memberId);
+        return ResponseEntity.ok(reservationDetails);
+    }
+
 }
