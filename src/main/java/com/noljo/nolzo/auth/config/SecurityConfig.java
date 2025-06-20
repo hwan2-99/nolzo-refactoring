@@ -23,6 +23,17 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    private static final String[] PERMIT_URL_ARRAY = {
+            "/v3/api-docs/",
+            "/swagger-ui/",
+            "/swagger-ui.html",
+            "/swagger-resources/",
+            "/webjars/",
+            "/v3/api-docs.yaml",
+            "/auth/",
+            "/ws/",
+    };
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, DaoAuthenticationProvider daoAuthProvider) throws Exception {
         http.authenticationProvider(daoAuthProvider)
@@ -34,6 +45,7 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(PERMIT_URL_ARRAY).permitAll()
                         .requestMatchers("/login", "/signup").permitAll()
                         .anyRequest().authenticated())
 
