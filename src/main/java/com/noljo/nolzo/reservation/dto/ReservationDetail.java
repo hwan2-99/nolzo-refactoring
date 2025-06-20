@@ -1,6 +1,7 @@
 package com.noljo.nolzo.reservation.dto;
 
 import com.noljo.nolzo.event.entity.Event;
+import com.noljo.nolzo.payment.entity.PaymentMethod;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import com.noljo.nolzo.reservation.entity.ReservationStatus;
 import com.noljo.nolzo.seat.entity.Seat;
@@ -9,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -22,6 +24,8 @@ public class ReservationDetail {
     private String status;
     private int totalPrice;
     private String reservationNumber;
+    private LocalDateTime createdAt;
+
 
     public static ReservationDetail from(Reservation reservation) {
         List<Seat> reservedSeats = reservation.getTickets().stream()
@@ -33,6 +37,7 @@ public class ReservationDetail {
                 .status(reservation.getStatus().name())
                 .totalPrice(reservation.getTotalPrice())
                 .reservationNumber(reservation.getReservationNumber())
+                .createdAt(reservation.getCreatedAt())
                 .build();
     }
 }

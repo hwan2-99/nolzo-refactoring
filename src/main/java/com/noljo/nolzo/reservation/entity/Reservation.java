@@ -30,7 +30,6 @@ public class Reservation extends BaseEntity {
 
     private String reservationNumber;
 
-
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.PERSIST)
     private List<Ticket> tickets = new ArrayList<>();
 
