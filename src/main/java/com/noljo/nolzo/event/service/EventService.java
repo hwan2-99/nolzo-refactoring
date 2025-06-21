@@ -10,7 +10,6 @@ import com.noljo.nolzo.event.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 @Service
@@ -57,7 +56,6 @@ public class EventService {
 
     public void delete(Long id) {
         getEvent(id);
-
         eventRepository.deleteById(id);
     }
 
@@ -78,18 +76,9 @@ public class EventService {
     }
 
     public List<EventResponse> searchEventList(String search) {
-        // "같은 제목 1건" 로직으로 변경
         List<Event> events = eventRepository.findOnePerTitle(search);
         return events.stream()
                 .map(EventResponse::from)
                 .toList();
     }
-
-//    public List<EventResponse> searchEventList(String search) {
-//        List<Event> eventList = eventRepository.findAllByTitleContaining(search);
-//
-//        return eventList.stream()
-//                .map(EventResponse::from)
-//                .toList();
-//    }
 }
