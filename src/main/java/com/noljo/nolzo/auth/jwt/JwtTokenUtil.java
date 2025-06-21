@@ -29,9 +29,18 @@ public class JwtTokenUtil {
         return jwtUtil.createAccessToken(member);
     }
 
-    public void removeRefreshToken(Member member) {
-        validateRefreshTokenExists(member);
-        refreshTokenRepository.deleteByMemberId(member.getId());
+    public void removeRefreshToken(Long memberId) {
+        validateRefreshTokenExists(memberId);
+        refreshTokenRepository.deleteByMemberId(memberId);
+    }
+
+    public boolean hasRefreshToken(Long memberId) {
+        try {
+            validateRefreshTokenExists(memberId);
+        } catch (IllegalStateException e) {
+            return false;
+        }
+        return true;
     }
 
     private void validateRefreshToken(String refreshToken) {

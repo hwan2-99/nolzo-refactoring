@@ -55,6 +55,13 @@ public class AuthService {
         return jwtTokenUtil.issueToken(member);
     }
 
+    public void logout(Long memberId) {
+        if (!jwtTokenUtil.hasRefreshToken(memberId)) {
+            throw new IllegalArgumentException("로그인 상태가 아닙니다.");
+        }
+        jwtTokenUtil.removeRefreshToken(memberId);
+    }
+
     private void checkDuplicateEmail(String email) {
         if (memberRepository.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 회원입니다.");
