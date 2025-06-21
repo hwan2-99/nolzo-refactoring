@@ -2,9 +2,9 @@ package com.noljo.nolzo.domain.reservation.service;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.repository.EventRepository;
+import com.noljo.nolzo.event.service.EventService;
 import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.repository.MemberRepository;
 import com.noljo.nolzo.reservation.dto.EventDateTimeResponse;
@@ -21,9 +21,11 @@ import com.noljo.nolzo.ticket.repository.TicketRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -42,6 +44,8 @@ public class ReservationServiceTest {
     private ReservationRepository reservationRepository;
     @Autowired
     private TicketRepository ticketRepository;
+    @Autowired
+    private EventService eventService;
 
     @Test
     void 같은_좌석은_동시에_접근이_불가능하다() throws InterruptedException {
@@ -76,19 +80,53 @@ public class ReservationServiceTest {
     }
 
     @Test
-    public void 공연에_대한_날짜_시간_선택할_수_있다() throws Exception {
-        //given
-        Event event = eventRepository.save(EventFixture.캣츠());
+    public void 공연에_대한_날짜와_시간을_선택할_수_있다() {
+        // given
+        Event event = eventRepository.save(EventFixture.캣츠()); // showDate: 2025-12-01, showTime: 19:00
 
-        //when
-        EventDateTimeResponse response = reservationService.readSelectedEventDateTime(event.getId());
+        // when
+        EventDateTimeResponse response = reservationService.readSelectedEventDateTime(
+                event.getId(),
+                event.getSchedule().getShowDate(),
+                event.getSchedule().getShowTime()
+        );
 
-        //then
+        // then
         assertNotNull(response);
         assertEquals(event.getId(), response.getId());
-        assertNotNull(response.getShowdate());
-        assertNotNull(response.getShowTime());
+        assertEquals(event.getSchedule().getShowDate(), response.getShowdate());
+        assertEquals(event.getSchedule().getShowTime(), response.getShowTime());
     }
+
+    @Test
+    public void 공연에_대한_선택한_날짜가_없을_시_예외() {
+        // given
+        Event event = eventRepository.save(EventFixture.캣츠());
+
+        LocalDate wrongDate = event.getSchedule().getShowDate().plusDays(1);
+        LocalTime correctTime = event.getSchedule().getShowTime();
+
+        // when & then
+        assertThatThrownBy(() ->
+                reservationService.readSelectedEventDateTime(event.getId(), wrongDate, correctTime)
+        ).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void 공연에_대한_선택한_시간이_없을_시_예외() {
+        // given
+        Event event = eventRepository.save(EventFixture.캣츠());
+
+        LocalDate correctDate = event.getSchedule().getShowDate();
+        LocalTime wrongTime = event.getSchedule().getShowTime().plusHours(1);
+
+        // when & then
+
+        assertThatThrownBy(()->reservationService.readSelectedEventDateTime(event.getId(),correctDate,wrongTime))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+
 
     @Test
     public void 전체_예약_조회() throws Exception {
