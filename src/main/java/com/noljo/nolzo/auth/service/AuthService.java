@@ -5,7 +5,6 @@ import com.noljo.nolzo.auth.dto.AccessTokenResponse;
 import com.noljo.nolzo.auth.dto.RegisterRequest;
 import com.noljo.nolzo.auth.dto.RegisterResponse;
 import com.noljo.nolzo.auth.dto.TokensResponse;
-import com.noljo.nolzo.auth.jwt.JwtTokenUtil;
 import com.noljo.nolzo.auth.jwt.JwtUtil;
 import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.entity.Role;
@@ -25,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final MemberRepository memberRepository;
-    private final JwtTokenUtil jwtTokenUtil;
+    private final JwtTokenService jwtTokenService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
@@ -55,20 +54,20 @@ public class AuthService {
         );
 
         SecurityContextHolder.getContext().setAuthentication(authenticate);
-        return jwtTokenUtil.issueToken(member);
+        return jwtTokenService.issueToken(member);
     }
 
     public void logout(String refreshToken) {
         Long memberId = jwtUtil.getMemberId(refreshToken);
         validateRefreshTokenExists(memberId);
-        jwtTokenUtil.removeRefreshToken(memberId);
+        jwtTokenService.removeRefreshToken(memberId);
     }
 
     public AccessTokenResponse reissueAccessToken(String refreshToken) {
         Long memberId = jwtUtil.getMemberId(refreshToken);
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원 입니다."));
-        String reissuedAccessToken = jwtTokenUtil.reissueAccessToken(member, refreshToken);
+        String reissuedAccessToken = jwtTokenService.reissueAccessToken(member, refreshToken);
         return new AccessTokenResponse(reissuedAccessToken);
     }
 
@@ -79,7 +78,7 @@ public class AuthService {
     }
 
     private void validateRefreshTokenExists(Long memberId) {
-        if (!jwtTokenUtil.hasRefreshToken(memberId)) {
+        if (!jwtTokenService.hasRefreshToken(memberId)) {
             throw new IllegalArgumentException("로그인 상태가 아닙니다.");
         }
     }

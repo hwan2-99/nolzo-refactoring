@@ -9,6 +9,7 @@ import com.noljo.nolzo.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -47,5 +48,10 @@ public class AuthController {
     ) {
         AccessTokenResponse response = authService.reissueAccessToken(refreshToken);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/test")
+    public ResponseEntity<String> test(@AuthenticationPrincipal(expression = "memberId") Long memberId) {
+        return ResponseEntity.ok(memberId.toString());
     }
 }
