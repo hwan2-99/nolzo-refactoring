@@ -33,4 +33,11 @@ public class ReservationController {
         return ResponseEntity.ok(reservationDetails);
     }
 
+    @GetMapping("/cancel")
+    public ResponseEntity<List<ReservationEventInfo>> getCancelReservations(@AuthenticationPrincipal CustomUserDetails userDetails){
+        Long memberId = userDetails.getMemberId();
+        List<ReservationEventInfo> reservationDetails = reservationService.findCancelReservations(memberId);
+        return  ResponseEntity.ok(reservationDetails);
+    }
+
 }
