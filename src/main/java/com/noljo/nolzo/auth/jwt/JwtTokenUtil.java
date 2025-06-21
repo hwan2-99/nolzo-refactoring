@@ -22,9 +22,9 @@ public class JwtTokenUtil {
 
     public String reissueAccessToken(Member member, String refreshToken) {
         validateRefreshToken(refreshToken);
-        validateRefreshTokenExists(member);
-        validateRefreshTokenNotExpired(member, refreshToken);
-        validateRefreshTokenMatches(member, refreshToken);
+        validateRefreshTokenExists(member.getId());
+        validateRefreshTokenNotExpired(member.getId(), refreshToken);
+        validateRefreshTokenMatches(member.getId(), refreshToken);
 
         return jwtUtil.createAccessToken(member);
     }
@@ -40,21 +40,21 @@ public class JwtTokenUtil {
         }
     }
 
-    private void validateRefreshTokenExists(Member member) {
-        if (refreshTokenRepository.findByMemberId(member.getId()) == null) {
+    private void validateRefreshTokenExists(Long memberId) {
+        if (refreshTokenRepository.findByMemberId(memberId) == null) {
             throw new IllegalStateException("저장된 RefreshToken이 없습니다.");
         }
     }
 
-    private void validateRefreshTokenNotExpired(Member member, String refreshToken) {
+    private void validateRefreshTokenNotExpired(Long memberId, String refreshToken) {
         if (jwtUtil.isExpired(refreshToken)) {
-            refreshTokenRepository.deleteByMemberId(member.getId());
+            refreshTokenRepository.deleteByMemberId(memberId);
             throw new IllegalStateException("RefreshToken이 만료되었습니다.");
         }
     }
 
-    private void validateRefreshTokenMatches(Member member, String refreshToken) {
-        String saved = refreshTokenRepository.findByMemberId(member.getId());
+    private void validateRefreshTokenMatches(Long memberId, String refreshToken) {
+        String saved = refreshTokenRepository.findByMemberId(memberId);
         if (!refreshToken.equals(saved)) {
             throw new IllegalStateException("RefreshToken이 일치하지 않습니다.");
         }
