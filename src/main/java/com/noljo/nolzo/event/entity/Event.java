@@ -1,6 +1,6 @@
 package com.noljo.nolzo.event.entity;
 
-import com.noljo.nolzo.payment.entity.Payment;
+import com.noljo.nolzo.event.dto.EventUpdateRequest;
 import com.noljo.nolzo.seat.entity.Seat;
 import jakarta.persistence.*;
 import java.util.ArrayList;
@@ -68,5 +68,13 @@ public class Event {
         this.rating = rating;
         this.reviewCount = reviewCount;
         this.seats = new ArrayList<>();
+    }
+    public void updateFrom(EventUpdateRequest dto) {
+        this.title         = dto.getTitle();
+        this.venue         = dto.getVenue();
+        this.description   = dto.getDescription();
+        this.startDate     = dto.getStartDate();
+        this.endDate       = dto.getEndDate();
+        this.schedule      = dto.getSchedule();
     }
 }
