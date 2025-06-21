@@ -1,7 +1,6 @@
-package com.noljo.nolzo.auth.service;
+package com.noljo.nolzo.auth.jwt;
 
 import com.noljo.nolzo.auth.dto.TokenResponse;
-import com.noljo.nolzo.auth.jwt.JwtUtil;
 import com.noljo.nolzo.auth.repository.RefreshTokenRepository;
 import com.noljo.nolzo.member.entity.Member;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class JwtTokenService {
+public class JwtTokenUtil {
 
     private final JwtUtil jwtUtil;
     private final RefreshTokenRepository refreshTokenRepository;

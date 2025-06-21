@@ -1,10 +1,9 @@
-package com.noljo.nolzo.auth.service;
+package com.noljo.nolzo.auth.jwt;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import com.noljo.nolzo.auth.dto.TokenResponse;
-import com.noljo.nolzo.auth.jwt.JwtUtil;
 import com.noljo.nolzo.auth.repository.RefreshTokenRepository;
 import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.repository.MemberRepository;
@@ -20,10 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 @ServiceTest
-class JwtTokenServiceTest {
+class JwtTokenUtilTest {
 
     @Autowired
-    private JwtTokenService jwtTokenService;
+    private JwtTokenUtil jwtTokenUtil;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -42,7 +41,7 @@ class JwtTokenServiceTest {
         Member member = MemberFixture.회원();
         memberRepository.save(member);
 
-        TokenResponse tokenResponse = jwtTokenService.issueToken(member);
+        TokenResponse tokenResponse = jwtTokenUtil.issueToken(member);
 
         String refreshToken = tokenResponse.refreshToken();
 
@@ -53,9 +52,9 @@ class JwtTokenServiceTest {
     void accessToken은_재발급이_가능하다() {
         Member member = MemberFixture.회원();
         memberRepository.save(member);
-        TokenResponse tokens = jwtTokenService.issueToken(member);
+        TokenResponse tokens = jwtTokenUtil.issueToken(member);
 
-        String newAccessToken = jwtTokenService.reissueAccessToken(member, tokens.refreshToken());
+        String newAccessToken = jwtTokenUtil.reissueAccessToken(member, tokens.refreshToken());
 
         assertThat(jwtUtil.isTokenValid(newAccessToken)).isTrue();
         assertThat(jwtUtil.getMemberId(newAccessToken)).isEqualTo(member.getId());
@@ -80,7 +79,7 @@ class JwtTokenServiceTest {
 
         refreshTokenRepository.save(member.getId(), expiredRefreshToken);
 
-        assertThatThrownBy(() -> jwtTokenService.reissueAccessToken(member, expiredRefreshToken))
+        assertThatThrownBy(() -> jwtTokenUtil.reissueAccessToken(member, expiredRefreshToken))
                 .isInstanceOf(IllegalStateException.class);
     }
 
@@ -89,11 +88,11 @@ class JwtTokenServiceTest {
         Member member = MemberFixture.회원();
         memberRepository.save(member);
 
-        TokenResponse tokens = jwtTokenService.issueToken(member);
+        TokenResponse tokens = jwtTokenUtil.issueToken(member);
 
         String fakeToken = tokens.refreshToken() + "fake-token";
 
-        assertThatThrownBy(() -> jwtTokenService.reissueAccessToken(member, fakeToken))
+        assertThatThrownBy(() -> jwtTokenUtil.reissueAccessToken(member, fakeToken))
                 .isInstanceOf(IllegalStateException.class);
     }
 }
