@@ -31,7 +31,7 @@ public class AuthService {
     private final JwtUtil jwtUtil;
 
     public RegisterResponse register(RegisterRequest request) {
-        checkDuplicateEmail(request.email());
+        validateDuplicateEmail(request.email());
 
         Member member = Member.of(
                 request.name(),
@@ -58,10 +58,9 @@ public class AuthService {
         return jwtTokenUtil.issueToken(member);
     }
 
-    public void logout(Long memberId) {
-        if (!jwtTokenUtil.hasRefreshToken(memberId)) {
-            throw new IllegalArgumentException("로그인 상태가 아닙니다.");
-        }
+    public void logout(String refreshToken) {
+        Long memberId = jwtUtil.getMemberId(refreshToken);
+        validateRefreshTokenExists(memberId);
         jwtTokenUtil.removeRefreshToken(memberId);
     }
 
@@ -73,9 +72,15 @@ public class AuthService {
         return new ReissueAccessTokenResponse(reissuedAccessToken);
     }
 
-    private void checkDuplicateEmail(String email) {
+    private void validateDuplicateEmail(String email) {
         if (memberRepository.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 회원입니다.");
+        }
+    }
+
+    private void validateRefreshTokenExists(Long memberId) {
+        if (!jwtTokenUtil.hasRefreshToken(memberId)) {
+            throw new IllegalArgumentException("로그인 상태가 아닙니다.");
         }
     }
 }

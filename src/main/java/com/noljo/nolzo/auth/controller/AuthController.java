@@ -9,7 +9,6 @@ import com.noljo.nolzo.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -37,8 +36,8 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@AuthenticationPrincipal(expression = "memberId") Long memberId) {
-        authService.logout(memberId);
+    public ResponseEntity<Void> logout(@RequestHeader(AUTHORIZATION_REFRESH) String refreshToken) {
+        authService.logout(refreshToken);
         return ResponseEntity.noContent().build();
     }
 
