@@ -3,6 +3,7 @@ package com.noljo.nolzo.auth.controller;
 import com.noljo.nolzo.auth.dto.LoginRequest;
 import com.noljo.nolzo.auth.dto.RegisterRequest;
 import com.noljo.nolzo.auth.dto.RegisterResponse;
+import com.noljo.nolzo.auth.dto.ReissueAccessTokenResponse;
 import com.noljo.nolzo.auth.dto.TokenResponse;
 import com.noljo.nolzo.auth.service.AuthService;
 import jakarta.validation.Valid;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
+    public static final String AUTHORIZATION_REFRESH = "Authorization-Refresh";
     private final AuthService authService;
 
     @PostMapping("/register")
@@ -37,5 +40,13 @@ public class AuthController {
     public ResponseEntity<Void> logout(@AuthenticationPrincipal(expression = "memberId") Long memberId) {
         authService.logout(memberId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<ReissueAccessTokenResponse> refreshAccessToken(
+            @RequestHeader(AUTHORIZATION_REFRESH) String refreshToken
+    ) {
+        ReissueAccessTokenResponse response = authService.reissueAccessToken(refreshToken);
+        return ResponseEntity.ok(response);
     }
 }
