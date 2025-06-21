@@ -3,8 +3,8 @@ package com.noljo.nolzo.auth.controller;
 import com.noljo.nolzo.auth.dto.LoginRequest;
 import com.noljo.nolzo.auth.dto.RegisterRequest;
 import com.noljo.nolzo.auth.dto.RegisterResponse;
-import com.noljo.nolzo.auth.dto.ReissueAccessTokenResponse;
-import com.noljo.nolzo.auth.dto.TokenResponse;
+import com.noljo.nolzo.auth.dto.AccessTokenResponse;
+import com.noljo.nolzo.auth.dto.TokensResponse;
 import com.noljo.nolzo.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +30,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest request) {
-        TokenResponse response = authService.login(request);
+    public ResponseEntity<TokensResponse> login(@Valid @RequestBody LoginRequest request) {
+        TokensResponse response = authService.login(request);
         return ResponseEntity.ok(response);
     }
 
@@ -41,11 +41,11 @@ public class AuthController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/refresh")
-    public ResponseEntity<ReissueAccessTokenResponse> refreshAccessToken(
+    @PostMapping("/reissue")
+    public ResponseEntity<AccessTokenResponse> reissueAccessToken(
             @RequestHeader(AUTHORIZATION_REFRESH) String refreshToken
     ) {
-        ReissueAccessTokenResponse response = authService.reissueAccessToken(refreshToken);
+        AccessTokenResponse response = authService.reissueAccessToken(refreshToken);
         return ResponseEntity.ok(response);
     }
 }

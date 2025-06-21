@@ -1,10 +1,10 @@
 package com.noljo.nolzo.auth.service;
 
 import com.noljo.nolzo.auth.dto.LoginRequest;
-import com.noljo.nolzo.auth.dto.ReissueAccessTokenResponse;
+import com.noljo.nolzo.auth.dto.AccessTokenResponse;
 import com.noljo.nolzo.auth.dto.RegisterRequest;
 import com.noljo.nolzo.auth.dto.RegisterResponse;
-import com.noljo.nolzo.auth.dto.TokenResponse;
+import com.noljo.nolzo.auth.dto.TokensResponse;
 import com.noljo.nolzo.auth.jwt.JwtTokenUtil;
 import com.noljo.nolzo.auth.jwt.JwtUtil;
 import com.noljo.nolzo.member.entity.Member;
@@ -45,7 +45,7 @@ public class AuthService {
         return RegisterResponse.from(savedMember);
     }
 
-    public TokenResponse login(LoginRequest request) {
+    public TokensResponse login(LoginRequest request) {
         Member member = memberRepository.findByEmail(request.email())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원 입니다."));
 
@@ -64,12 +64,12 @@ public class AuthService {
         jwtTokenUtil.removeRefreshToken(memberId);
     }
 
-    public ReissueAccessTokenResponse reissueAccessToken(String refreshToken) {
+    public AccessTokenResponse reissueAccessToken(String refreshToken) {
         Long memberId = jwtUtil.getMemberId(refreshToken);
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원 입니다."));
         String reissuedAccessToken = jwtTokenUtil.reissueAccessToken(member, refreshToken);
-        return new ReissueAccessTokenResponse(reissuedAccessToken);
+        return new AccessTokenResponse(reissuedAccessToken);
     }
 
     private void validateDuplicateEmail(String email) {

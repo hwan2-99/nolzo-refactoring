@@ -1,6 +1,6 @@
 package com.noljo.nolzo.auth.jwt;
 
-import com.noljo.nolzo.auth.dto.TokenResponse;
+import com.noljo.nolzo.auth.dto.TokensResponse;
 import com.noljo.nolzo.auth.repository.RefreshTokenRepository;
 import com.noljo.nolzo.member.entity.Member;
 import lombok.RequiredArgsConstructor;
@@ -13,11 +13,11 @@ public class JwtTokenUtil {
     private final JwtUtil jwtUtil;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public TokenResponse issueToken(Member member) {
+    public TokensResponse issueToken(Member member) {
         String accessToken = jwtUtil.createAccessToken(member);
         String refreshToken = jwtUtil.createRefreshToken(member);
         refreshTokenRepository.save(member.getId(), refreshToken);
-        return new TokenResponse(accessToken, refreshToken);
+        return new TokensResponse(accessToken, refreshToken);
     }
 
     public String reissueAccessToken(Member member, String refreshToken) {

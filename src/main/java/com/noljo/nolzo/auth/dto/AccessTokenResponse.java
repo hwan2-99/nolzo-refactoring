@@ -1,6 +1,6 @@
 package com.noljo.nolzo.auth.dto;
 
-public record ReissueAccessTokenResponse(
+public record AccessTokenResponse(
         String accessToken
 ) {
 }
