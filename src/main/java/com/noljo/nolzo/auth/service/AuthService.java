@@ -1,12 +1,18 @@
 package com.noljo.nolzo.auth.service;
 
+import com.noljo.nolzo.auth.dto.LoginRequest;
 import com.noljo.nolzo.auth.dto.RegisterRequest;
 import com.noljo.nolzo.auth.dto.RegisterResponse;
-import com.noljo.nolzo.auth.jwt.JwtUtil;
+import com.noljo.nolzo.auth.dto.TokenResponse;
+import com.noljo.nolzo.auth.jwt.JwtTokenUtil;
 import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.entity.Role;
 import com.noljo.nolzo.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final MemberRepository memberRepository;
+    private final JwtTokenUtil jwtTokenUtil;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
 
     public RegisterResponse register(RegisterRequest request) {
         checkDuplicateEmail(request.email());
@@ -32,6 +40,19 @@ public class AuthService {
 
         Member savedMember = memberRepository.save(member);
         return RegisterResponse.from(savedMember);
+    }
+
+    public TokenResponse login(LoginRequest request) {
+        Member member = memberRepository.findByEmail(request.email())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원 입니다."));
+
+        // todo: 로그인 실패시 에러 처리
+        Authentication authenticate = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.email(), request.password())
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
+        return jwtTokenUtil.issueToken(member);
     }
 
     private void checkDuplicateEmail(String email) {
