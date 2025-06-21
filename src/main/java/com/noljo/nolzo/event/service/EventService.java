@@ -76,4 +76,20 @@ public class EventService {
         return
                 EventDetailResponse.from(scheduleInfos,event);
     }
+
+    public List<EventResponse> searchEventList(String search) {
+        // "같은 제목 1건" 로직으로 변경
+        List<Event> events = eventRepository.findOnePerTitle(search);
+        return events.stream()
+                .map(EventResponse::from)
+                .toList();
+    }
+
+//    public List<EventResponse> searchEventList(String search) {
+//        List<Event> eventList = eventRepository.findAllByTitleContaining(search);
+//
+//        return eventList.stream()
+//                .map(EventResponse::from)
+//                .toList();
+//    }
 }
