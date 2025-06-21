@@ -3,6 +3,7 @@ package com.noljo.nolzo.event.controller;
 import com.noljo.nolzo.event.dto.EventDetailResponse;
 import com.noljo.nolzo.event.dto.EventRequest;
 import com.noljo.nolzo.event.dto.EventResponse;
+import com.noljo.nolzo.event.dto.EventUpdateRequest;
 import com.noljo.nolzo.event.entity.EventCategory;
 import com.noljo.nolzo.event.service.EventService;
 import jakarta.validation.Valid;
@@ -38,7 +39,7 @@ public class EventController {
     }
 
     @PostMapping("/update/{id}")
-    public ResponseEntity<EventResponse> updateEvent(@PathVariable Long id, @RequestBody @Valid EventRequest dto) {
+    public ResponseEntity<EventResponse> updateEvent(@PathVariable Long id, @RequestBody @Valid EventUpdateRequest dto) {
         return ResponseEntity.ok(eventService.update(id, dto));
     }
 
