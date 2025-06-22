@@ -1,7 +1,6 @@
 package com.noljo.nolzo.event.dto;
 
 import com.noljo.nolzo.event.entity.Event;
-import com.noljo.nolzo.event.entity.Schedule;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -31,9 +30,6 @@ public class EventUpdateRequest {
     @NotNull(message = "종료 입력 필수")
     private LocalDate endDate;
 
-    @NotNull(message = "종료 입력 필수")
-    private Schedule schedule;
-
     public Event toEntity(Event original) {
         return Event.builder()
                 .id(original.getId())
@@ -42,7 +38,6 @@ public class EventUpdateRequest {
                 .description(this.description)
                 .startDate(this.startDate)
                 .endDate(this.endDate)
-                .schedule(this.schedule)
                 .build();
     }
 }
