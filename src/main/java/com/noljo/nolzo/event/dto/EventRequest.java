@@ -1,8 +1,9 @@
 package com.noljo.nolzo.event.dto;
 
+import com.noljo.nolzo.event.dto.internal.ScheduleInfo;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.entity.EventCategory;
-import com.noljo.nolzo.event.entity.Schedule;
+import com.noljo.nolzo.Schedule.entity.Schedule;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -29,7 +30,7 @@ public class EventRequest {
     @NotNull(message = "종료일 지정 필수")
     private LocalDate endDate;
 
-    private Schedule schedule;
+    private ScheduleInfo scheduleInfo;
 
     //콤보박스여도 notnull?
     @NotNull(message = "카테고리 지정 필수")
@@ -47,7 +48,6 @@ public class EventRequest {
                 .posterImageUrl(posterImageUrl)
                 .startDate(startDate)
                 .endDate(endDate)
-                .schedule(schedule)
                 .eventCategory(eventCategory)
                 .runtime(runtime)
                 .ageLimit(ageLimit)
