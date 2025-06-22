@@ -65,8 +65,7 @@ public class AuthService {
 
     public AccessTokenResponse reissueAccessToken(String refreshToken) {
         Long memberId = jwtUtil.getMemberId(refreshToken);
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원 입니다."));
+        Member member = memberRepository.getOrThrow(memberId);
         String reissuedAccessToken = jwtTokenService.reissueAccessToken(member, refreshToken);
         return new AccessTokenResponse(reissuedAccessToken);
     }
