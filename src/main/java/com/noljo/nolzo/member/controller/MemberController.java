@@ -1,6 +1,5 @@
 package com.noljo.nolzo.member.controller;
 
-import com.noljo.nolzo.auth.security.CustomUserDetails;
 import com.noljo.nolzo.member.dto.PasswordChangeRequest;
 import com.noljo.nolzo.member.service.MemberService;
 import jakarta.validation.Valid;
@@ -21,9 +20,8 @@ public class MemberController {
 
   @PostMapping("/password")
   public ResponseEntity<?> changePassword(
-      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @AuthenticationPrincipal(expression = "memberId") Long memberId,
       @RequestBody @Valid PasswordChangeRequest request) {
-    Long memberId = userDetails.getMemberId();
     memberService.changeMemberPassword(memberId, request);
 
     return ResponseEntity.ok("password change successful.");
