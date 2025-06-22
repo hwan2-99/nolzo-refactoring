@@ -45,10 +45,9 @@ public class AuthService {
     }
 
     public TokensResponse login(LoginRequest request) {
-        Member member = memberRepository.findByEmail(request.email())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원 입니다."));
+        Member member = findMemberByEmail(request.email());
 
-        // todo: 로그인 실패시 에러 처리
+        // todo: 로그인 실패시 에러 메시지 처리 구체화
         Authentication authenticate = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.email(), request.password())
         );
@@ -68,6 +67,11 @@ public class AuthService {
         Member member = memberRepository.getOrThrow(memberId);
         String reissuedAccessToken = jwtTokenService.reissueAccessToken(member, refreshToken);
         return new AccessTokenResponse(reissuedAccessToken);
+    }
+
+    private Member findMemberByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원 입니다."));
     }
 
     private void validateDuplicateEmail(String email) {
