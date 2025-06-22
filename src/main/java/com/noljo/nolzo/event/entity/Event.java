@@ -1,21 +1,24 @@
 package com.noljo.nolzo.event.entity;
 
 import com.noljo.nolzo.event.dto.EventUpdateRequest;
+import com.noljo.nolzo.Schedule.entity.Schedule;
+import com.noljo.nolzo.global.BaseEntity;
 import com.noljo.nolzo.seat.entity.Seat;
 import jakarta.persistence.*;
 import java.util.ArrayList;
-import java.util.List;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Event {
+public class Event extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,8 +37,6 @@ public class Event {
 
     private LocalDate endDate;
 
-    @Embedded
-    private Schedule schedule;
 
     @Enumerated(EnumType.STRING)
     private EventCategory eventCategory;
@@ -49,10 +50,13 @@ public class Event {
     private int reviewCount;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.PERSIST)
+    private List<Schedule> schedules = new ArrayList<>();
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.PERSIST)
     private List<Seat> seats = new ArrayList<>();
 
     @Builder
-    public Event(Long id, String title, String venue, String description, String posterImageUrl, LocalDate startDate, LocalDate endDate, Schedule schedule,
+    public Event(Long id, String title, String venue, String description, String posterImageUrl, LocalDate startDate, LocalDate endDate,
                  EventCategory eventCategory, int runtime, int ageLimit, int rating, int reviewCount) {
         this.id = id;
         this.title = title;
@@ -61,7 +65,6 @@ public class Event {
         this.posterImageUrl = posterImageUrl;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.schedule = schedule;
         this.eventCategory = eventCategory;
         this.runtime = runtime;
         this.ageLimit = ageLimit;
