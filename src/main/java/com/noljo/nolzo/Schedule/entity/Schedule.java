@@ -1,13 +1,16 @@
 package com.noljo.nolzo.Schedule.entity;
 
 import com.noljo.nolzo.event.entity.Event;
+import com.noljo.nolzo.event.entity.EventCategory;
 import com.noljo.nolzo.ticket.entity.Ticket;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -30,6 +33,21 @@ public class Schedule {
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
-    @OneToMany(mappedBy = "schedule")
-    private List<Ticket> tickets;
+//    @OneToMany(mappedBy = "schedule")
+//    private List<Ticket> tickets;
+
+    public void setEvent(Event event) {
+        this.event = event;
+    }
+
+    @Builder
+    public Schedule(LocalDate showDate, LocalTime showTime) {
+        this.showDate=showDate;
+        this.showTime=showTime;
+    }
+
+    public void updateFrom(LocalDate showDate, LocalTime showTime){
+        this.showDate=showDate;
+        this.showTime=showTime;
+    }
 }

@@ -1,9 +1,7 @@
 package com.noljo.nolzo.event.entity;
-
 import com.noljo.nolzo.event.dto.EventUpdateRequest;
 import com.noljo.nolzo.Schedule.entity.Schedule;
 import com.noljo.nolzo.global.BaseEntity;
-import com.noljo.nolzo.seat.entity.Seat;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 
@@ -49,11 +47,9 @@ public class Event extends BaseEntity {
 
     private int reviewCount;
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<Schedule> schedules = new ArrayList<>();
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.PERSIST)
-    private List<Seat> seats = new ArrayList<>();
 
     @Builder
     public Event(Long id, String title, String venue, String description, String posterImageUrl, LocalDate startDate, LocalDate endDate,
@@ -70,7 +66,11 @@ public class Event extends BaseEntity {
         this.ageLimit = ageLimit;
         this.rating = rating;
         this.reviewCount = reviewCount;
-        this.seats = new ArrayList<>();
+    }
+
+    public void addSchedule(Schedule schedule) {
+        schedules.add(schedule);
+        schedule.setEvent(this);
     }
     public void updateFrom(EventUpdateRequest dto) {
         this.title         = dto.getTitle();
@@ -78,6 +78,5 @@ public class Event extends BaseEntity {
         this.description   = dto.getDescription();
         this.startDate     = dto.getStartDate();
         this.endDate       = dto.getEndDate();
-        this.schedule      = dto.getSchedule();
     }
 }
