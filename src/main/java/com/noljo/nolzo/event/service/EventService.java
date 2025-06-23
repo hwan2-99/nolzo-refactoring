@@ -66,4 +66,19 @@ public class EventService {
         original.updateFrom(dto);
         return EventResponse.from(original);
     }
+
+    @Transactional(readOnly = true)
+    public List<EventResponse> getTop10ByCategory(EventCategory category) {
+        List<Event> eventList = eventRepository.findTop10ByEventCategoryOrderByViewCountDesc(category);
+        return eventList.stream()
+                .map(EventResponse::from)
+                .toList();
+    }
+
+    public List<EventResponse> getTop6PopularEvents() {
+        List<Event> popularEventList = eventRepository.findTop6ByOrderByViewCountDesc();
+        return popularEventList.stream()
+                .map(EventResponse::from)
+                .toList();
+    }
 }
