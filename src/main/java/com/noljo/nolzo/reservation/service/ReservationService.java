@@ -17,8 +17,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
 @Transactional
 @Service
@@ -85,13 +89,15 @@ public class ReservationService {
                 )
                 .toList();
     }
-
+    
+    @Transactional(readOnly = true)
     public List<ReservationEventInfo> findReservationsConfirmed(Long memberId) {
 
         List<Reservation> reservations = reservationRepository.findReservationsStatusConfirmedByMemberId(memberId);
 
 
         return reservations.stream()
+
                 .map(reservation -> {
                             Event event = reservation.getTickets().get(0).getSeat().getEvent();
                             return ReservationEventInfo.of(event, reservation);
@@ -99,8 +105,22 @@ public class ReservationService {
                 )
                 .toList();
     }
-  
+
+    @Transactional(readOnly = true)
     public List<ReservationEventInfo> findTicketsUsed(Long memberId) {
 
         List<Reservation> reservations = reservationRepository.findTicketStatusUsedByMemberId(memberId);
 }
+  
+    @Transactional(readOnly = true)
+    public List<ReservationEventInfo> findCancelReservations(Long memberId) {
+
+        List<Reservation> cancelTickets = reservationRepository.findTicketStatusCanceledByMemberId(memberId);
+        List<Reservation> cancelReservations = reservationRepository.findReservationsStatusCanceledByMemberId(memberId);
+
+        Set<Reservation> cancelList = new HashSet<>();
+        cancelList.addAll(cancelTickets);
+        cancelList.addAll(cancelReservations);
+
+        return cancelList.stream()
+
