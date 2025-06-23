@@ -53,7 +53,6 @@ public class EventService {
         eventRepository.deleteById(id);
     }
 
-
     public List<EventResponse> searchEventList(String search) {
         List<Event> events = eventRepository.findOnePerTitle(search);
         return events.stream()
@@ -75,6 +74,7 @@ public class EventService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<EventResponse> getTop6PopularEvents() {
         List<Event> popularEventList = eventRepository.findTop6ByOrderByViewCountDesc();
         return popularEventList.stream()
