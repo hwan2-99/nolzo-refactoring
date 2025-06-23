@@ -1,6 +1,7 @@
 package com.noljo.nolzo.support.fixture;
 
 import com.noljo.nolzo.event.dto.EventRequest;
+import com.noljo.nolzo.event.dto.EventUpdateRequest;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.entity.EventCategory;
 import java.time.LocalDate;
@@ -14,6 +15,9 @@ public enum EventFixture {
     캣츠("Cats", "서울 예술의 전당", "세계적으로 유명한 뮤지컬, 고양이들의 이야기를 그린 작품입니다.",
             "https://example.com/cats.jpg", LocalDate.of(2024, 3, 1), LocalDate.of(2024, 6, 30),
             new Schedule(LocalDate.of(2024, 5, 10), LocalTime.of(19, 30)), EventCategory.CONCERT, 180, 12, 5, 120),
+    캣츠2("Cats2", "서울 예술의 전당", "세계적으로 유명한 뮤지컬, 고양이들의 이야기를 그린 작품입니다.",
+            "https://example.com/cats.jpg", LocalDate.of(2024, 3, 1), LocalDate.of(2024, 6, 30),
+            new Schedule(LocalDate.of(2024, 5, 11), LocalTime.of(19, 30)), EventCategory.CONCERT, 180, 12, 5, 120),
     햄릿("Hamlet", "국립극장 해오름극장", "셰익스피어 4대 비극 중 하나인 '햄릿'의 현대적 재해석 공연입니다.",
             "https://example.com/hamlet.jpg", LocalDate.of(2025, 7, 1), LocalDate.of(2025, 7, 15),
             new Schedule(LocalDate.of(2024, 7, 10), LocalTime.of(18, 30)), EventCategory.CONCERT, 150, 15, 4, 80),
@@ -75,6 +79,16 @@ public enum EventFixture {
                 .eventCategory(캣츠.eventCategory)
                 .runtime(캣츠.runtime)
                 .ageLimit(캣츠.ageLimit)
+                .build();
+    }
+    public static EventUpdateRequest 캣츠2dto() {
+        return EventUpdateRequest.builder()
+                .title(캣츠2.title)
+                .venue(캣츠2.venue)
+                .description(캣츠2.description)
+                .startDate(캣츠2.startDate)
+                .endDate(캣츠2.endDate)
+                .schedule(캣츠2.schedule)
                 .build();
     }
 
