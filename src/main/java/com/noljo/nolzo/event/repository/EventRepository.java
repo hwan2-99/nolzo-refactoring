@@ -12,19 +12,6 @@ import java.util.List;
 public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findAllByEventCategory(EventCategory eventCategory);
 
-    @Query("""
-            select e
-            from Event e
-            where e.id in(
-                select min(e2.id)
-                from Event e2
-                where e2.eventCategory = :category
-                group by e2.title
-            )
-            """)
-    List<Event> findDistinctEventByCategory(@Param("category")EventCategory category);
-
-    List<Event> findAllByTitle(String title);
 
     @Query("""
         SELECT e FROM Event e

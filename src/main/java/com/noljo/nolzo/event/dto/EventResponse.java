@@ -1,12 +1,13 @@
 package com.noljo.nolzo.event.dto;
 
+import com.noljo.nolzo.Schedule.dto.ScheduleResponse;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.entity.EventCategory;
-import com.noljo.nolzo.event.entity.Schedule;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Builder
@@ -19,7 +20,7 @@ public class EventResponse {
     private String posterImageUrl;
     private LocalDate startDate;
     private LocalDate endDate;
-    private Schedule schedule;
+    private List<ScheduleResponse> schedule;
     private EventCategory eventCategory;
     private int runtime;
     private int ageLimit;
@@ -27,6 +28,10 @@ public class EventResponse {
     private int reviewCount;
 
     public static EventResponse from(Event event) {
+        List<ScheduleResponse> schedules = event.getSchedules().stream()
+                .map(ScheduleResponse::from)
+                .toList();
+
         return EventResponse.builder()
                 .id(event.getId())
                 .title(event.getTitle())
@@ -35,12 +40,12 @@ public class EventResponse {
                 .posterImageUrl(event.getPosterImageUrl())
                 .startDate(event.getStartDate())
                 .endDate(event.getEndDate())
-                .schedule(event.getSchedule())
                 .eventCategory(event.getEventCategory())
                 .runtime(event.getRuntime())
                 .ageLimit(event.getAgeLimit())
                 .rating(event.getRating())
                 .reviewCount(event.getReviewCount())
+                .schedule(schedules)
                 .build();
     }
 }

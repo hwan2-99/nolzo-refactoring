@@ -1,10 +1,8 @@
 package com.noljo.nolzo.domain.event.service;
 
-import com.noljo.nolzo.event.dto.EventDetailResponse;
 import com.noljo.nolzo.event.dto.EventRequest;
 import com.noljo.nolzo.event.dto.EventResponse;
 import com.noljo.nolzo.event.dto.EventUpdateRequest;
-import com.noljo.nolzo.event.dto.internal.ScheduleInfo;
 import com.noljo.nolzo.event.entity.EventCategory;
 import com.noljo.nolzo.event.service.EventService;
 import com.noljo.nolzo.support.annotation.ServiceTest;
@@ -97,30 +95,7 @@ class EventServiceTest {
         Assertions.assertThat("Cats2").isEqualTo(eventService.findById(id).getTitle());
     }
 
-    @Test
-    void 이벤트_중복없이_title기반_찾기(){
-        EventRequest dtoHam = EventFixture.햄릿dto();
-        EventResponse response1 = eventService.save(dtoHam);
-        EventRequest dtoHam2 = EventFixture.햄릿2dto();
-        EventResponse response2 = eventService.save(dtoHam2);
 
-        List<EventResponse> responses = eventService.findDistinctEventByCategory(EventCategory.CONCERT);
 
-        Assertions.assertThat(response1.getTitle()).isEqualTo(response2.getTitle());
-        Assertions.assertThat(responses.size()).isEqualTo(1);
-    }
 
-    @Test
-    void 동일_이벤트_회차조회(){
-        EventRequest dtoHam = EventFixture.햄릿dto();
-        EventResponse response2 = eventService.save(dtoHam);
-        EventRequest dtoHam2 = EventFixture.햄릿2dto();
-        EventResponse response3 = eventService.save(dtoHam2);
-
-        EventDetailResponse responseDetail = eventService.findEventDetail(response3.getId());
-        System.out.println(responseDetail.getTitle());
-        for(ScheduleInfo dto: responseDetail.getSchedules()){
-            System.out.println(dto.getSchedule().getShowDate());
-        }
-    }
 }

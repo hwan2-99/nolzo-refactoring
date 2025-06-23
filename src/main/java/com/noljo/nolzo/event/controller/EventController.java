@@ -1,6 +1,5 @@
 package com.noljo.nolzo.event.controller;
 
-import com.noljo.nolzo.event.dto.EventDetailResponse;
 import com.noljo.nolzo.event.dto.EventRequest;
 import com.noljo.nolzo.event.dto.EventResponse;
 import com.noljo.nolzo.event.dto.EventUpdateRequest;
@@ -29,13 +28,13 @@ public class EventController {
     }
 
     @GetMapping(params = "category")
-    public ResponseEntity<List<EventResponse>> getDistinctEventByCategory(@RequestParam EventCategory category) {
-        return ResponseEntity.ok(eventService.findDistinctEventByCategory(category));
+    public ResponseEntity<List<EventResponse>> getEventByCategory(@RequestParam EventCategory category) {
+        return ResponseEntity.ok(eventService.findAllByCategory(category));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EventDetailResponse> getEventDetail(@PathVariable Long id) {
-        return ResponseEntity.ok(eventService.findEventDetail(id));
+    public ResponseEntity<EventResponse> getEventDetail(@PathVariable Long id) {
+        return ResponseEntity.ok(eventService.findById(id));
     }
 
     @GetMapping("/search")
