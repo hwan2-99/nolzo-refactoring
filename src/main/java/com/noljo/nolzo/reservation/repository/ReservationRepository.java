@@ -1,7 +1,10 @@
 package com.noljo.nolzo.reservation.repository;
 
+import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import java.util.List;
+
+import com.noljo.nolzo.reservation.entity.ReservationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,7 +21,15 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     }
 
     List<Reservation> findReservationsByMemberId(Long memberId);
+  
+    @Query("SELECT r from Reservation r WHERE r.member.id= :memberId AND r.status = 'CONFIRMED'")
+    List<Reservation> findReservationsStatusConfirmedByMemberId(@Param("memberId") Long memberId);
 
     @Query("SELECT r FROM Reservation r JOIN r.tickets t WHERE r.member.id = :memberId AND t.status = 'USED'")
     List<Reservation> findTicketStatusUsedByMemberId(@Param("memberId") Long memberId);
+
+    List<Reservation> member(Member member);
+
+   
+
 }

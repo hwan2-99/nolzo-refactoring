@@ -71,9 +71,10 @@ public class ReservationService {
                 .toList();
     }
 
-    public List<ReservationEventInfo> findTicketsUsed(Long memberId) {
+    public List<ReservationEventInfo> findReservationsConfirmed(Long memberId) {
 
-        List<Reservation> reservations = reservationRepository.findTicketStatusUsedByMemberId(memberId);
+        List<Reservation> reservations = reservationRepository.findReservationsStatusConfirmedByMemberId(memberId);
+
 
         return reservations.stream()
                 .map(reservation -> {
@@ -83,4 +84,8 @@ public class ReservationService {
                 )
                 .toList();
     }
+  
+    public List<ReservationEventInfo> findTicketsUsed(Long memberId) {
+
+        List<Reservation> reservations = reservationRepository.findTicketStatusUsedByMemberId(memberId);
 }
