@@ -119,9 +119,29 @@ class EventServiceTest {
 
         event = eventRepository.save(event);
 
-        EventResponse response = eventService.findById(event.getId()); // 1회 조회
+        eventService.findById(event.getId());
         Event updatedEvent = eventRepository.findById(event.getId()).orElseThrow();
 
         Assertions.assertThat(updatedEvent.getViewCount()).isEqualTo(1);
+    }
+
+    @Test
+    void 카테고리별로_상위_10개의_이벤트를_조회할_수_있다() {
+        Event cats   = eventRepository.save(EventFixture.캣츠());
+        Event hamlet = eventRepository.save(EventFixture.햄릿());
+
+        for (int i = 0; i < 5; i++)  cats.addViewCount();
+        for (int i = 0; i < 10; i++) hamlet.addViewCount();
+
+        eventRepository.save(cats);
+        eventRepository.save(hamlet);
+
+        List<EventResponse> result =
+                eventService.getTop10ByCategory(EventCategory.CONCERT);
+
+        Assertions.assertThat(result).hasSize(2);
+        Assertions.assertThat(result.get(0).getId()).isEqualTo(hamlet.getId());
+        Assertions.assertThat(result.get(1).getId()).isEqualTo(cats.getId());
+        Assertions.assertThat(result.get(0).getViewCount()).isGreaterThan(result.get(1).getViewCount());
     }
 }
