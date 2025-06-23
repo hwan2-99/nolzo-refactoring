@@ -1,29 +1,29 @@
-package com.noljo.nolzo.reservation.dto;
+    package com.noljo.nolzo.reservation.dto;
 
-import com.noljo.nolzo.event.entity.Event;
-import lombok.Getter;
+    import com.noljo.nolzo.Schedule.entity.Schedule;
+    import lombok.Getter;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+    import java.time.LocalDate;
+    import java.time.LocalTime;
 
-@Getter
-public class EventDateTimeResponse {
+    @Getter
+    public class EventDateTimeResponse {
 
-    private Long id;
-    private LocalDate showdate;
-    private LocalTime showTime;
+        private Long id;
+        private LocalDate showDate;
+        private LocalTime showTime;
 
-    private EventDateTimeResponse(Long id, LocalDate showdate, LocalTime showTime) {
-        this.id = id;
-        this.showdate = showdate;
-        this.showTime = showTime;
+        private EventDateTimeResponse(Long id, LocalDate showDate, LocalTime showTime) {
+            this.id = id;
+            this.showDate = showDate;
+            this.showTime = showTime;
+        }
+
+        public static EventDateTimeResponse fromSchedule(Schedule schedule) {
+            return new EventDateTimeResponse(
+                    schedule.getEvent().getId(),
+                    schedule.getShowDate(),
+                    schedule.getShowTime()
+            );
+        }
     }
-
-    public static EventDateTimeResponse fromEvent(Event event){
-        return new EventDateTimeResponse(
-                event.getId(),
-                event.getSchedule().getShowDate(),
-                event.getSchedule().getShowTime()
-        );
-    }
-}

@@ -1,5 +1,6 @@
 package com.noljo.nolzo.event.dto;
 
+import com.noljo.nolzo.Schedule.entity.Schedule;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import lombok.Builder;
@@ -20,13 +21,13 @@ public class ReservationEvent {
     private LocalTime time;
     private String image;
 
-    public static ReservationEvent from(Event event) {
+    public static ReservationEvent from(Event event, Schedule schedule) {
         return ReservationEvent.builder()
                 .id(event.getId())
                 .title(event.getTitle())
                 .venue(event.getVenue())
-                .date(event.getSchedule().getShowDate())
-                .time(event.getSchedule().getShowTime())
+                .date(schedule.getShowDate())
+                .time(schedule.getShowTime())
                 .image(event.getPosterImageUrl())
                 .build();
     }
