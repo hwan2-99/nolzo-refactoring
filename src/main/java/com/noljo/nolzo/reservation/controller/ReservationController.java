@@ -33,4 +33,11 @@ public class ReservationController {
         return ResponseEntity.ok(reservationDetails);
     }
 
+    @GetMapping("/confirmed")
+    public ResponseEntity<List<ReservationEventInfo>> getReservationConfirmed(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long memberId = userDetails.getMemberId();
+        List<ReservationEventInfo> reservationDetails = reservationService.findReservationsConfirmed(memberId);
+        return  ResponseEntity.ok(reservationDetails);
+    }
+
 }
