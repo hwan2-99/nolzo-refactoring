@@ -3,6 +3,7 @@ package com.noljo.nolzo.event.service;
 import com.noljo.nolzo.event.dto.EventDetailResponse;
 import com.noljo.nolzo.event.dto.EventRequest;
 import com.noljo.nolzo.event.dto.EventResponse;
+import com.noljo.nolzo.event.dto.EventUpdateRequest;
 import com.noljo.nolzo.event.dto.internal.ScheduleInfo;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.entity.EventCategory;
@@ -47,23 +48,18 @@ public class EventService {
         Event event = getEvent(id);
         return EventResponse.from(event);
     }
-    public EventResponse update(Long id, EventRequest dto) {
-        getEvent(id);
-        Event updated = dto.toEntity(id);
-        Event saved = eventRepository.save(updated);
-        return EventResponse.from(saved);
-    }
-
     public void delete(Long id) {
         getEvent(id);
         eventRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public List<EventResponse> findDistinctEventByCategory(EventCategory category){
         return eventRepository.findDistinctEventByCategory(category).stream()
                 .map(EventResponse::from)
                 .toList();
     }
+    @Transactional(readOnly = true)
     public EventDetailResponse findEventDetail(Long id){
         Event event = getEvent(id);
         List<Event> events = eventRepository.findAllByTitle(event.getTitle());
@@ -80,5 +76,11 @@ public class EventService {
         return events.stream()
                 .map(EventResponse::from)
                 .toList();
+    }
+
+    public EventResponse update(Long id, EventUpdateRequest dto) {
+        Event original = getEvent(id);
+        original.updateFrom(dto);
+        return EventResponse.from(original);
     }
 }
