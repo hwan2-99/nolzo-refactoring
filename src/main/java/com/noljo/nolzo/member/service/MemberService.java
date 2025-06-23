@@ -23,8 +23,6 @@ public class MemberService {
     member.changePassword(passwordEncoder.encode(request.getPassword()));
   }
 
-}
-
   public MemberDto readMember(Long memberId) {
     Member member = memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException("member not found"));
     return MemberDto.from(member);

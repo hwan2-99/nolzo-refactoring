@@ -35,7 +35,6 @@ public class Event extends BaseEntity {
 
     private LocalDate endDate;
 
-
     @Enumerated(EnumType.STRING)
     private EventCategory eventCategory;
 

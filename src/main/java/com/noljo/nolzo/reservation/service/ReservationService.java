@@ -1,5 +1,6 @@
 package com.noljo.nolzo.reservation.service;
 
+import com.noljo.nolzo.Schedule.entity.Schedule;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.repository.EventRepository;
 import com.noljo.nolzo.reservation.dto.EventDateTimeResponse;
@@ -13,6 +14,8 @@ import com.noljo.nolzo.reservation.entity.ReservationStatus;
 import com.noljo.nolzo.reservation.repository.ReservationRepository;
 import com.noljo.nolzo.seat.service.SeatService;
 import java.time.LocalDate;
+
+import com.noljo.nolzo.ticket.entity.Ticket;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,72 +58,59 @@ public class ReservationService {
         return RESERVATION_NUMBER_PREFIX + yearSuffix + reservationId;
     }
 
-    public EventDateTimeResponse readSelectedEventDateTime(Long eventId , LocalDate selectDate, LocalTime selectTime) {
+    public EventDateTimeResponse readSelectedEventDateTime(Long eventId, LocalDate selectDate, LocalTime selectTime) {
 
-            Event event = eventRepository.findById(eventId)
-                    .orElseThrow(() -> new IllegalArgumentException("해당 이벤트가 존재하지 않습니다"));
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 이벤트가 존재하지 않습니다."));
 
-            validateReadSelectedEventDateTime(event,selectDate,selectTime);
+        Schedule schedule = event.getSchedules().stream()
+                .filter(s -> s.getShowDate().equals(selectDate) && s.getShowTime().equals(selectTime))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("선택한 날짜와 시간의 스케줄이 존재하지 않습니다."));
 
-            return EventDateTimeResponse.fromEvent(event);
+        return EventDateTimeResponse.fromSchedule(schedule);
     }
 
-    private void validateReadSelectedEventDateTime(Event event ,LocalDate selectDate, LocalTime selectTime) {
-
-        if (!selectDate.equals(event.getSchedule().getShowDate())) {
-            throw new IllegalArgumentException("선택한 이벤트에 유효한 날짜가 존재하지 않습니다.");
-        }
-
-        if (!selectTime.equals(event.getSchedule().getShowTime())) {
-            throw new IllegalArgumentException("선택한 이벤트에 유효한 시간이 존재하지 않습니다.");
-        }
-    }
 
     @Transactional(readOnly = true)
     public List<ReservationEventInfo> findReservations(Long memberId) {
-
-        List<Reservation> reservationList = reservationRepository.findReservationsByMemberId(memberId);
-
-        return reservationList.stream()
-                .map(reservation -> {
-                            Event event = reservation.getTickets().get(0).getSeat().getEvent();
-                            return ReservationEventInfo.of(event, reservation);
-                        }
-                )
+        return reservationRepository.findReservationsByMemberId(memberId).stream()
+                .map(r -> ReservationEventInfo.of(
+                        r.getTickets().get(0).getSeat().getEvent(),
+                        r))
                 .toList();
     }
-    
+
     @Transactional(readOnly = true)
     public List<ReservationEventInfo> findReservationsConfirmed(Long memberId) {
-
-        List<Reservation> reservations = reservationRepository.findReservationsStatusConfirmedByMemberId(memberId);
-
-
-        return reservations.stream()
-
-                .map(reservation -> {
-                            Event event = reservation.getTickets().get(0).getSeat().getEvent();
-                            return ReservationEventInfo.of(event, reservation);
-                        }
-                )
+        return reservationRepository.findReservationsStatusConfirmedByMemberId(memberId).stream()
+                .map(r -> ReservationEventInfo.of(
+                        r.getTickets().get(0).getSeat().getEvent(),
+                        r))
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public List<ReservationEventInfo> findTicketsUsed(Long memberId) {
+        return reservationRepository.findTicketStatusUsedByMemberId(memberId).stream()
+                .map(r -> ReservationEventInfo.of(
+                        r.getTickets().get(0).getSeat().getEvent(),
+                        r))
+                .toList();
+    }
 
-        List<Reservation> reservations = reservationRepository.findTicketStatusUsedByMemberId(memberId);
-}
-  
     @Transactional(readOnly = true)
     public List<ReservationEventInfo> findCancelReservations(Long memberId) {
+        List<Reservation> reservations = reservationRepository.findCanceledReservationsFetchAll(memberId);
 
-        List<Reservation> cancelTickets = reservationRepository.findTicketStatusCanceledByMemberId(memberId);
-        List<Reservation> cancelReservations = reservationRepository.findReservationsStatusCanceledByMemberId(memberId);
-
-        Set<Reservation> cancelList = new HashSet<>();
-        cancelList.addAll(cancelTickets);
-        cancelList.addAll(cancelReservations);
-
-        return cancelList.stream()
+        return reservations.stream()
+                .map(reservation -> {
+                    Ticket ticket = reservation.getTickets().get(0); // 첫 번째 티켓 기준
+                    Event event = ticket.getSeat().getEvent();
+                    // 정확한 Schedule 정보는 없음
+                    return ReservationEventInfo.of(event, reservation);
+                })
+                .toList();
+    }
+}
 

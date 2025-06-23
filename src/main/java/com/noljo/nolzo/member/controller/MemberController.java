@@ -29,8 +29,6 @@ public class MemberController {
     return ResponseEntity.ok("password change successful.");
   }
 
-}
-
   @GetMapping
   public ResponseEntity<MemberDto> getMember(@AuthenticationPrincipal(expression = "memberId") Long memberId) {
     return ResponseEntity.ok(memberService.readMember(memberId));

@@ -20,20 +20,47 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
                 .orElseThrow(() -> new NotFoundException("not found")); // 에러코드 추후 통일화 필요
     }
 
-    List<Reservation> findReservationsByMemberId(Long memberId);
-  
-    @Query("SELECT r from Reservation r WHERE r.member.id= :memberId AND r.status = 'CONFIRMED'")
+    @Query("""
+    SELECT DISTINCT r FROM Reservation r
+    JOIN FETCH r.tickets t
+    JOIN FETCH t.seat s
+    JOIN FETCH s.event e
+    JOIN FETCH e.schedules sch
+    WHERE r.member.id = :memberId
+""")
+    List<Reservation> findReservationsByMemberId(@Param("memberId") Long memberId);
+
+    @Query("""
+    SELECT DISTINCT r FROM Reservation r
+    JOIN FETCH r.tickets t
+    JOIN FETCH t.seat s
+    JOIN FETCH s.event e
+    JOIN FETCH e.schedules sch
+    WHERE r.member.id = :memberId
+    AND r.status = 'CONFIRMED'
+""")
     List<Reservation> findReservationsStatusConfirmedByMemberId(@Param("memberId") Long memberId);
 
-    @Query("SELECT r FROM Reservation r JOIN r.tickets t WHERE r.member.id = :memberId AND t.status = 'USED'")
+    @Query("""
+    SELECT DISTINCT r FROM Reservation r
+    JOIN FETCH r.tickets t
+    JOIN FETCH t.seat s
+    JOIN FETCH s.event e
+    JOIN FETCH e.schedules sch
+    WHERE r.member.id = :memberId
+    AND t.status = 'USED'
+""")
     List<Reservation> findTicketStatusUsedByMemberId(@Param("memberId") Long memberId);
 
-    List<Reservation> member(Member member);
-  
-    @Query("SELECT r FROM Reservation r JOIN r.tickets t WHERE r.member.id = :memberId AND t.status = 'CANCELED'")
-    List<Reservation> findTicketStatusCanceledByMemberId(@Param("memberId") Long memberId);
+    @Query("""
+    SELECT DISTINCT r FROM Reservation r
+    JOIN FETCH r.tickets t
+    JOIN FETCH t.seat s
+    JOIN FETCH s.event e
+    JOIN FETCH e.schedules sch
+    WHERE r.member.id = :memberId
+      AND (r.status = 'CANCELED' OR t.status = 'CANCELED')
+""")
+    List<Reservation> findCanceledReservationsFetchAll(@Param("memberId") Long memberId);
 
-    @Query("SELECT r FROM Reservation r WHERE r.member.id = :memberId AND r.status = 'CANCELED'")
-    List<Reservation> findReservationsStatusCanceledByMemberId(Long memberId);
-   
 }
