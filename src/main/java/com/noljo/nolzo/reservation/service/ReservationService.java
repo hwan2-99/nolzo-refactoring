@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @Transactional
@@ -50,11 +51,25 @@ public class ReservationService {
         return RESERVATION_NUMBER_PREFIX + yearSuffix + reservationId;
     }
 
-    public EventDateTimeResponse readSelectedEventDateTime(Long eventId) {
+    public EventDateTimeResponse readSelectedEventDateTime(Long eventId , LocalDate selectDate, LocalTime selectTime) {
 
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 이벤트가 존재하지 않습니다"));
-        return EventDateTimeResponse.fromEvent(event);
+            Event event = eventRepository.findById(eventId)
+                    .orElseThrow(() -> new IllegalArgumentException("해당 이벤트가 존재하지 않습니다"));
+
+            validateReadSelectedEventDateTime(event,selectDate,selectTime);
+
+            return EventDateTimeResponse.fromEvent(event);
+    }
+
+    private void validateReadSelectedEventDateTime(Event event ,LocalDate selectDate, LocalTime selectTime) {
+
+        if (!selectDate.equals(event.getSchedule().getShowDate())) {
+            throw new IllegalArgumentException("선택한 이벤트에 유효한 날짜가 존재하지 않습니다.");
+        }
+
+        if (!selectTime.equals(event.getSchedule().getShowTime())) {
+            throw new IllegalArgumentException("선택한 이벤트에 유효한 시간이 존재하지 않습니다.");
+        }
     }
 
     @Transactional(readOnly = true)

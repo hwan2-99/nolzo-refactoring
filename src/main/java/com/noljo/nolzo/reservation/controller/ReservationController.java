@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -20,9 +22,11 @@ public class ReservationController {
     private final ReservationService reservationService;
 
     @PostMapping("/{eventId}")
-    public ResponseEntity<EventDateTimeResponse> chooseEventDateTime(@PathVariable Long eventId) {
+    public ResponseEntity<EventDateTimeResponse> chooseEventDateTime(@PathVariable Long eventId ,
+                                                                     @RequestParam LocalDate selectDate,
+                                                                     @RequestParam LocalTime selectTime) {
 
-        EventDateTimeResponse event = reservationService.readSelectedEventDateTime(eventId);
+        EventDateTimeResponse event = reservationService.readSelectedEventDateTime(eventId, selectDate, selectTime);
         return ResponseEntity.ok(event);
     }
   
