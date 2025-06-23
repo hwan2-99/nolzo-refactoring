@@ -41,11 +41,13 @@ public class EventService {
         return EventResponse.from(saved);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public EventResponse findById(Long id) {
         Event event = getEvent(id);
+        event.addViewCount();
         return EventResponse.from(event);
     }
+
     public void delete(Long id) {
         getEvent(id);
         eventRepository.deleteById(id);
