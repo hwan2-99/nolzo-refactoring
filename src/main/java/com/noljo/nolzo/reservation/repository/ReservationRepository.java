@@ -21,9 +21,15 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     }
 
     List<Reservation> findReservationsByMemberId(Long memberId);
+  
+    @Query("SELECT r from Reservation r WHERE r.member.id= :memberId AND r.status = 'CONFIRMED'")
+    List<Reservation> findReservationsStatusConfirmedByMemberId(@Param("memberId") Long memberId);
+
+    @Query("SELECT r FROM Reservation r JOIN r.tickets t WHERE r.member.id = :memberId AND t.status = 'USED'")
+    List<Reservation> findTicketStatusUsedByMemberId(@Param("memberId") Long memberId);
 
     List<Reservation> member(Member member);
 
-    @Query("SELECT r from Reservation r WHERE r.member.id= :memberId AND r.status = 'CONFIRMED'")
-    List<Reservation> findReservationsStatusConfirmedByMemberId(@Param("memberId") Long memberId);
+   
+
 }

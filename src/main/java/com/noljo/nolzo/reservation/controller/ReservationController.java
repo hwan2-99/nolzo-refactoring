@@ -38,6 +38,14 @@ public class ReservationController {
         Long memberId = userDetails.getMemberId();
         List<ReservationEventInfo> reservationDetails = reservationService.findReservationsConfirmed(memberId);
         return  ResponseEntity.ok(reservationDetails);
+
     }
+
+    @GetMapping("/used")
+    public ResponseEntity<List<ReservationEventInfo>> getTicketsUsed(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long memberId = userDetails.getMemberId();
+        List<ReservationEventInfo> reservationDetails = reservationService.findTicketsUsed(memberId);
+        return ResponseEntity.ok(reservationDetails);
+
 
 }

@@ -75,6 +75,7 @@ public class ReservationService {
 
         List<Reservation> reservations = reservationRepository.findReservationsStatusConfirmedByMemberId(memberId);
 
+
         return reservations.stream()
                 .map(reservation -> {
                             Event event = reservation.getTickets().get(0).getSeat().getEvent();
@@ -83,4 +84,8 @@ public class ReservationService {
                 )
                 .toList();
     }
+  
+    public List<ReservationEventInfo> findTicketsUsed(Long memberId) {
+
+        List<Reservation> reservations = reservationRepository.findTicketStatusUsedByMemberId(memberId);
 }
