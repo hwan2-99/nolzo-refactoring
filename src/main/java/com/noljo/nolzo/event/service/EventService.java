@@ -11,7 +11,6 @@ import com.noljo.nolzo.event.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 @Service
@@ -72,10 +71,16 @@ public class EventService {
                 EventDetailResponse.from(scheduleInfos,event);
     }
 
+    public List<EventResponse> searchEventList(String search) {
+        List<Event> events = eventRepository.findOnePerTitle(search);
+        return events.stream()
+                .map(EventResponse::from)
+                .toList();
+    }
+
     public EventResponse update(Long id, EventUpdateRequest dto) {
         Event original = getEvent(id);
         original.updateFrom(dto);
         return EventResponse.from(original);
     }
-
 }
