@@ -1,11 +1,11 @@
-package com.noljo.nolzo.auth.service;
+package com.noljo.nolzo.auth.jwt;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-import com.noljo.nolzo.auth.dto.TokenResponse;
-import com.noljo.nolzo.auth.jwt.JwtUtil;
+import com.noljo.nolzo.auth.dto.TokensResponse;
 import com.noljo.nolzo.auth.repository.RefreshTokenRepository;
+import com.noljo.nolzo.auth.service.JwtTokenService;
 import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.repository.MemberRepository;
 import com.noljo.nolzo.support.annotation.ServiceTest;
@@ -42,9 +42,9 @@ class JwtTokenServiceTest {
         Member member = MemberFixture.회원();
         memberRepository.save(member);
 
-        TokenResponse tokenResponse = jwtTokenService.issueToken(member);
+        TokensResponse tokensResponse = jwtTokenService.issueToken(member);
 
-        String refreshToken = tokenResponse.refreshToken();
+        String refreshToken = tokensResponse.refreshToken();
 
         assertThat(refreshTokenRepository.findByMemberId(member.getId())).isEqualTo(refreshToken);
     }
@@ -53,7 +53,7 @@ class JwtTokenServiceTest {
     void accessToken은_재발급이_가능하다() {
         Member member = MemberFixture.회원();
         memberRepository.save(member);
-        TokenResponse tokens = jwtTokenService.issueToken(member);
+        TokensResponse tokens = jwtTokenService.issueToken(member);
 
         String newAccessToken = jwtTokenService.reissueAccessToken(member, tokens.refreshToken());
 
@@ -89,7 +89,7 @@ class JwtTokenServiceTest {
         Member member = MemberFixture.회원();
         memberRepository.save(member);
 
-        TokenResponse tokens = jwtTokenService.issueToken(member);
+        TokensResponse tokens = jwtTokenService.issueToken(member);
 
         String fakeToken = tokens.refreshToken() + "fake-token";
 

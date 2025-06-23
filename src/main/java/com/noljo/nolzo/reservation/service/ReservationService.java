@@ -17,7 +17,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
 @Transactional
 @Service
@@ -50,11 +55,25 @@ public class ReservationService {
         return RESERVATION_NUMBER_PREFIX + yearSuffix + reservationId;
     }
 
-    public EventDateTimeResponse readSelectedEventDateTime(Long eventId) {
+    public EventDateTimeResponse readSelectedEventDateTime(Long eventId , LocalDate selectDate, LocalTime selectTime) {
 
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 이벤트가 존재하지 않습니다"));
-        return EventDateTimeResponse.fromEvent(event);
+            Event event = eventRepository.findById(eventId)
+                    .orElseThrow(() -> new IllegalArgumentException("해당 이벤트가 존재하지 않습니다"));
+
+            validateReadSelectedEventDateTime(event,selectDate,selectTime);
+
+            return EventDateTimeResponse.fromEvent(event);
+    }
+
+    private void validateReadSelectedEventDateTime(Event event ,LocalDate selectDate, LocalTime selectTime) {
+
+        if (!selectDate.equals(event.getSchedule().getShowDate())) {
+            throw new IllegalArgumentException("선택한 이벤트에 유효한 날짜가 존재하지 않습니다.");
+        }
+
+        if (!selectTime.equals(event.getSchedule().getShowTime())) {
+            throw new IllegalArgumentException("선택한 이벤트에 유효한 시간이 존재하지 않습니다.");
+        }
     }
 
     @Transactional(readOnly = true)
@@ -70,4 +89,38 @@ public class ReservationService {
                 )
                 .toList();
     }
+    
+    @Transactional(readOnly = true)
+    public List<ReservationEventInfo> findReservationsConfirmed(Long memberId) {
+
+        List<Reservation> reservations = reservationRepository.findReservationsStatusConfirmedByMemberId(memberId);
+
+
+        return reservations.stream()
+
+                .map(reservation -> {
+                            Event event = reservation.getTickets().get(0).getSeat().getEvent();
+                            return ReservationEventInfo.of(event, reservation);
+                        }
+                )
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReservationEventInfo> findTicketsUsed(Long memberId) {
+
+        List<Reservation> reservations = reservationRepository.findTicketStatusUsedByMemberId(memberId);
 }
+  
+    @Transactional(readOnly = true)
+    public List<ReservationEventInfo> findCancelReservations(Long memberId) {
+
+        List<Reservation> cancelTickets = reservationRepository.findTicketStatusCanceledByMemberId(memberId);
+        List<Reservation> cancelReservations = reservationRepository.findReservationsStatusCanceledByMemberId(memberId);
+
+        Set<Reservation> cancelList = new HashSet<>();
+        cancelList.addAll(cancelTickets);
+        cancelList.addAll(cancelReservations);
+
+        return cancelList.stream()
+

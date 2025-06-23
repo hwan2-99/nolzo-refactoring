@@ -1,14 +1,21 @@
 package com.noljo.nolzo.event.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.noljo.nolzo.Schedule.dto.internal.ScheduleInfo;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.entity.EventCategory;
-import com.noljo.nolzo.event.entity.Schedule;
+import com.noljo.nolzo.Schedule.entity.Schedule;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Getter
 @Builder
@@ -29,7 +36,6 @@ public class EventRequest {
     @NotNull(message = "종료일 지정 필수")
     private LocalDate endDate;
 
-    private Schedule schedule;
 
     //콤보박스여도 notnull?
     @NotNull(message = "카테고리 지정 필수")
@@ -38,8 +44,12 @@ public class EventRequest {
     private int runtime;
 
     private int ageLimit;
+
+    @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+    private List<ScheduleInfo> schedule;
+
     public Event toEntity(Long id) {
-        return Event.builder()
+        Event event = Event.builder()
                 .id(id)
                 .title(title)
                 .venue(venue)
@@ -47,13 +57,22 @@ public class EventRequest {
                 .posterImageUrl(posterImageUrl)
                 .startDate(startDate)
                 .endDate(endDate)
-                .schedule(schedule)
                 .eventCategory(eventCategory)
                 .runtime(runtime)
                 .ageLimit(ageLimit)
                 .rating(0)
                 .reviewCount(0)
                 .build();
+
+        schedule.forEach(req->{
+            Schedule schedule = Schedule.builder()
+                    .showDate(req.getShowDate())
+                    .showTime(req.getShowTime())
+                    .build();
+            schedule.setEvent(event);
+            event.addSchedule(schedule);
+        });
+        return event;
     }
 
     public Event toEntity() {

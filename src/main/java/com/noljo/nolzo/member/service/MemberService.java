@@ -6,6 +6,7 @@ import com.noljo.nolzo.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import com.noljo.nolzo.member.dto.MemberDto;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,4 +23,10 @@ public class MemberService {
     member.changePassword(passwordEncoder.encode(request.getPassword()));
   }
 
+}
+
+  public MemberDto readMember(Long memberId) {
+    Member member = memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException("member not found"));
+    return MemberDto.from(member);
+  }
 }
