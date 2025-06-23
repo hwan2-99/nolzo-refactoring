@@ -37,6 +37,11 @@ public class EventController {
         return ResponseEntity.ok(eventService.findById(id));
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<EventResponse>> getSearchEventList(@RequestParam(name = "search") String search) {
+        return ResponseEntity.ok(eventService.searchEventList(search));
+    }
+
     @PostMapping("/update/{id}")
     public ResponseEntity<EventResponse> updateEvent(@PathVariable Long id, @RequestBody @Valid EventUpdateRequest dto) {
         return ResponseEntity.ok(eventService.update(id, dto));
@@ -47,7 +52,4 @@ public class EventController {
         eventService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
-
-
 }
