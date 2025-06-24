@@ -42,6 +42,11 @@ public class EventController {
         return ResponseEntity.ok(eventService.searchEventList(search));
     }
 
+    @GetMapping("/rankings")
+    public ResponseEntity<List<EventResponse>> getRankingsByCategory(@RequestParam EventCategory category) {
+        return ResponseEntity.ok(eventService.getTop10ByCategory(category));
+    }
+
     @PostMapping("/update/{id}")
     public ResponseEntity<EventResponse> updateEvent(@PathVariable Long id, @RequestBody @Valid EventUpdateRequest dto) {
         return ResponseEntity.ok(eventService.update(id, dto));

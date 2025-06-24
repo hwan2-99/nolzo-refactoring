@@ -41,16 +41,17 @@ public class EventService {
         return EventResponse.from(saved);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public EventResponse findById(Long id) {
         Event event = getEvent(id);
+        event.addViewCount();
         return EventResponse.from(event);
     }
+
     public void delete(Long id) {
         getEvent(id);
         eventRepository.deleteById(id);
     }
-
 
     public List<EventResponse> searchEventList(String search) {
         List<Event> events = eventRepository.findOnePerTitle(search);
@@ -63,5 +64,13 @@ public class EventService {
         Event original = getEvent(id);
         original.updateFrom(dto);
         return EventResponse.from(original);
+    }
+
+    @Transactional(readOnly = true)
+    public List<EventResponse> getTop10ByCategory(EventCategory category) {
+        List<Event> eventList = eventRepository.findTop10ByEventCategoryOrderByViewCountDesc(category);
+        return eventList.stream()
+                .map(EventResponse::from)
+                .toList();
     }
 }

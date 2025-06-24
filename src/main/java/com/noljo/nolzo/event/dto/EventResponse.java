@@ -26,6 +26,7 @@ public class EventResponse {
     private int ageLimit;
     private int rating;
     private int reviewCount;
+    private long viewCount;
 
     public static EventResponse from(Event event) {
         List<ScheduleResponse> schedules = event.getSchedules().stream()
@@ -46,6 +47,7 @@ public class EventResponse {
                 .rating(event.getRating())
                 .reviewCount(event.getReviewCount())
                 .schedule(schedules)
+                .viewCount(event.getViewCount())
                 .build();
     }
 }

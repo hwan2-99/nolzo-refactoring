@@ -46,6 +46,9 @@ public class Event extends BaseEntity {
 
     private int reviewCount;
 
+    @Column(nullable = false)
+    private long viewCount = 0;
+
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<Schedule> schedules = new ArrayList<>();
 
@@ -71,6 +74,11 @@ public class Event extends BaseEntity {
         schedules.add(schedule);
         schedule.setEvent(this);
     }
+
+    public void addViewCount() {
+        this.viewCount++;
+    }
+
     public void updateFrom(EventUpdateRequest dto) {
         this.title         = dto.getTitle();
         this.venue         = dto.getVenue();
