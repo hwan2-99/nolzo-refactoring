@@ -1,17 +1,18 @@
 package com.noljo.nolzo.reservation.service;
 
 import com.noljo.nolzo.Schedule.entity.Schedule;
+import com.noljo.nolzo.event.dto.ReservationEvent;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.repository.EventRepository;
-import com.noljo.nolzo.reservation.dto.EventDateTimeResponse;
-import com.noljo.nolzo.reservation.dto.ReservationEventInfo;
+import com.noljo.nolzo.payment.entity.Payment;
+import com.noljo.nolzo.payment.repository.PaymentRepository;
+import com.noljo.nolzo.reservation.dto.*;
 import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.repository.MemberRepository;
-import com.noljo.nolzo.reservation.dto.ReservationRequest;
-import com.noljo.nolzo.reservation.dto.ReservationResponse;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import com.noljo.nolzo.reservation.entity.ReservationStatus;
 import com.noljo.nolzo.reservation.repository.ReservationRepository;
+import com.noljo.nolzo.seat.entity.Seat;
 import com.noljo.nolzo.seat.service.SeatService;
 import java.time.LocalDate;
 
@@ -39,6 +40,7 @@ public class ReservationService {
     private final MemberRepository memberRepository;
     private final EventRepository eventRepository;
     private final SeatService seatService;
+    private final PaymentRepository paymentRepository;
 
     //todo Permistic lock을 사용해서 구현한 내용 추후 multi-thread or Optimistic Lock or Redis 사용후 비교예정
     public ReservationResponse create(Long memberId, ReservationRequest request) {
@@ -111,6 +113,19 @@ public class ReservationService {
                     return ReservationEventInfo.of(event, reservation);
                 })
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public ReservationEventInfo findReservationDetails(Long memberId) {
+        Reservation reservation = reservationRepository.findReservationDetailsByMemberId(memberId);
+        Payment payment = paymentRepository.findPaymentByMemberIdAndReservationId(memberId, reservation.getId());
+
+        Event event = reservation.getTickets().stream()
+                .findFirst()
+                .map(ticket -> ticket.getSeat().getEvent())
+                .orElseThrow(() -> new IllegalStateException("예약에 연결된 공연이 없습니다."));
+
+        return ReservationEventInfo.detailsOf(event, reservation, payment);
     }
 }
 
