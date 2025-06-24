@@ -1,5 +1,6 @@
 package com.noljo.nolzo.reservation.dto;
 
+import com.noljo.nolzo.Schedule.entity.Schedule;
 import com.noljo.nolzo.event.dto.ReservationEvent;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.reservation.entity.Reservation;
@@ -13,8 +14,13 @@ public class ReservationEventInfo {
     private ReservationDetail detail;
 
     public static ReservationEventInfo of(Event event, Reservation reservation) {
+        Schedule schedule = event.getSchedules()
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당 이벤트에 등록된 스케줄이 없습니다."));
+
         return ReservationEventInfo.builder()
-                .event(ReservationEvent.from(event))
+                .event(ReservationEvent.from(event, schedule))
                 .detail(ReservationDetail.from(reservation))
                 .build();
     }
