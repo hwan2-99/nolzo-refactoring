@@ -1,15 +1,14 @@
 package com.noljo.nolzo.reservation.repository;
 
 import com.noljo.nolzo.member.entity.Member;
+import com.noljo.nolzo.reservation.dto.ReservationEventInfo;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import java.util.List;
 
-import com.noljo.nolzo.reservation.entity.ReservationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.webjars.NotFoundException;
 
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
@@ -17,7 +16,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     default Reservation getOrThrow(Long id) {
         return findById(id)
-                .orElseThrow(() -> new NotFoundException("not found")); // 에러코드 추후 통일화 필요
+                .orElseThrow(() -> new IllegalArgumentException("not found")); // 에러코드 추후 통일화 필요
     }
 
     @Query("""
@@ -63,4 +62,13 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 """)
     List<Reservation> findCanceledReservationsFetchAll(@Param("memberId") Long memberId);
 
+    @Query("""
+    SELECT DISTINCT r FROM Reservation r
+    JOIN FETCH r.tickets t
+    JOIN FETCH t.seat s
+    JOIN FETCH s.event e
+    JOIN FETCH e.schedules sch
+    WHERE r.member.id = :memberId
+""")
+    Reservation findReservationDetailsByMemberId(@Param("memberId") Long memberId);
 }
