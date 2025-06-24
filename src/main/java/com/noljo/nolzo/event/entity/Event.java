@@ -86,4 +86,5 @@ public class Event extends BaseEntity {
         this.startDate     = dto.getStartDate();
         this.endDate       = dto.getEndDate();
     }
+
 }
