@@ -73,12 +73,4 @@ public class EventService {
                 .map(EventResponse::from)
                 .toList();
     }
-
-    @Transactional(readOnly = true)
-    public List<EventResponse> getTop6PopularEvents() {
-        List<Event> popularEventList = eventRepository.findTop6ByOrderByViewCountDesc();
-        return popularEventList.stream()
-                .map(EventResponse::from)
-                .toList();
-    }
 }

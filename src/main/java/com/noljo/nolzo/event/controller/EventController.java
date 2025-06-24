@@ -47,11 +47,6 @@ public class EventController {
         return ResponseEntity.ok(eventService.getTop10ByCategory(category));
     }
 
-    @GetMapping("/popular")
-    public ResponseEntity<List<EventResponse>> getTop6PopularEvents() {
-        return ResponseEntity.ok(eventService.getTop6PopularEvents());
-    }
-
     @PostMapping("/update/{id}")
     public ResponseEntity<EventResponse> updateEvent(@PathVariable Long id, @RequestBody @Valid EventUpdateRequest dto) {
         return ResponseEntity.ok(eventService.update(id, dto));
