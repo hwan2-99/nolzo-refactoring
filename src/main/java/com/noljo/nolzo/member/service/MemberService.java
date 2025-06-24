@@ -16,6 +16,15 @@ public class MemberService {
   private final PasswordEncoder passwordEncoder;
 
   @Transactional
+  public void deleteMember(Long memberId) {
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new IllegalArgumentException("member not found."));
+    member.softDelete();
+  }
+
+}
+
+  @Transactional
   public void changeMemberPassword(Long memberId, PasswordChangeRequest request) {
     Member member = memberRepository.findById(memberId)
         .orElseThrow(() -> new IllegalArgumentException("member not found"));
