@@ -22,8 +22,6 @@ public class MemberService {
     member.softDelete();
   }
 
-}
-
   @Transactional
   public void changeMemberPassword(Long memberId, PasswordChangeRequest request) {
     Member member = memberRepository.findById(memberId)

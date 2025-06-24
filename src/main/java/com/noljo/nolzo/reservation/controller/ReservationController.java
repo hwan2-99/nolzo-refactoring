@@ -58,7 +58,4 @@ public class ReservationController {
         List<ReservationEventInfo> reservationDetails = reservationService.findCancelReservations(memberId);
         return  ResponseEntity.ok(reservationDetails);
     }
-
-
-
 }
