@@ -41,8 +41,5 @@ out/
 ### VS Code ###
 .vscode/
 
-### yml
-src/main/**/application.yml
-
 ### Log
 .log
