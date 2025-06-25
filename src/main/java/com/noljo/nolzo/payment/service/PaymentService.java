@@ -25,7 +25,7 @@ public class PaymentService {
         Reservation reservation = reservationRepository.getOrThrow(request.reservationId());
         if (isCanceled(request)){
             reservationRepository.delete(reservation);
-            throw new IllegalArgumentException("Payment canceled");
+            return null;
         }
         Payment payment = paymentRepository.save(new Payment(request.paymentMethod(), member, reservation));
         return PaymentResponse.from(payment);
