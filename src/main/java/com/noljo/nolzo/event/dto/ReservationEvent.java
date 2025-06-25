@@ -31,4 +31,15 @@ public class ReservationEvent {
                 .image(event.getPosterImageUrl())
                 .build();
     }
+
+    public static ReservationEvent fromDetails(Event event, Schedule schedule) {
+        return ReservationEvent.builder()
+                .id(event.getId())
+                .title(event.getTitle())
+                .venue(event.getVenue())
+                .date(schedule.getShowDate())
+                .time(schedule.getShowTime())
+                .build();
+    }
 }
+

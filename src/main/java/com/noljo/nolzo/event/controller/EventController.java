@@ -7,8 +7,11 @@ import com.noljo.nolzo.event.entity.EventCategory;
 import com.noljo.nolzo.event.service.EventService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
 @RestController
@@ -22,9 +25,10 @@ public class EventController {
         return ResponseEntity.ok(eventService.findAll());
     }
 
-    @PostMapping("/")
-    public ResponseEntity<EventResponse> createEvent(@RequestBody @Valid EventRequest dto) {
-        return ResponseEntity.ok(eventService.save(dto));
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<EventResponse> createEvent(@RequestPart("dto") @Valid EventRequest dto,
+                                                     @RequestPart(value = "eventImage", required = false)MultipartFile eventImage) {
+        return ResponseEntity.ok(eventService.save(dto,eventImage));
     }
 
     @GetMapping(params = "category")
@@ -40,6 +44,11 @@ public class EventController {
     @GetMapping("/search")
     public ResponseEntity<List<EventResponse>> getSearchEventList(@RequestParam(name = "search") String search) {
         return ResponseEntity.ok(eventService.searchEventList(search));
+    }
+
+    @GetMapping("/rankings")
+    public ResponseEntity<List<EventResponse>> getRankingsByCategory(@RequestParam EventCategory category) {
+        return ResponseEntity.ok(eventService.getTop10ByCategory(category));
     }
 
     @PostMapping("/update/{id}")

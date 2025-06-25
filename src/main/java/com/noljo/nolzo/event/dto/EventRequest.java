@@ -1,24 +1,24 @@
 package com.noljo.nolzo.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonSetter;
 import com.noljo.nolzo.Schedule.dto.internal.ScheduleInfo;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.entity.EventCategory;
 import com.noljo.nolzo.Schedule.entity.Schedule;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class EventRequest {
     @NotBlank(message = "제목 지정 필수")
     private String title;
@@ -36,7 +36,6 @@ public class EventRequest {
     @NotNull(message = "종료일 지정 필수")
     private LocalDate endDate;
 
-
     //콤보박스여도 notnull?
     @NotNull(message = "카테고리 지정 필수")
     private EventCategory eventCategory;
@@ -45,12 +44,13 @@ public class EventRequest {
 
     private int ageLimit;
 
+
+
     @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
     private List<ScheduleInfo> schedule;
 
-    public Event toEntity(Long id) {
+    public Event toEntity(String posterImageUrl) {
         Event event = Event.builder()
-                .id(id)
                 .title(title)
                 .venue(venue)
                 .description(description)

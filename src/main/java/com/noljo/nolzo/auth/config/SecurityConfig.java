@@ -24,14 +24,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private static final String[] PERMIT_URL_ARRAY = {
-            "/v3/api-docs/",
-            "/swagger-ui/",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
             "/swagger-ui.html",
-            "/swagger-resources/",
-            "/webjars/",
+            "/swagger-resources/**",
+            "/webjars/**",
             "/v3/api-docs.yaml",
-            "/auth/",
-            "/ws/",
+            "/auth/**",
+            "/ws/**",
+            "/auth/**",
     };
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;

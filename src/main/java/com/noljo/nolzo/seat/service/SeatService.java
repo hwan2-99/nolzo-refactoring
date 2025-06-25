@@ -7,7 +7,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.webjars.NotFoundException;
 
 @Transactional
 @Service
@@ -25,7 +24,7 @@ public class SeatService {
 
     private Seat findSeatByIdWithPessimisticLock(Long id) {
         return seatRepository.findByIdWithPessimisticLock(id)
-                .orElseThrow(() -> new NotFoundException("Seat with id " + id + " not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Seat with id " + id + " not found"));
     }
 
     private void validateIsAvailable(Seat seat) {
