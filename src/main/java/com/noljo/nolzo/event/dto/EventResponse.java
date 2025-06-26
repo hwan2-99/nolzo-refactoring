@@ -3,10 +3,13 @@ package com.noljo.nolzo.event.dto;
 import com.noljo.nolzo.Schedule.dto.ScheduleResponse;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.entity.EventCategory;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Getter
@@ -28,6 +31,8 @@ public class EventResponse {
     private int reviewCount;
     private long viewCount;
 
+    private LocalDateTime reservationStart;
+    private LocalDateTime reservationEnd;
     public static EventResponse from(Event event) {
         List<ScheduleResponse> schedules = event.getSchedules().stream()
                 .map(ScheduleResponse::from)
@@ -48,6 +53,8 @@ public class EventResponse {
                 .reviewCount(event.getReviewCount())
                 .schedule(schedules)
                 .viewCount(event.getViewCount())
+                .reservationStart(event.getReservationStart())
+                .reservationEnd(event.getReservationEnd())
                 .build();
     }
 }

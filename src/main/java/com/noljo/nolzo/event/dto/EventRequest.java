@@ -13,6 +13,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Getter
@@ -36,13 +38,17 @@ public class EventRequest {
     @NotNull(message = "종료일 지정 필수")
     private LocalDate endDate;
 
-    //콤보박스여도 notnull?
     @NotNull(message = "카테고리 지정 필수")
     private EventCategory eventCategory;
 
     private int runtime;
 
     private int ageLimit;
+
+    @NotNull (message = "예약시작시점 지정 필수")
+    private LocalDateTime reservationStart;
+    @NotNull (message = "예약종료시점 지정 필수")
+    private LocalDateTime reservationEnd;
 
 
 
@@ -62,6 +68,8 @@ public class EventRequest {
                 .ageLimit(ageLimit)
                 .rating(0)
                 .reviewCount(0)
+                .reservationStart(reservationStart)
+                .reservationEnd(reservationEnd)
                 .build();
 
         schedule.forEach(req->{
