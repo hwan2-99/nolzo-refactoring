@@ -14,5 +14,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     List<Event> findTop10ByEventCategoryOrderByViewCountDesc(EventCategory eventCategory);
 
+    List<Event> findTop6ByOrderByViewCountDesc();
+  
     List<Event> findByTitleContaining(String search);
 }
