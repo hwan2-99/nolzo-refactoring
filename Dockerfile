@@ -1,0 +1,12 @@
+FROM openjdk:17
+
+WORKDIR /app/nolzo/
+
+ARG JAR_PATH=build/libs/
+
+COPY ${JAR_PATH}*.jar app.jar
+
+ARG SPRING_PROFILES_ACTIVE=dev
+ENV SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
