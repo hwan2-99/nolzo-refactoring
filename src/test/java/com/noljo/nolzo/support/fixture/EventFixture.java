@@ -17,22 +17,22 @@ import lombok.Getter;
 public enum EventFixture {
     캣츠("Cats", "서울 예술의 전당", "세계적으로 유명한 뮤지컬, 고양이들의 이야기를 그린 작품입니다.",
             "https://example.com/cats.jpg", LocalDate.of(2024, 3, 1), LocalDate.of(2024, 6, 30),
-             EventCategory.CONCERT, 180, 12, 5, 120
-            , LocalDateTime.of(2024,2,25,12,0), LocalDateTime.of(2024,2,27,12,0)
+            EventCategory.CONCERT, 180, 12, 5, 120
+            , LocalDateTime.of(2024, 2, 25, 12, 0), LocalDateTime.of(2024, 2, 27, 12, 0)
     ),
     캣츠2("Cats2", "서울 예술의 전당", "세계적으로 유명한 뮤지컬, 고양이들의 이야기를 그린 작품입니다.",
             "https://example.com/cats.jpg", LocalDate.of(2024, 3, 1), LocalDate.of(2024, 6, 30),
-             EventCategory.CONCERT, 180, 12, 5, 120
-            , LocalDateTime.of(2024,2,25,12,0), LocalDateTime.of(2024,2,27,12,0)),
+            EventCategory.CONCERT, 180, 12, 5, 120
+            , LocalDateTime.of(2024, 2, 25, 12, 0), LocalDateTime.of(2024, 2, 27, 12, 0)),
     햄릿("Hamlet", "국립극장 해오름극장", "셰익스피어 4대 비극 중 하나인 '햄릿'의 현대적 재해석 공연입니다.",
             "https://example.com/hamlet.jpg", LocalDate.of(2025, 7, 1), LocalDate.of(2025, 7, 15),
-             EventCategory.CONCERT, 150, 15, 4, 80
+            EventCategory.CONCERT, 150, 15, 4, 80
 
-            , LocalDateTime.of(2024,2,25,12,0), LocalDateTime.of(2024,2,27,12,0)),
+            , LocalDateTime.of(2024, 2, 25, 12, 0), LocalDateTime.of(2024, 2, 27, 12, 0)),
     햄릿일정("Hamlet", "국립극장 해오름극장", "셰익스피어 4대 비극 중 하나인 '햄릿'의 현대적 재해석 공연.",
-               "https://example.com/hamlet.jpg", LocalDate.of(2025, 7, 1), LocalDate.of(2025, 7, 15),
-             EventCategory.CONCERT, 150, 15, 4, 80
-            , LocalDateTime.of(2024,2,25,12,0), LocalDateTime.of(2024,2,27,12,0));
+            "https://example.com/hamlet.jpg", LocalDate.of(2025, 7, 1), LocalDate.of(2025, 7, 15),
+            EventCategory.CONCERT, 150, 15, 4, 80
+            , LocalDateTime.of(2024, 2, 25, 12, 0), LocalDateTime.of(2024, 2, 27, 12, 0));
 
     private String title;
     private String venue;
@@ -68,21 +68,21 @@ public enum EventFixture {
         this.ageLimit = ageLimit;
         this.rating = rating;
         this.reviewCount = reviewCount;
-        this.reservationStart=reservationStart;
-        this.reservationEnd=reservationEnd;
+        this.reservationStart = reservationStart;
+        this.reservationEnd = reservationEnd;
     }
 
     public static Event 캣츠() {
-        Event event=  new Event(null, 캣츠.title, 캣츠.venue, 캣츠.description, 캣츠.posterImageUrl,
-                캣츠.startDate, 캣츠.endDate,  캣츠.eventCategory, 캣츠.runtime, 캣츠.ageLimit, 캣츠.rating, 캣츠.reviewCount,
-                캣츠.reservationStart,캣츠.reservationEnd);
+        Event event = new Event(null, 캣츠.title, 캣츠.venue, 캣츠.description, 캣츠.posterImageUrl,
+                캣츠.startDate, 캣츠.endDate, 캣츠.eventCategory, 캣츠.runtime, 캣츠.ageLimit, 캣츠.rating, 캣츠.reviewCount,
+                캣츠.reservationStart, 캣츠.reservationEnd);
         return event;
     }
 
     public static Event 햄릿() {
-        Event event=  new Event(null, 햄릿.title, 햄릿.venue, 햄릿.description, 햄릿.posterImageUrl,
-                햄릿.startDate, 햄릿.endDate,  햄릿.eventCategory, 햄릿.runtime, 햄릿.ageLimit, 햄릿.rating, 햄릿.reviewCount,
-                햄릿.reservationStart,햄릿.reservationEnd);
+        Event event = new Event(null, 햄릿.title, 햄릿.venue, 햄릿.description, 햄릿.posterImageUrl,
+                햄릿.startDate, 햄릿.endDate, 햄릿.eventCategory, 햄릿.runtime, 햄릿.ageLimit, 햄릿.rating, 햄릿.reviewCount,
+                햄릿.reservationStart, 햄릿.reservationEnd);
         return event;
     }
 
@@ -107,6 +107,7 @@ public enum EventFixture {
                 .reservationEnd(캣츠.reservationEnd)
                 .build();
     }
+
     public static EventUpdateRequest 캣츠2dto() {
         return EventUpdateRequest.builder()
                 .title(캣츠2.title)
@@ -138,6 +139,7 @@ public enum EventFixture {
                 .reservationEnd(햄릿.reservationEnd)
                 .build();
     }
+
     public static EventRequest 햄릿2dto() {
         return EventRequest.builder()
                 .title(햄릿일정.title)
