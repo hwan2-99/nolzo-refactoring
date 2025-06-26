@@ -25,4 +25,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findOnePerTitle(@Param("keyword") String keyword);
 
     List<Event> findTop10ByEventCategoryOrderByViewCountDesc(EventCategory eventCategory);
+
+    List<Event> findTop6ByOrderByViewCountDesc();
 }
