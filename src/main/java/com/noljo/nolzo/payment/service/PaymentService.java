@@ -23,8 +23,15 @@ public class PaymentService {
     public PaymentResponse create(PaymentRequest request) {
         Member member = memberRepository.getOrThrow(request.memberId());
         Reservation reservation = reservationRepository.getOrThrow(request.reservationId());
-
+        if (isCanceled(request)){
+            reservationRepository.delete(reservation);
+            return null;
+        }
         Payment payment = paymentRepository.save(new Payment(request.paymentMethod(), member, reservation));
         return PaymentResponse.from(payment);
+    }
+
+    private boolean isCanceled(PaymentRequest request) {
+        return !request.paymentStatus().equals("SUCCESS");
     }
 }
