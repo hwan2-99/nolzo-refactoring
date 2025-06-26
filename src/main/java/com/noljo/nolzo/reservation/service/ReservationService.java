@@ -11,6 +11,7 @@ import com.noljo.nolzo.member.repository.MemberRepository;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import com.noljo.nolzo.reservation.entity.ReservationStatus;
 import com.noljo.nolzo.reservation.repository.ReservationRepository;
+import com.noljo.nolzo.schedule.repository.ScheduleRepository;
 import com.noljo.nolzo.seat.dto.SeatResponse;
 import com.noljo.nolzo.seat.entity.Seat;
 import com.noljo.nolzo.seat.service.SeatService;
@@ -124,7 +125,5 @@ public class ReservationService {
 
         return ReservationEventInfo.detailsOf(event, reservation, payment);
     }
-
-
 }
 
