@@ -8,6 +8,7 @@ import com.noljo.nolzo.reservation.dto.ReservationRequest;
 import com.noljo.nolzo.reservation.dto.ReservationResponse;
 import com.noljo.nolzo.reservation.service.ReservationService;
 import com.noljo.nolzo.seat.dto.SeatResponse;
+import com.noljo.nolzo.seat.service.SeatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import java.util.List;
 public class ReservationController {
 
     private final ReservationService reservationService;
+    private final SeatService seatService;
 
     @PostMapping
     public ResponseEntity<ReservationResponse> create(@AuthenticationPrincipal CustomUserDetails user,
@@ -80,12 +82,11 @@ public class ReservationController {
 
     }
 
-//    @GetMapping("/reservation/{eventId}")
-//    public ResponseEntity<List<SeatResponse>> findSeatsByEventId(
-//            @PathVariable Long eventId,
-//            @RequestParam String date,
-//            @RequestParam String time) {
-//
-//        return ResponseEntity.ok(reservationService.findSeats(eventId, date, time));
-//    }
+    @GetMapping("/reservation/{eventId}")
+    public ResponseEntity<List<SeatResponse>> findSeatsByEventId(
+            @PathVariable Long eventId,
+            @RequestParam String date,
+            @RequestParam String time) {
+        return ResponseEntity.ok(seatService.findSeats(eventId, date, time));
+    }
 }
