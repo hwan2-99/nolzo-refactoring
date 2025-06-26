@@ -12,17 +12,7 @@ import java.util.List;
 public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findAllByEventCategory(EventCategory eventCategory);
 
-    @Query("""
-        SELECT e FROM Event e
-        WHERE (:keyword = 'all' OR e.title LIKE CONCAT('%', :keyword, '%'))
-          AND e.id = (
-                SELECT MIN(e2.id)
-                FROM Event e2
-                WHERE e2.title = e.title
-          )
-        ORDER BY e.title ASC
-    """)
-    List<Event> findOnePerTitle(@Param("keyword") String keyword);
-
     List<Event> findTop10ByEventCategoryOrderByViewCountDesc(EventCategory eventCategory);
+
+    List<Event> findByTitleContaining(String search);
 }

@@ -51,6 +51,44 @@ class EventServiceTest {
     }
 
     @Test
+    void 제목에_검색어가_포함된_이벤트만_조회된다() {
+        Event event1 = eventRepository.save(Event.builder()
+                .title("셜록홈즈: 블러디 게임")
+                .venue("LG아트센터 서울")
+                .description("정체불명의 연쇄 살인 사건을 둘러싼 셜록의 추리와 심리전")
+                .posterImageUrl("http://image.url/sherlock-bloody.jpg")
+                .startDate(LocalDate.of(2025, 11, 5))
+                .endDate(LocalDate.of(2025, 12, 20))
+                .eventCategory(EventCategory.MUSICAL)
+                .runtime(155)
+                .ageLimit(15)
+                .rating(0)
+                .reviewCount(0)
+                .build());
+
+        Event event2 = eventRepository.save(Event.builder()
+                .title("셜록홈즈: 앤더슨가의 비밀")
+                .venue("광림아트센터 BBCH홀")
+                .description("셜록 홈즈와 왓슨이 앤더슨 가문의 미스터리를 파헤치는 이야기")
+                .posterImageUrl("http://image.url/sherlock-anderson.jpg")
+                .startDate(LocalDate.of(2025, 10, 15))
+                .endDate(LocalDate.of(2025, 12, 20))
+                .eventCategory(EventCategory.MUSICAL)
+                .runtime(155)
+                .ageLimit(15)
+                .rating(0)
+                .reviewCount(0)
+                .build());
+
+        List<EventResponse> result = eventService.searchEventList("셜록");
+
+        Assertions.assertThat(result)
+                .hasSize(2)
+                .allSatisfy(event ->
+                        Assertions.assertThat(event.getTitle()).contains("셜록"));
+    }
+
+    @Test
     void 카테고리별_이벤트를_조회할_수_있다() {
         EventRequest concertEvent = EventFixture.캣츠dto();
         EventRequest hamletEvent = EventFixture.햄릿dto();
@@ -67,7 +105,7 @@ class EventServiceTest {
 
     @Test
     void 존재하지_않는_카테고리의_이벤트_조회시_빈_리스트를_반환한다() {
-        EventRequest concertEvent = EventFixture.캣츠dto();  // CONCERT 카테고리
+        EventRequest concertEvent = EventFixture.캣츠dto();
         eventService.save(concertEvent);
 
         List<EventResponse> otherEvents = eventService.findAllByCategory(EventCategory.MUSICAL);

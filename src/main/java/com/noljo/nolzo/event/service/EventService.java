@@ -71,7 +71,7 @@ public class EventService {
     }
 
     public List<EventResponse> searchEventList(String search) {
-        List<Event> events = eventRepository.findOnePerTitle(search);
+        List<Event> events = eventRepository.findByTitleContaining(search);
         return events.stream()
                 .map(EventResponse::from)
                 .toList();
