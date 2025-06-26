@@ -6,12 +6,15 @@ import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.repository.MemberRepository;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import com.noljo.nolzo.reservation.repository.ReservationRepository;
+import com.noljo.nolzo.schedule.entity.Schedule;
+import com.noljo.nolzo.schedule.repository.ScheduleRepository;
 import com.noljo.nolzo.seat.entity.Seat;
 import com.noljo.nolzo.seat.repository.SeatRepository;
 import com.noljo.nolzo.support.annotation.ServiceTest;
 import com.noljo.nolzo.support.fixture.EventFixture;
 import com.noljo.nolzo.support.fixture.MemberFixture;
 import com.noljo.nolzo.support.fixture.ReservationFixture;
+import com.noljo.nolzo.support.fixture.ScheduleFixture;
 import com.noljo.nolzo.support.fixture.SeatFixture;
 import com.noljo.nolzo.support.fixture.TicketFixture;
 import com.noljo.nolzo.ticket.entity.Ticket;
@@ -36,6 +39,8 @@ class TicketServiceTest {
     private SeatRepository seatRepository;
     @Autowired
     private EventRepository eventRepository;
+    @Autowired
+    private ScheduleRepository scheduleRepository;
 
     @Test
     void 티켓을_생성할_수_있다() {
@@ -45,7 +50,10 @@ class TicketServiceTest {
         Event event = EventFixture.캣츠();
         eventRepository.save(event);
 
-        Seat seat = SeatFixture.일반좌석(event);
+        Schedule schedule = ScheduleFixture.공연_스케쥴(event);
+        scheduleRepository.save(schedule);
+
+        Seat seat = SeatFixture.일반좌석(schedule);
         seatRepository.save(seat);
 
         Reservation reservation = ReservationFixture.예약(member);

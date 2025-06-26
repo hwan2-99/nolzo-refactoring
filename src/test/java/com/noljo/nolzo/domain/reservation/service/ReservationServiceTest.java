@@ -1,6 +1,5 @@
 package com.noljo.nolzo.domain.reservation.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -15,6 +14,8 @@ import com.noljo.nolzo.reservation.dto.ReservationRequest;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import com.noljo.nolzo.reservation.repository.ReservationRepository;
 import com.noljo.nolzo.reservation.service.ReservationService;
+import com.noljo.nolzo.schedule.entity.Schedule;
+import com.noljo.nolzo.schedule.repository.ScheduleRepository;
 import com.noljo.nolzo.seat.entity.Seat;
 import com.noljo.nolzo.seat.repository.SeatRepository;
 import com.noljo.nolzo.support.annotation.ServiceTest;
@@ -40,6 +41,8 @@ public class ReservationServiceTest {
     @Autowired
     private SeatRepository seatRepository;
     @Autowired
+    private ScheduleRepository scheduleRepository;
+    @Autowired
     private ReservationRepository reservationRepository;
     @Autowired
     private TicketRepository ticketRepository;
@@ -48,11 +51,11 @@ public class ReservationServiceTest {
     void 같은_좌석은_동시에_접근이_불가능하다() throws InterruptedException {
         Member member = memberRepository.save(MemberFixture.회원());
         Member anotherMember = memberRepository.save(MemberFixture.회투());
-
         Event event = eventRepository.save(EventFixture.캣츠());
+        Schedule schedule = scheduleRepository.save(ScheduleFixture.공연_스케쥴(event));
 
-        Seat seat1 = seatRepository.save(SeatFixture.일반좌석(event));
-        Seat seat2 = seatRepository.save(SeatFixture.일반좌석2(event));
+        Seat seat1 = seatRepository.save(SeatFixture.일반좌석(schedule));
+        Seat seat2 = seatRepository.save(SeatFixture.일반좌석2(schedule));
 
         List<Seat> seats = seatRepository.findAll();
         ReservationRequest request = new ReservationRequest(event.getId(), seats);
@@ -77,7 +80,8 @@ public class ReservationServiceTest {
         LocalDate showDate = event.getSchedules().get(0).getShowDate();
         LocalTime showTime = event.getSchedules().get(0).getShowTime();
 
-        EventDateTimeResponse response = reservationService.readSelectedEventDateTime(event.getId(), showDate, showTime);
+        EventDateTimeResponse response = reservationService.readSelectedEventDateTime(event.getId(), showDate,
+                showTime);
 
         assertNotNull(response);
         assertEquals(event.getId(), response.getId());
