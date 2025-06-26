@@ -1,8 +1,7 @@
 package com.noljo.nolzo.seat.entity;
 
-import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.global.BaseEntity;
-import com.noljo.nolzo.reservation.entity.Reservation;
+import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.ticket.entity.Ticket;
 import jakarta.persistence.*;
 import java.util.ArrayList;
@@ -39,12 +38,12 @@ public class Seat extends BaseEntity {
     private List<Ticket> tickets = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "event_id")
-    private Event event;
+    @JoinColumn(name = "schedule_id")
+    private Schedule schedule;
 
     @Builder
     public Seat(Long id, String rowName, int seatNumber, String seatSection, String floor, int price, SeatStatus status,
-                Event event) {
+                Schedule schedule) {
         this.id = id;
         this.rowName = rowName;
         this.seatNumber = seatNumber;
@@ -52,7 +51,7 @@ public class Seat extends BaseEntity {
         this.floor = floor;
         this.price = price;
         this.status = status;
-        this.event = event;
+        this.schedule = schedule;
     }
 
     public void updateStatus(SeatStatus status) {

@@ -58,7 +58,6 @@ public class Event extends BaseEntity {
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<Schedule> schedules = new ArrayList<>();
 
-
     @Builder
     public Event(Long id, String title, String venue, String description, String posterImageUrl, LocalDate startDate, LocalDate endDate,
                  EventCategory eventCategory, int runtime, int ageLimit, int rating, int reviewCount,

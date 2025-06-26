@@ -15,6 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class SeatService {
     private final SeatRepository seatRepository;
 
+//    public List<SeatResponse> createSeats(Long scheduleId) {
+//
+//    }
+
     public void updateWithReservation(List<Seat> seats) {
         seats.forEach(seat -> {
             validateIsAvailable(seat);
@@ -34,8 +38,8 @@ public class SeatService {
         }
     }
 
-    @Transactional(readOnly = true)
-    public List<SeatResponse> findSeatsByEventAndSchedule(Long eventId) {
-
-    }
+//    @Transactional(readOnly = true)
+//    public List<SeatResponse> findSeatsByEventAndSchedule(Long eventId) {
+//
+//    }
 }

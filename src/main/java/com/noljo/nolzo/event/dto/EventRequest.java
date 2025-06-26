@@ -46,10 +46,9 @@ public class EventRequest {
 
     @NotNull (message = "예약시작시점 지정 필수")
     private LocalDateTime reservationStart;
+
     @NotNull (message = "예약종료시점 지정 필수")
     private LocalDateTime reservationEnd;
-
-
 
     @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
     private List<ScheduleInfo> schedule;

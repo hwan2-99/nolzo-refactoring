@@ -1,7 +1,5 @@
 package com.noljo.nolzo.reservation.repository;
 
-import com.noljo.nolzo.member.entity.Member;
-import com.noljo.nolzo.reservation.dto.ReservationEventInfo;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import java.util.List;
 
@@ -23,18 +21,19 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     SELECT DISTINCT r FROM Reservation r
     JOIN FETCH r.tickets t
     JOIN FETCH t.seat s
-    JOIN FETCH s.event e
-    JOIN FETCH e.schedules sch
+    JOIN FETCH s.schedule sch
+    JOIN FETCH sch.event e
     WHERE r.member.id = :memberId
 """)
     List<Reservation> findReservationsByMemberId(@Param("memberId") Long memberId);
+
 
     @Query("""
     SELECT DISTINCT r FROM Reservation r
     JOIN FETCH r.tickets t
     JOIN FETCH t.seat s
-    JOIN FETCH s.event e
-    JOIN FETCH e.schedules sch
+    JOIN FETCH s.schedule sch
+    JOIN FETCH sch.event e
     WHERE r.member.id = :memberId
     AND r.status = 'CONFIRMED'
 """)
@@ -44,8 +43,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     SELECT DISTINCT r FROM Reservation r
     JOIN FETCH r.tickets t
     JOIN FETCH t.seat s
-    JOIN FETCH s.event e
-    JOIN FETCH e.schedules sch
+    JOIN FETCH s.schedule sch
+    JOIN FETCH sch.event e
     WHERE r.member.id = :memberId
     AND t.status = 'USED'
 """)
@@ -55,8 +54,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     SELECT DISTINCT r FROM Reservation r
     JOIN FETCH r.tickets t
     JOIN FETCH t.seat s
-    JOIN FETCH s.event e
-    JOIN FETCH e.schedules sch
+    JOIN FETCH s.schedule sch
+    JOIN FETCH sch.event e
     WHERE r.member.id = :memberId
       AND (r.status = 'CANCELED' OR t.status = 'CANCELED')
 """)
@@ -66,8 +65,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     SELECT DISTINCT r FROM Reservation r
     JOIN FETCH r.tickets t
     JOIN FETCH t.seat s
-    JOIN FETCH s.event e
-    JOIN FETCH e.schedules sch
+    JOIN FETCH s.schedule sch
+    JOIN FETCH sch.event e
     WHERE r.member.id = :memberId
 """)
     Reservation findReservationDetailsByMemberId(@Param("memberId") Long memberId);
