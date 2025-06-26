@@ -20,11 +20,12 @@ public class PaymentService {
     private final MemberRepository memberRepository;
     private final ReservationRepository reservationRepository;
 
-    public PaymentResponse create(PaymentRequest request) {
-        Member member = memberRepository.getOrThrow(request.memberId());
+    public PaymentResponse create(Long userId, PaymentRequest request) {
+        Member member = memberRepository.getOrThrow(userId);
         Reservation reservation = reservationRepository.getOrThrow(request.reservationId());
-        if (isCanceled(request)){
+        if (isCanceled(request)) {
             reservationRepository.delete(reservation);
+            //Todo 추루 트랜잭션 분리예정
             return null;
         }
         Payment payment = paymentRepository.save(new Payment(request.paymentMethod(), member, reservation));
