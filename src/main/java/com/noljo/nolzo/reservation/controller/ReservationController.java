@@ -4,8 +4,11 @@ package com.noljo.nolzo.reservation.controller;
 import com.noljo.nolzo.auth.security.CustomUserDetails;
 import com.noljo.nolzo.reservation.dto.ReservationEventInfo;
 import com.noljo.nolzo.reservation.dto.EventDateTimeResponse;
+import com.noljo.nolzo.reservation.dto.ReservationRequest;
+import com.noljo.nolzo.reservation.dto.ReservationResponse;
 import com.noljo.nolzo.reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -21,41 +24,57 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
-    @PostMapping("/{eventId}")
-    public ResponseEntity<EventDateTimeResponse> chooseEventDateTime(@PathVariable Long eventId ,
-                                                                     @RequestParam LocalDate selectDate,
-                                                                     @RequestParam LocalTime selectTime) {
+    @PostMapping
+    public ResponseEntity<ReservationResponse> create(@AuthenticationPrincipal CustomUserDetails user,
+                                                      @RequestBody ReservationRequest request) {
+        return ResponseEntity.ok(reservationService.create(user.getMemberId(), request));
+    }
 
+    @PostMapping("/{eventId}")
+
+    public ResponseEntity<EventDateTimeResponse> chooseEventDateTime(@PathVariable Long eventId ,
+                                                                     @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate selectDate,
+                                                                     @RequestParam @DateTimeFormat(pattern = "HH:mm:ss") LocalTime selectTime) {
         EventDateTimeResponse event = reservationService.readSelectedEventDateTime(eventId, selectDate, selectTime);
         return ResponseEntity.ok(event);
     }
-  
+
     @GetMapping
-    public ResponseEntity<List<ReservationEventInfo>> getReservations(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<List<ReservationEventInfo>> getReservations(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long memberId = userDetails.getMemberId();
-        List<ReservationEventInfo> reservationDetails = reservationService.findReservations(memberId);
-        return ResponseEntity.ok(reservationDetails);
+        List<ReservationEventInfo> reservationEventInfo = reservationService.findReservations(memberId);
+        return ResponseEntity.ok(reservationEventInfo);
     }
 
     @GetMapping("/confirmed")
-    public ResponseEntity<List<ReservationEventInfo>> getReservationConfirmed(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<List<ReservationEventInfo>> getReservationConfirmed(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long memberId = userDetails.getMemberId();
-        List<ReservationEventInfo> reservationDetails = reservationService.findReservationsConfirmed(memberId);
-        return  ResponseEntity.ok(reservationDetails);
-
+        List<ReservationEventInfo> reservationEventInfo = reservationService.findReservationsConfirmed(memberId);
+        return  ResponseEntity.ok(reservationEventInfo);
     }
 
     @GetMapping("/used")
-    public ResponseEntity<List<ReservationEventInfo>> getTicketsUsed(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<List<ReservationEventInfo>> getTicketsUsed(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long memberId = userDetails.getMemberId();
-        List<ReservationEventInfo> reservationDetails = reservationService.findTicketsUsed(memberId);
-        return ResponseEntity.ok(reservationDetails);
+        List<ReservationEventInfo> reservationEventInfo = reservationService.findTicketsUsed(memberId);
+        return ResponseEntity.ok(reservationEventInfo);
     }
-  
+
     @GetMapping("/cancel")
-    public ResponseEntity<List<ReservationEventInfo>> getCancelReservations(@AuthenticationPrincipal CustomUserDetails userDetails){
+    public ResponseEntity<List<ReservationEventInfo>> getCancelReservations(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long memberId = userDetails.getMemberId();
-        List<ReservationEventInfo> reservationDetails = reservationService.findCancelReservations(memberId);
-        return  ResponseEntity.ok(reservationDetails);
+        List<ReservationEventInfo> reservationEventInfo = reservationService.findCancelReservations(memberId);
+        return ResponseEntity.ok(reservationEventInfo);
+    }
+
+    @GetMapping("/details/{reservationId}")
+        public ResponseEntity<ReservationEventInfo> getReservationDetails(@AuthenticationPrincipal(expression = "memberId") Long memberId){
+        ReservationEventInfo reservationDetails = reservationService.findReservationDetails(memberId);
+        return ResponseEntity.ok(reservationDetails);
+
     }
 }

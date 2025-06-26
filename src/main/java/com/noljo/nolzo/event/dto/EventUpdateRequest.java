@@ -1,5 +1,6 @@
 package com.noljo.nolzo.event.dto;
 
+import com.noljo.nolzo.Schedule.dto.internal.ScheduleInfo;
 import com.noljo.nolzo.event.entity.Event;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -9,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 @Builder
@@ -29,6 +32,12 @@ public class EventUpdateRequest {
 
     @NotNull(message = "종료 입력 필수")
     private LocalDate endDate;
+
+    @NotNull (message = "예약시작시점 지정 필수")
+    private LocalDateTime reservationStart;
+    @NotNull (message = "예약종료시점 지정 필수")
+    private LocalDateTime reservationEnd;
+
 
     public Event toEntity(Event original) {
         return Event.builder()

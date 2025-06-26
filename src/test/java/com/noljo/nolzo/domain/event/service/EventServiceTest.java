@@ -9,9 +9,12 @@ import com.noljo.nolzo.event.repository.EventRepository;
 import com.noljo.nolzo.event.service.EventService;
 import com.noljo.nolzo.support.annotation.ServiceTest;
 import com.noljo.nolzo.support.fixture.EventFixture;
+import com.noljo.nolzo.support.fixture.FileFixture;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -24,10 +27,12 @@ class EventServiceTest {
     @Autowired
     EventRepository eventRepository;
 
+    MultipartFile image = FileFixture.dummyImage();
+
     @Test
     void 이벤트를_저장할_수_있다() {
         EventRequest dto = EventFixture.캣츠dto();
-        EventResponse response = eventService.save(dto);
+        EventResponse response = eventService.save(dto,image);
         Assertions.assertThat(response.getId()).isNotNull();
         Assertions.assertThat(response.getTitle()).isEqualTo("Cats");
     }
@@ -35,7 +40,7 @@ class EventServiceTest {
     @Test
     void 이벤트를_조회할_수_있다() {
         EventRequest dto = EventFixture.캣츠dto();
-        EventResponse response = eventService.save(dto);
+        EventResponse response = eventService.save(dto,image);
         Assertions.assertThat(response.getId()).isEqualTo(eventService.findAll().get(0).getId());
     }
 
@@ -44,18 +49,56 @@ class EventServiceTest {
 
         EventRequest dto = EventFixture.캣츠dto();
 
-        EventResponse response = eventService.save(dto);
+        EventResponse response = eventService.save(dto,image);
         Long id = response.getId();
 
         Assertions.assertThat("Cats").isEqualTo(eventService.findById(id).getTitle());
     }
 
     @Test
+    void 제목에_검색어가_포함된_이벤트만_조회된다() {
+        Event event1 = eventRepository.save(Event.builder()
+                .title("셜록홈즈: 블러디 게임")
+                .venue("LG아트센터 서울")
+                .description("정체불명의 연쇄 살인 사건을 둘러싼 셜록의 추리와 심리전")
+                .posterImageUrl("http://image.url/sherlock-bloody.jpg")
+                .startDate(LocalDate.of(2025, 11, 5))
+                .endDate(LocalDate.of(2025, 12, 20))
+                .eventCategory(EventCategory.MUSICAL)
+                .runtime(155)
+                .ageLimit(15)
+                .rating(0)
+                .reviewCount(0)
+                .build());
+
+        Event event2 = eventRepository.save(Event.builder()
+                .title("셜록홈즈: 앤더슨가의 비밀")
+                .venue("광림아트센터 BBCH홀")
+                .description("셜록 홈즈와 왓슨이 앤더슨 가문의 미스터리를 파헤치는 이야기")
+                .posterImageUrl("http://image.url/sherlock-anderson.jpg")
+                .startDate(LocalDate.of(2025, 10, 15))
+                .endDate(LocalDate.of(2025, 12, 20))
+                .eventCategory(EventCategory.MUSICAL)
+                .runtime(155)
+                .ageLimit(15)
+                .rating(0)
+                .reviewCount(0)
+                .build());
+
+        List<EventResponse> result = eventService.searchEventList("셜록");
+
+        Assertions.assertThat(result)
+                .hasSize(2)
+                .allSatisfy(event ->
+                        Assertions.assertThat(event.getTitle()).contains("셜록"));
+    }
+
+    @Test
     void 카테고리별_이벤트를_조회할_수_있다() {
         EventRequest concertEvent = EventFixture.캣츠dto();
         EventRequest hamletEvent = EventFixture.햄릿dto();
-        eventService.save(concertEvent);
-        eventService.save(hamletEvent);
+        eventService.save(concertEvent,image);
+        eventService.save(hamletEvent,image);
 
         List<EventResponse> concertEvents = eventService.findAllByCategory(EventCategory.CONCERT);
 
@@ -68,7 +111,7 @@ class EventServiceTest {
     @Test
     void 존재하지_않는_카테고리의_이벤트_조회시_빈_리스트를_반환한다() {
         EventRequest concertEvent = EventFixture.캣츠dto();  // CONCERT 카테고리
-        eventService.save(concertEvent);
+        eventService.save(concertEvent,image);
 
         List<EventResponse> otherEvents = eventService.findAllByCategory(EventCategory.MUSICAL);
 
@@ -79,7 +122,7 @@ class EventServiceTest {
     @Test
     void 이벤트를_삭제할_수_있다() {
         EventRequest dto = EventFixture.캣츠dto();
-        EventResponse response = eventService.save(dto);
+        EventResponse response = eventService.save(dto,image);
         Long id = response.getId();
 
         eventService.delete(id);
@@ -91,7 +134,7 @@ class EventServiceTest {
     void 이벤트를_갱신할_수_있다() {
         EventRequest dtoCats = EventFixture.캣츠dto();
         EventUpdateRequest dtoCats2 = EventFixture.캣츠2dto();
-        EventResponse response = eventService.save(dtoCats);
+        EventResponse response = eventService.save(dtoCats,image);
         Long id = response.getId();
 
         Assertions.assertThat("Cats").isEqualTo(eventService.findById(id).getTitle());

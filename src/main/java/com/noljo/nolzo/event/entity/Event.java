@@ -1,14 +1,19 @@
 package com.noljo.nolzo.event.entity;
+import com.noljo.nolzo.Schedule.dto.internal.ScheduleInfo;
 import com.noljo.nolzo.event.dto.EventUpdateRequest;
 import com.noljo.nolzo.Schedule.entity.Schedule;
 import com.noljo.nolzo.global.BaseEntity;
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -46,6 +51,10 @@ public class Event extends BaseEntity {
 
     private int reviewCount;
 
+    private LocalDateTime reservationStart;
+
+    private LocalDateTime reservationEnd;
+
     @Column(nullable = false)
     private long viewCount = 0;
 
@@ -55,7 +64,8 @@ public class Event extends BaseEntity {
 
     @Builder
     public Event(Long id, String title, String venue, String description, String posterImageUrl, LocalDate startDate, LocalDate endDate,
-                 EventCategory eventCategory, int runtime, int ageLimit, int rating, int reviewCount) {
+                 EventCategory eventCategory, int runtime, int ageLimit, int rating, int reviewCount,
+                 LocalDateTime reservationStart,LocalDateTime reservationEnd) {
         this.id = id;
         this.title = title;
         this.venue = venue;
@@ -68,6 +78,8 @@ public class Event extends BaseEntity {
         this.ageLimit = ageLimit;
         this.rating = rating;
         this.reviewCount = reviewCount;
+        this.reservationStart=reservationStart;
+        this.reservationEnd=reservationEnd;
     }
 
     public void addSchedule(Schedule schedule) {
@@ -85,5 +97,8 @@ public class Event extends BaseEntity {
         this.description   = dto.getDescription();
         this.startDate     = dto.getStartDate();
         this.endDate       = dto.getEndDate();
+        this.reservationStart=dto.getReservationStart();
+        this.reservationEnd=dto.getReservationEnd();
     }
+
 }
