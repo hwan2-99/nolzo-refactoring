@@ -54,7 +54,8 @@ public class ReservationServiceTest {
         Seat seat1 = seatRepository.save(SeatFixture.일반좌석(event));
         Seat seat2 = seatRepository.save(SeatFixture.일반좌석2(event));
 
-        ReservationRequest request = new ReservationRequest(event.getId(), List.of(seat1, seat2));
+        List<Seat> seats = seatRepository.findAll();
+        ReservationRequest request = new ReservationRequest(event.getId(), seats);
 
         Thread thread1 = new Thread(() -> reservationService.create(member.getId(), request));
         Thread thread2 = new Thread(() -> reservationService.create(anotherMember.getId(), request));
@@ -65,7 +66,8 @@ public class ReservationServiceTest {
         thread1.join();
         thread2.join();
 
-        assertThatThrownBy(() -> reservationService.create(anotherMember.getId(), request))
+        assertThatThrownBy(() -> reservationService.create(anotherMember.getId(),
+                new ReservationRequest(event.getId(), seatRepository.findAll())))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

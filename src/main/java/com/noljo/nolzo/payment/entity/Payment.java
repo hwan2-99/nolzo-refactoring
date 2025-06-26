@@ -5,7 +5,6 @@ import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

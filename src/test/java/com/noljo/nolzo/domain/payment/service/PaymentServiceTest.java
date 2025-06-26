@@ -4,8 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.repository.MemberRepository;
+import com.noljo.nolzo.payment.dto.PaymentRequest;
 import com.noljo.nolzo.payment.entity.Payment;
+import com.noljo.nolzo.payment.entity.PaymentMethod;
 import com.noljo.nolzo.payment.repository.PaymentRepository;
+import com.noljo.nolzo.payment.service.PaymentService;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import com.noljo.nolzo.reservation.repository.ReservationRepository;
 import com.noljo.nolzo.support.annotation.ServiceTest;
@@ -23,6 +26,8 @@ public class PaymentServiceTest {
     private ReservationRepository reservationRepository;
     @Autowired
     private PaymentRepository paymentRepository;
+    @Autowired
+    private PaymentService paymentService;
 
     @Test
     void 예약과_유저를_통해_결제를_할_수_있다() {
@@ -34,5 +39,20 @@ public class PaymentServiceTest {
 
         paymentRepository.save(PaymentFixture.신용카드(member, reservation));
         assertThat(paymentRepository.findAll()).hasSize(1);
+    }
+
+    @Test
+    void 결제_취소_시_객체는_생성되지_않는다() {
+        Member member = MemberFixture.회원();
+        memberRepository.save(member);
+
+        Reservation reservation = ReservationFixture.예약(member);
+        reservationRepository.save(reservation);
+        PaymentRequest request = new PaymentRequest(member.getId(), reservation.getId(), PaymentMethod.CASH,
+                "CANCELED");
+        paymentService.create(request);
+
+        assertThat(paymentRepository.findAll()).hasSize(0);
+        assertThat(reservationRepository.findAll()).hasSize(0);
     }
 }
