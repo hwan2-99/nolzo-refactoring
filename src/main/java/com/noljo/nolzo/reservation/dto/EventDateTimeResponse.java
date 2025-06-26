@@ -1,6 +1,6 @@
     package com.noljo.nolzo.reservation.dto;
 
-    import com.noljo.nolzo.Schedule.entity.Schedule;
+    import com.noljo.nolzo.schedule.entity.Schedule;
     import lombok.Getter;
 
     import java.time.LocalDate;

@@ -1,5 +1,6 @@
 package com.noljo.nolzo.seat.service;
 
+import com.noljo.nolzo.seat.dto.SeatResponse;
 import com.noljo.nolzo.seat.entity.Seat;
 import com.noljo.nolzo.seat.entity.SeatStatus;
 import com.noljo.nolzo.seat.repository.SeatRepository;
@@ -31,5 +32,10 @@ public class SeatService {
         if (seat.getStatus() != SeatStatus.AVAILABLE) {
             throw new IllegalArgumentException("Seat with id " + seat.getId() + " is not available");
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<SeatResponse> findSeatsByEventAndSchedule(Long eventId) {
+
     }
 }

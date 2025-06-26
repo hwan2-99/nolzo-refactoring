@@ -1,7 +1,6 @@
 package com.noljo.nolzo.reservation.service;
 
-import com.noljo.nolzo.Schedule.entity.Schedule;
-import com.noljo.nolzo.event.dto.ReservationEvent;
+import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.repository.EventRepository;
 import com.noljo.nolzo.payment.entity.Payment;
@@ -12,7 +11,6 @@ import com.noljo.nolzo.member.repository.MemberRepository;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import com.noljo.nolzo.reservation.entity.ReservationStatus;
 import com.noljo.nolzo.reservation.repository.ReservationRepository;
-import com.noljo.nolzo.seat.entity.Seat;
 import com.noljo.nolzo.seat.service.SeatService;
 import java.time.LocalDate;
 
@@ -22,11 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Set;
 
 @Transactional
 @Service

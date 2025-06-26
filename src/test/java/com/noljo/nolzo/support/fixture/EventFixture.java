@@ -1,6 +1,6 @@
 package com.noljo.nolzo.support.fixture;
 
-import com.noljo.nolzo.Schedule.dto.internal.ScheduleInfo;
+import com.noljo.nolzo.schedule.dto.internal.ScheduleInfo;
 import com.noljo.nolzo.event.dto.EventRequest;
 import com.noljo.nolzo.event.dto.EventUpdateRequest;
 import com.noljo.nolzo.event.entity.Event;
@@ -10,8 +10,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
-import com.noljo.nolzo.Schedule.entity.Schedule;
-import jakarta.validation.constraints.NotNull;
+import com.noljo.nolzo.schedule.entity.Schedule;
 import lombok.Getter;
 
 @Getter

@@ -1,15 +1,11 @@
-package com.noljo.nolzo.Schedule.entity;
+package com.noljo.nolzo.schedule.entity;
 
 import com.noljo.nolzo.event.entity.Event;
-import com.noljo.nolzo.event.entity.EventCategory;
-import com.noljo.nolzo.ticket.entity.Ticket;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
