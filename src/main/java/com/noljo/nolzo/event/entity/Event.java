@@ -3,7 +3,6 @@ package com.noljo.nolzo.event.entity;
 import com.noljo.nolzo.event.dto.EventUpdateRequest;
 import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.global.BaseEntity;
-import com.noljo.nolzo.seat.entity.Seat;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -56,9 +55,6 @@ public class Event extends BaseEntity {
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<Schedule> schedules = new ArrayList<>();
-
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
-    private List<Seat> seats = new ArrayList<>();
 
     @Builder
     public Event(Long id, String title, String venue, String description, String posterImageUrl, LocalDate startDate, LocalDate endDate,
