@@ -1,7 +1,6 @@
 package com.noljo.nolzo.reservation.service;
 
-import com.noljo.nolzo.Schedule.entity.Schedule;
-import com.noljo.nolzo.event.dto.ReservationEvent;
+import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.repository.EventRepository;
 import com.noljo.nolzo.payment.entity.Payment;
@@ -12,6 +11,8 @@ import com.noljo.nolzo.member.repository.MemberRepository;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import com.noljo.nolzo.reservation.entity.ReservationStatus;
 import com.noljo.nolzo.reservation.repository.ReservationRepository;
+import com.noljo.nolzo.schedule.repository.ScheduleRepository;
+import com.noljo.nolzo.seat.dto.SeatResponse;
 import com.noljo.nolzo.seat.entity.Seat;
 import com.noljo.nolzo.seat.service.SeatService;
 import java.time.LocalDate;
@@ -22,11 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Set;
 
 @Transactional
 @Service
@@ -78,7 +76,7 @@ public class ReservationService {
     public List<ReservationEventInfo> findReservations(Long memberId) {
         return reservationRepository.findReservationsByMemberId(memberId).stream()
                 .map(r -> ReservationEventInfo.of(
-                        r.getTickets().get(0).getSeat().getEvent(),
+                        r.getTickets().get(0).getSeat().getSchedule().getEvent(),
                         r))
                 .toList();
     }
@@ -87,7 +85,7 @@ public class ReservationService {
     public List<ReservationEventInfo> findReservationsConfirmed(Long memberId) {
         return reservationRepository.findReservationsStatusConfirmedByMemberId(memberId).stream()
                 .map(r -> ReservationEventInfo.of(
-                        r.getTickets().get(0).getSeat().getEvent(),
+                        r.getTickets().get(0).getSeat().getSchedule().getEvent(),
                         r))
                 .toList();
     }
@@ -96,7 +94,7 @@ public class ReservationService {
     public List<ReservationEventInfo> findTicketsUsed(Long memberId) {
         return reservationRepository.findTicketStatusUsedByMemberId(memberId).stream()
                 .map(r -> ReservationEventInfo.of(
-                        r.getTickets().get(0).getSeat().getEvent(),
+                        r.getTickets().get(0).getSeat().getSchedule().getEvent(),
                         r))
                 .toList();
     }
@@ -108,7 +106,7 @@ public class ReservationService {
         return reservations.stream()
                 .map(reservation -> {
                     Ticket ticket = reservation.getTickets().get(0); // 첫 번째 티켓 기준
-                    Event event = ticket.getSeat().getEvent();
+                    Event event = ticket.getSeat().getSchedule().getEvent();
                     // 정확한 Schedule 정보는 없음
                     return ReservationEventInfo.of(event, reservation);
                 })
@@ -122,7 +120,7 @@ public class ReservationService {
 
         Event event = reservation.getTickets().stream()
                 .findFirst()
-                .map(ticket -> ticket.getSeat().getEvent())
+                .map(ticket -> ticket.getSeat().getSchedule().getEvent())
                 .orElseThrow(() -> new IllegalStateException("예약에 연결된 공연이 없습니다."));
 
         return ReservationEventInfo.detailsOf(event, reservation, payment);

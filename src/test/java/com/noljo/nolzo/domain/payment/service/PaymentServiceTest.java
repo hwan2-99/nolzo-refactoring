@@ -48,9 +48,9 @@ public class PaymentServiceTest {
 
         Reservation reservation = ReservationFixture.예약(member);
         reservationRepository.save(reservation);
-        PaymentRequest request = new PaymentRequest(member.getId(), reservation.getId(), PaymentMethod.CASH,
+        PaymentRequest request = new PaymentRequest(reservation.getId(), PaymentMethod.CASH,
                 "CANCELED");
-        paymentService.create(request);
+        paymentService.create(member.getId(), request);
 
         assertThat(paymentRepository.findAll()).hasSize(0);
         assertThat(reservationRepository.findAll()).hasSize(0);

@@ -1,19 +1,16 @@
 package com.noljo.nolzo.event.entity;
-import com.noljo.nolzo.Schedule.dto.internal.ScheduleInfo;
 import com.noljo.nolzo.event.dto.EventUpdateRequest;
-import com.noljo.nolzo.Schedule.entity.Schedule;
+import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.global.BaseEntity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -60,7 +57,6 @@ public class Event extends BaseEntity {
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<Schedule> schedules = new ArrayList<>();
-
 
     @Builder
     public Event(Long id, String title, String venue, String description, String posterImageUrl, LocalDate startDate, LocalDate endDate,

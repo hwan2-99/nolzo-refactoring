@@ -1,6 +1,5 @@
 package com.noljo.nolzo.event.dto;
 
-import com.noljo.nolzo.Schedule.dto.internal.ScheduleInfo;
 import com.noljo.nolzo.event.entity.Event;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,7 +10,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @Getter
 @Builder

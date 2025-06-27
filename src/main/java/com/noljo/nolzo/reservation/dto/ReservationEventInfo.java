@@ -1,6 +1,6 @@
 package com.noljo.nolzo.reservation.dto;
 
-import com.noljo.nolzo.Schedule.entity.Schedule;
+import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.event.dto.ReservationEvent;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.payment.entity.Payment;

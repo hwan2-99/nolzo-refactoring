@@ -1,8 +1,5 @@
-package com.noljo.nolzo.Schedule.dto.internal;
+package com.noljo.nolzo.schedule.dto.internal;
 
-import com.noljo.nolzo.event.entity.Event;
-import com.noljo.nolzo.Schedule.entity.Schedule;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;

@@ -32,7 +32,7 @@ class EventServiceTest {
     @Test
     void 이벤트를_저장할_수_있다() {
         EventRequest dto = EventFixture.캣츠dto();
-        EventResponse response = eventService.save(dto,image);
+        EventResponse response = eventService.save(dto, image);
         Assertions.assertThat(response.getId()).isNotNull();
         Assertions.assertThat(response.getTitle()).isEqualTo("Cats");
     }
@@ -40,7 +40,7 @@ class EventServiceTest {
     @Test
     void 이벤트를_조회할_수_있다() {
         EventRequest dto = EventFixture.캣츠dto();
-        EventResponse response = eventService.save(dto,image);
+        EventResponse response = eventService.save(dto, image);
         Assertions.assertThat(response.getId()).isEqualTo(eventService.findAll().get(0).getId());
     }
 
@@ -49,7 +49,7 @@ class EventServiceTest {
 
         EventRequest dto = EventFixture.캣츠dto();
 
-        EventResponse response = eventService.save(dto,image);
+        EventResponse response = eventService.save(dto, image);
         Long id = response.getId();
 
         Assertions.assertThat("Cats").isEqualTo(eventService.findById(id).getTitle());
@@ -97,8 +97,8 @@ class EventServiceTest {
     void 카테고리별_이벤트를_조회할_수_있다() {
         EventRequest concertEvent = EventFixture.캣츠dto();
         EventRequest hamletEvent = EventFixture.햄릿dto();
-        eventService.save(concertEvent,image);
-        eventService.save(hamletEvent,image);
+        eventService.save(concertEvent, image);
+        eventService.save(hamletEvent, image);
 
         List<EventResponse> concertEvents = eventService.findAllByCategory(EventCategory.CONCERT);
 
@@ -111,7 +111,7 @@ class EventServiceTest {
     @Test
     void 존재하지_않는_카테고리의_이벤트_조회시_빈_리스트를_반환한다() {
         EventRequest concertEvent = EventFixture.캣츠dto();  // CONCERT 카테고리
-        eventService.save(concertEvent,image);
+        eventService.save(concertEvent, image);
 
         List<EventResponse> otherEvents = eventService.findAllByCategory(EventCategory.MUSICAL);
 
@@ -122,7 +122,7 @@ class EventServiceTest {
     @Test
     void 이벤트를_삭제할_수_있다() {
         EventRequest dto = EventFixture.캣츠dto();
-        EventResponse response = eventService.save(dto,image);
+        EventResponse response = eventService.save(dto, image);
         Long id = response.getId();
 
         eventService.delete(id);
@@ -134,7 +134,7 @@ class EventServiceTest {
     void 이벤트를_갱신할_수_있다() {
         EventRequest dtoCats = EventFixture.캣츠dto();
         EventUpdateRequest dtoCats2 = EventFixture.캣츠2dto();
-        EventResponse response = eventService.save(dtoCats,image);
+        EventResponse response = eventService.save(dtoCats, image);
         Long id = response.getId();
 
         Assertions.assertThat("Cats").isEqualTo(eventService.findById(id).getTitle());
@@ -170,11 +170,15 @@ class EventServiceTest {
 
     @Test
     void 카테고리별로_상위_10개의_이벤트를_조회할_수_있다() {
-        Event cats   = eventRepository.save(EventFixture.캣츠());
+        Event cats = eventRepository.save(EventFixture.캣츠());
         Event hamlet = eventRepository.save(EventFixture.햄릿());
 
-        for (int i = 0; i < 5; i++)  cats.addViewCount();
-        for (int i = 0; i < 10; i++) hamlet.addViewCount();
+        for (int i = 0; i < 5; i++) {
+            cats.addViewCount();
+        }
+        for (int i = 0; i < 10; i++) {
+            hamlet.addViewCount();
+        }
 
         eventRepository.save(cats);
         eventRepository.save(hamlet);

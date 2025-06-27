@@ -15,7 +15,7 @@ public class FileFixture {
             byte[] content = Files.readAllBytes(resource.getFile().toPath());
             return new MockMultipartFile(
                     "image",
-                    "test.jpg",               
+                    "test.jpg",
                     "image/jpeg",
                     content
             );

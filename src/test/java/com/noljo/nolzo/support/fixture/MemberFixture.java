@@ -27,6 +27,7 @@ public enum MemberFixture {
     public static Member 회원() {
         return Member.of(회원.name, 회원.email, 회원.password, 회원.birth, 회원.role);
     }
+
     public static Member 회투() {
         return Member.of(회투.name, 회투.email, 회투.password, 회투.birth, 회투.role);
     }

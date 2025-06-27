@@ -1,15 +1,13 @@
 package com.noljo.nolzo.event.dto;
 
-import com.noljo.nolzo.Schedule.dto.ScheduleResponse;
+import com.noljo.nolzo.schedule.dto.ScheduleResponse;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.entity.EventCategory;
-import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 @Getter

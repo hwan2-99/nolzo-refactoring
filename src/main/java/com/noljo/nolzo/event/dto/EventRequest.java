@@ -1,10 +1,10 @@
 package com.noljo.nolzo.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.noljo.nolzo.Schedule.dto.internal.ScheduleInfo;
+import com.noljo.nolzo.schedule.dto.internal.ScheduleInfo;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.entity.EventCategory;
-import com.noljo.nolzo.Schedule.entity.Schedule;
+import com.noljo.nolzo.schedule.entity.Schedule;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 @Getter
@@ -47,10 +46,9 @@ public class EventRequest {
 
     @NotNull (message = "예약시작시점 지정 필수")
     private LocalDateTime reservationStart;
+
     @NotNull (message = "예약종료시점 지정 필수")
     private LocalDateTime reservationEnd;
-
-
 
     @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
     private List<ScheduleInfo> schedule;
