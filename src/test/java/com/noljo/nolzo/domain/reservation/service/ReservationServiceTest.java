@@ -77,23 +77,27 @@ public class ReservationServiceTest {
     @Test
     void 공연에_대한_날짜와_시간을_선택할_수_있다() {
         Event event = eventRepository.save(EventFixture.캣츠());
-        LocalDate showDate = event.getSchedules().get(0).getShowDate();
-        LocalTime showTime = event.getSchedules().get(0).getShowTime();
+        Schedule schedule = scheduleRepository.save(ScheduleFixture.공연_스케쥴(event));
+        event.addSchedule(schedule);
 
-        EventDateTimeResponse response = reservationService.readSelectedEventDateTime(event.getId(), showDate,
-                showTime);
+
+        EventDateTimeResponse response = reservationService.readSelectedEventDateTime(event.getId(), schedule.getShowDate(),
+                schedule.getShowTime());
 
         assertNotNull(response);
         assertEquals(event.getId(), response.getId());
-        assertEquals(showDate, response.getShowDate());
-        assertEquals(showTime, response.getShowTime());
+        assertEquals(schedule.getShowDate(), response.getShowDate());
+        assertEquals(schedule.getShowTime(), response.getShowTime());
     }
 
     @Test
     void 공연에_대한_선택한_날짜가_없을_시_예외() {
         Event event = eventRepository.save(EventFixture.캣츠());
-        LocalDate wrongDate = event.getSchedules().get(0).getShowDate().plusDays(1);
-        LocalTime correctTime = event.getSchedules().get(0).getShowTime();
+        Schedule schedule = scheduleRepository.save(ScheduleFixture.공연_스케쥴(event));
+        event.addSchedule(schedule);
+
+        LocalDate wrongDate = schedule.getShowDate().plusDays(1);
+        LocalTime correctTime = schedule.getShowTime();
 
         assertThatThrownBy(() -> reservationService.readSelectedEventDateTime(event.getId(), wrongDate, correctTime))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -102,8 +106,11 @@ public class ReservationServiceTest {
     @Test
     void 공연에_대한_선택한_시간이_없을_시_예외() {
         Event event = eventRepository.save(EventFixture.캣츠());
-        LocalDate correctDate = event.getSchedules().get(0).getShowDate();
-        LocalTime wrongTime = event.getSchedules().get(0).getShowTime().plusHours(1);
+        Schedule schedule = scheduleRepository.save(ScheduleFixture.공연_스케쥴(event));
+        event.addSchedule(schedule);
+
+        LocalDate correctDate = schedule.getShowDate();
+        LocalTime wrongTime = schedule.getShowTime().plusHours(1);
 
         assertThatThrownBy(() -> reservationService.readSelectedEventDateTime(event.getId(), correctDate, wrongTime))
                 .isInstanceOf(IllegalArgumentException.class);
