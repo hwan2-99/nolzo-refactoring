@@ -7,11 +7,12 @@ import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.entity.EventCategory;
 import com.noljo.nolzo.event.repository.EventRepository;
 import com.noljo.nolzo.global.upload.S3Uploader;
+import com.noljo.nolzo.schedule.dto.internal.ScheduleInfo;
+import com.noljo.nolzo.schedule.entity.Schedule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -80,6 +81,16 @@ public class EventService {
     public EventResponse update(Long id, EventUpdateRequest dto) {
         Event original = getEvent(id);
         original.updateFrom(dto);
+
+        List<Schedule> schedules = original.getSchedules();
+        List<ScheduleInfo> updatedInfo = dto.getSchedule();
+
+        for (int i = 0; i < schedules.size(); i++) {
+            Schedule s = schedules.get(i);
+            ScheduleInfo info = updatedInfo.get(i);
+            s.updateFrom(info.getShowDate(), info.getShowTime());
+        }
+
         return EventResponse.from(original);
     }
 
