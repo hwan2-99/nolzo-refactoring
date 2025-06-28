@@ -7,7 +7,9 @@ import com.noljo.nolzo.payment.dto.PaymentResponse;
 import com.noljo.nolzo.payment.entity.Payment;
 import com.noljo.nolzo.payment.repository.PaymentRepository;
 import com.noljo.nolzo.reservation.entity.Reservation;
+import com.noljo.nolzo.reservation.entity.ReservationStatus;
 import com.noljo.nolzo.reservation.repository.ReservationRepository;
+import com.noljo.nolzo.reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +21,7 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final MemberRepository memberRepository;
     private final ReservationRepository reservationRepository;
+    private final ReservationService reservationService;
 
     public PaymentResponse create(Long userId, PaymentRequest request) {
         Member member = memberRepository.getOrThrow(userId);
@@ -29,6 +32,7 @@ public class PaymentService {
             return null;
         }
         Payment payment = paymentRepository.save(new Payment(request.paymentMethod(), member, reservation));
+        reservation.updateStatus(ReservationStatus.CONFIRMED);
         return PaymentResponse.from(payment);
     }
 
