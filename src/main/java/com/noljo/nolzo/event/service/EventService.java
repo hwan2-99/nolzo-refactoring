@@ -9,6 +9,7 @@ import com.noljo.nolzo.event.repository.EventRepository;
 import com.noljo.nolzo.global.upload.S3Uploader;
 import com.noljo.nolzo.schedule.dto.internal.ScheduleInfo;
 import com.noljo.nolzo.schedule.entity.Schedule;
+import com.noljo.nolzo.seat.service.SeatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import java.util.List;
 public class EventService {
 
     private final EventRepository eventRepository;
+    private final SeatService seatService;
     private final S3Uploader s3Uploader;
 
     public Event getEvent(Long id){
@@ -54,8 +56,10 @@ public class EventService {
         }
 
         Event event = dto.toEntity(imageUrl);
-
         Event saved = eventRepository.save(event);
+
+        saved.getSchedules().forEach(schedule -> seatService.createSeats(schedule.getId()));
+
         return EventResponse.from(saved);
     }
 
@@ -86,9 +90,9 @@ public class EventService {
         List<ScheduleInfo> updatedInfo = dto.getSchedule();
 
         for (int i = 0; i < schedules.size(); i++) {
-            Schedule s = schedules.get(i);
+            Schedule schedule = schedules.get(i);
             ScheduleInfo info = updatedInfo.get(i);
-            s.updateFrom(info.getShowDate(), info.getShowTime());
+            schedule.updateFrom(info.getShowDate(), info.getShowTime());
         }
 
         return EventResponse.from(original);
