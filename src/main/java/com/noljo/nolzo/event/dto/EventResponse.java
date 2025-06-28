@@ -21,7 +21,7 @@ public class EventResponse {
     private String posterImageUrl;
     private LocalDate startDate;
     private LocalDate endDate;
-    private List<ScheduleResponse> schedule;
+    private List<ScheduleResponse> schedules;
     private EventCategory eventCategory;
     private int runtime;
     private int ageLimit;
@@ -49,7 +49,7 @@ public class EventResponse {
                 .ageLimit(event.getAgeLimit())
                 .rating(event.getRating())
                 .reviewCount(event.getReviewCount())
-                .schedule(schedules)
+                .schedules(schedules)
                 .viewCount(event.getViewCount())
                 .reservationStart(event.getReservationStart())
                 .reservationEnd(event.getReservationEnd())
