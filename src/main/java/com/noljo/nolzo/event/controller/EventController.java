@@ -55,7 +55,7 @@ public class EventController {
         return ResponseEntity.ok(eventService.getTop6PopularEvents());
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<EventResponse> updateEvent(@PathVariable Long id, @RequestBody @Valid EventUpdateRequest dto) {
         return ResponseEntity.ok(eventService.update(id, dto));
     }
