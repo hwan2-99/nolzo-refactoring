@@ -7,6 +7,7 @@ import com.noljo.nolzo.seat.entity.Seat;
 import com.noljo.nolzo.seat.entity.SeatStatus;
 import com.noljo.nolzo.seat.entity.SectionPrice;
 import com.noljo.nolzo.seat.repository.SeatRepository;
+import com.noljo.nolzo.ticket.entity.Ticket;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -61,6 +62,13 @@ public class SeatService {
             Seat lockedSeat = findSeatByIdWithPessimisticLock(seat.getId());
             lockedSeat.updateStatus(SeatStatus.WAITING);
         });
+    }
+
+    public void updateWithPayment(List<Ticket> tickets, SeatStatus seatStatus) {
+        for (Ticket ticket : tickets) {
+            Seat seat = ticket.getSeat();
+            seat.updateStatus(seatStatus);
+        }
     }
 
     private Seat findSeatByIdWithPessimisticLock(Long id) {

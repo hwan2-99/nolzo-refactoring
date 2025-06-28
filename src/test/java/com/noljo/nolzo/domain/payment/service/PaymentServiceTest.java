@@ -16,6 +16,7 @@ import com.noljo.nolzo.reservation.repository.ReservationRepository;
 import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.schedule.repository.ScheduleRepository;
 import com.noljo.nolzo.seat.entity.Seat;
+import com.noljo.nolzo.seat.entity.SeatStatus;
 import com.noljo.nolzo.seat.repository.SeatRepository;
 import com.noljo.nolzo.support.annotation.ServiceTest;
 import com.noljo.nolzo.support.fixture.EventFixture;
@@ -102,5 +103,32 @@ public class PaymentServiceTest {
 
         assertThat(reservationRepository.findAll()).hasSize(0);
         assertThat(ticketRepository.findAll()).hasSize(0);
+    }
+
+    @Test
+    void 결제_성공_시_좌석의_상태는_예약됨으로_변경된다() {
+        Member member = MemberFixture.회원();
+        memberRepository.save(member);
+
+        Event event = EventFixture.캣츠();
+        eventRepository.save(event);
+
+        Schedule schedule = ScheduleFixture.공연_스케쥴(event);
+        scheduleRepository.save(schedule);
+
+        Seat seat = SeatFixture.일반좌석(schedule);
+        seatRepository.save(seat);
+
+        Reservation reservation = ReservationFixture.예약(member);
+        reservationRepository.save(reservation);
+
+        Ticket ticket = TicketFixture.미사용티켓(reservation, seat);
+        ticketRepository.save(ticket);
+
+        PaymentRequest request = new PaymentRequest(reservation.getId(), PaymentMethod.CASH,
+                "SUCCESS");
+        paymentService.create(member.getId(), request);
+
+        assertThat(seatRepository.findAll().get(0).getStatus()).isEqualTo(SeatStatus.RESERVED);
     }
 }
