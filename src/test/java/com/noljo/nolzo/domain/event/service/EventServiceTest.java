@@ -7,6 +7,7 @@ import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.entity.EventCategory;
 import com.noljo.nolzo.event.repository.EventRepository;
 import com.noljo.nolzo.event.service.EventService;
+import com.noljo.nolzo.schedule.dto.ScheduleResponse;
 import com.noljo.nolzo.support.annotation.ServiceTest;
 import com.noljo.nolzo.support.fixture.EventFixture;
 import com.noljo.nolzo.support.fixture.FileFixture;
@@ -14,7 +15,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -118,7 +118,6 @@ class EventServiceTest {
         Assertions.assertThat(otherEvents).isEmpty();
     }
 
-
     @Test
     void 이벤트를_삭제할_수_있다() {
         EventRequest dto = EventFixture.캣츠dto();
@@ -131,17 +130,29 @@ class EventServiceTest {
     }
 
     @Test
-    void 이벤트를_갱신할_수_있다() {
-        EventRequest dtoCats = EventFixture.캣츠dto();
-        EventUpdateRequest dtoCats2 = EventFixture.캣츠2dto();
-        EventResponse response = eventService.save(dtoCats, image);
-        Long id = response.getId();
+    void 이벤트와_스케줄_정보를_갱신할_수_있다() {
+        EventRequest originalRequest = EventFixture.캣츠dto();
+        EventUpdateRequest updateRequest = EventFixture.캣츠2dto();
 
-        Assertions.assertThat("Cats").isEqualTo(eventService.findById(id).getTitle());
-        EventResponse updatedResponse = eventService.update(id, dtoCats2);
+        EventResponse savedResponse = eventService.save(originalRequest, image);
+        Long id = savedResponse.getId();
 
-        Assertions.assertThat(id).isEqualTo(updatedResponse.getId());
-        Assertions.assertThat("Cats2").isEqualTo(eventService.findById(id).getTitle());
+        EventResponse updatedResponse = eventService.update(id, updateRequest);
+
+        Assertions.assertThat(updatedResponse.getTitle()).isEqualTo(updateRequest.getTitle());
+        Assertions.assertThat(updatedResponse.getVenue()).isEqualTo(updateRequest.getVenue());
+        Assertions.assertThat(updatedResponse.getDescription()).isEqualTo(updateRequest.getDescription());
+
+        List<ScheduleResponse> updatedSchedules = eventService.findById(id).getSchedules();
+
+        Assertions.assertThat(updatedSchedules)
+                .hasSameSizeAs(updateRequest.getSchedule());
+        for (int i = 0; i < updatedSchedules.size(); i++) {
+            Assertions.assertThat(updatedSchedules.get(i).getShowDate())
+                    .isEqualTo(updateRequest.getSchedule().get(i).getShowDate());
+            Assertions.assertThat(updatedSchedules.get(i).getShowTime())
+                    .isEqualTo(updateRequest.getSchedule().get(i).getShowTime());
+        }
     }
 
     @Test
