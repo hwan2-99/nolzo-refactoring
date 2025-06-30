@@ -76,8 +76,9 @@ public class ReservationController {
 
     @GetMapping("/details/{reservationId}")
     public ResponseEntity<ReservationEventInfo> getReservationDetails(
-            @AuthenticationPrincipal(expression = "memberId") Long memberId) {
-        ReservationEventInfo reservationDetails = reservationService.findReservationDetails(memberId);
+            @AuthenticationPrincipal(expression = "memberId") Long memberId,
+            @PathVariable Long reservationId) {
+        ReservationEventInfo reservationDetails = reservationService.findReservationDetails(memberId, reservationId);
         return ResponseEntity.ok(reservationDetails);
 
     }
