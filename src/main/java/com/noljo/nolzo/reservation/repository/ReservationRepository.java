@@ -67,7 +67,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     JOIN FETCH t.seat s
     JOIN FETCH s.schedule sch
     JOIN FETCH sch.event e
-    WHERE r.member.id = :memberId
+    WHERE r.member.id = :memberId AND r.id = :reservationId
 """)
-    Reservation findReservationDetailsByMemberId(@Param("memberId") Long memberId);
+    Reservation findReservationDetailsByMemberId(@Param("memberId") Long memberId, @Param("reservationId") Long reservationId);
 }

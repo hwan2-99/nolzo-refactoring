@@ -119,8 +119,8 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public ReservationEventInfo findReservationDetails(Long memberId) {
-        Reservation reservation = reservationRepository.findReservationDetailsByMemberId(memberId);
+    public ReservationEventInfo findReservationDetails(Long memberId, Long reservationId) {
+        Reservation reservation = reservationRepository.findReservationDetailsByMemberId(memberId,reservationId);
         Payment payment = paymentRepository.findPaymentByMemberIdAndReservationId(memberId, reservation.getId());
 
         Event event = reservation.getTickets().stream()
