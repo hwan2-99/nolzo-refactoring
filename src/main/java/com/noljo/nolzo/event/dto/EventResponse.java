@@ -5,7 +5,6 @@ import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.entity.EventCategory;
 import lombok.Builder;
 import lombok.Getter;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,9 +27,9 @@ public class EventResponse {
     private int rating;
     private int reviewCount;
     private long viewCount;
-
     private LocalDateTime reservationStart;
     private LocalDateTime reservationEnd;
+
     public static EventResponse from(Event event) {
         List<ScheduleResponse> schedules = event.getSchedules().stream()
                 .map(ScheduleResponse::from)

@@ -2,7 +2,6 @@ package com.noljo.nolzo.schedule.dto;
 
 import com.noljo.nolzo.schedule.entity.Schedule;
 import lombok.Getter;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 

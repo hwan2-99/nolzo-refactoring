@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-
 import com.noljo.nolzo.schedule.entity.Schedule;
 import lombok.Getter;
 
@@ -115,6 +114,14 @@ public enum EventFixture {
                 .description(캣츠2.description)
                 .startDate(캣츠2.startDate)
                 .endDate(캣츠2.endDate)
+                .reservationStart (캣츠2. reservationStart)
+                .reservationEnd(캣츠2.reservationEnd)
+                .schedule(List.of(
+                        new ScheduleInfo(
+                                LocalDate.of(2024, 5, 12),
+                                LocalTime.of(18, 0)
+                        )
+                ))
                 .build();
     }
 
