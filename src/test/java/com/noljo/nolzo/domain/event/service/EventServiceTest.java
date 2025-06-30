@@ -110,7 +110,7 @@ class EventServiceTest {
 
     @Test
     void 존재하지_않는_카테고리의_이벤트_조회시_빈_리스트를_반환한다() {
-        EventRequest concertEvent = EventFixture.캣츠dto();  // CONCERT 카테고리
+        EventRequest concertEvent = EventFixture.캣츠dto();
         eventService.save(concertEvent, image);
 
         List<EventResponse> otherEvents = eventService.findAllByCategory(EventCategory.MUSICAL);
