@@ -1,17 +1,15 @@
 package com.noljo.nolzo.event.entity;
+
 import com.noljo.nolzo.event.dto.EventUpdateRequest;
 import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.global.BaseEntity;
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -96,5 +94,4 @@ public class Event extends BaseEntity {
         this.reservationStart=dto.getReservationStart();
         this.reservationEnd=dto.getReservationEnd();
     }
-
 }

@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.*;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -32,9 +31,6 @@ public class Schedule {
 
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
     private List<Seat> seats = new ArrayList<>();
-
-//    @OneToMany(mappedBy = "schedule")
-//    private List<Ticket> tickets;
 
     public void setEvent(Event event) {
         this.event = event;
