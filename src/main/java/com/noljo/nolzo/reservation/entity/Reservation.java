@@ -29,7 +29,7 @@ public class Reservation extends BaseEntity {
 
     private String reservationNumber;
 
-    @OneToMany(mappedBy = "reservation", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "reservation", cascade = CascadeType.REMOVE)
     private List<Ticket> tickets = new ArrayList<>();
 
     @ManyToOne
@@ -48,5 +48,9 @@ public class Reservation extends BaseEntity {
     public Reservation(ReservationStatus status, int totalPrice, String reservationNumber,
                        Member member) {
         this(null, status, totalPrice, reservationNumber, member);
+    }
+
+    public void updateStatus(ReservationStatus reservationStatus) {
+        this.status = reservationStatus;
     }
 }

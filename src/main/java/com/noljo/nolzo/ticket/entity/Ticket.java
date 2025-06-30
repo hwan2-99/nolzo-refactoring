@@ -37,4 +37,10 @@ public class Ticket extends BaseEntity {
         this.reservation = reservation;
         this.seat = seat;
     }
+
+    public Ticket(TicketStatus status, Reservation reservation, Seat seat) {
+        this.status = status;
+        this.reservation = reservation;
+        this.seat = seat;
+    }
 }

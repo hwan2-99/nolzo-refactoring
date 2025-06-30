@@ -15,6 +15,7 @@ import com.noljo.nolzo.schedule.repository.ScheduleRepository;
 import com.noljo.nolzo.seat.dto.SeatResponse;
 import com.noljo.nolzo.seat.entity.Seat;
 import com.noljo.nolzo.seat.service.SeatService;
+import com.noljo.nolzo.ticket.service.TicketService;
 import java.time.LocalDate;
 
 import com.noljo.nolzo.ticket.entity.Ticket;
@@ -39,6 +40,7 @@ public class ReservationService {
     private final EventRepository eventRepository;
     private final SeatService seatService;
     private final PaymentRepository paymentRepository;
+    private final TicketService ticketService;
 
     //todo Permistic lock을 사용해서 구현한 내용 추후 multi-thread or Optimistic Lock or Redis 사용후 비교예정
     public ReservationResponse create(Long memberId, ReservationRequest request) {
@@ -47,6 +49,9 @@ public class ReservationService {
                 createReservationNumber(), member);
 
         seatService.updateWithReservation(request.seats());
+        for (Seat seat : request.seats()) {
+            ticketService.create(reservation, seat);
+        }
         return ReservationResponse.from(reservationRepository.save(reservation));
     }
 
