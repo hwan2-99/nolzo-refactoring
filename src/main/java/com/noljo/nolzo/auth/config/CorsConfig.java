@@ -33,7 +33,7 @@ public class CorsConfig {
         configuration.setAllowedOriginPatterns(List.of(allowedOrigins.split(",")));
         configuration.setAllowedMethods(List.of(allowedMethods.split(",")));
         configuration.setAllowedHeaders(List.of(allowedHeaders.split(",")));
-        configuration.setAllowCredentials(false);
+        configuration.setAllowCredentials(true);
         configuration.setMaxAge(maxAge);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
