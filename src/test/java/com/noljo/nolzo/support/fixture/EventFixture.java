@@ -97,7 +97,7 @@ public enum EventFixture {
                 .eventCategory(캣츠.eventCategory)
                 .runtime(캣츠.runtime)
                 .ageLimit(캣츠.ageLimit)
-                .schedule(List.of(
+                .schedules(List.of(
                         new ScheduleInfo(
                                 LocalDate.of(2024, 5, 10),
                                 LocalTime.of(19, 30)
@@ -129,7 +129,7 @@ public enum EventFixture {
                 .eventCategory(햄릿.eventCategory)
                 .runtime(햄릿.runtime)
                 .ageLimit(햄릿.ageLimit)
-                .schedule(List.of(
+                .schedules(List.of(
                         new ScheduleInfo(
                                 LocalDate.of(2024, 5, 10),
                                 LocalTime.of(19, 30)
@@ -151,7 +151,7 @@ public enum EventFixture {
                 .eventCategory(햄릿일정.eventCategory)
                 .runtime(햄릿일정.runtime)
                 .ageLimit(햄릿일정.ageLimit)
-                .schedule(List.of(
+                .schedules(List.of(
                         new ScheduleInfo(
                                 LocalDate.of(2024, 5, 10),
                                 LocalTime.of(19, 30)

@@ -51,7 +51,7 @@ public class EventRequest {
     private LocalDateTime reservationEnd;
 
     @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
-    private List<ScheduleInfo> schedule;
+    private List<ScheduleInfo> schedules;
 
     public Event toEntity(String posterImageUrl) {
         Event event = Event.builder()
@@ -70,7 +70,7 @@ public class EventRequest {
                 .reservationEnd(reservationEnd)
                 .build();
 
-        schedule.forEach(req->{
+        schedules.forEach(req->{
             Schedule schedule = Schedule.builder()
                     .showDate(req.getShowDate())
                     .showTime(req.getShowTime())
