@@ -1,5 +1,7 @@
 package com.noljo.nolzo.auth.config;
 
+import static org.springframework.http.HttpMethod.*;
+
 import com.noljo.nolzo.auth.jwt.JwtAuthenticationFilter;
 import com.noljo.nolzo.auth.security.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +51,11 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PERMIT_URL_ARRAY).permitAll()
-                        .requestMatchers("auth/register", "auth/login").permitAll()
+                        .requestMatchers("/auth/**", "/event/**").permitAll()
+                        .requestMatchers(GET, "/reservations/reservation/**").permitAll()
+                        .requestMatchers(POST, "/reservations/*").permitAll()
+                        .requestMatchers("/member/**", "/payments/**", "/reservations/**", "/tickets/**")
+                        .hasRole("USER")
                         .anyRequest().authenticated())
 
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
