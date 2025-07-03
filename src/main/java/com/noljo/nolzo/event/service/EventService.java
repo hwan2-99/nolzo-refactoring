@@ -26,8 +26,9 @@ public class EventService {
     private final SeatService seatService;
     private final S3Uploader s3Uploader;
 
-    public Event getEvent(Long id){
-        return eventRepository.findById(id).orElseThrow(()->new IllegalArgumentException("해당 이벤트가 존재하지 않습니다 id : " +id));
+    public Event getEvent(Long id) {
+        return eventRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 이벤트가 존재하지 않습니다 id : " + id));
     }
 
     @Transactional(readOnly = true)
