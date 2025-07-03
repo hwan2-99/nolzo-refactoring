@@ -44,13 +44,13 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
+    public ResponseEntity<TokensResponse> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
         TokensResponse tokens = authService.login(request);
 
         addCookie(response, ACCESS_TOKEN, tokens.accessToken(), Duration.ofSeconds(accessTokenValidityInSeconds), false);
         addCookie(response, REFRESH_TOKEN, tokens.refreshToken(), Duration.ofSeconds(refreshTokenValidityInSeconds), true);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(tokens);
     }
 
     @PostMapping("/logout")
