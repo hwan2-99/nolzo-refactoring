@@ -36,10 +36,15 @@ public class Review extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public Review(String content, int rating, Event event, Member member) {
+    public Review(Long id, String content, int rating, Event event, Member member) {
+        this.id = id;
         this.content = content;
         this.rating = rating;
         this.event = event;
         this.member = member;
+    }
+
+    public Review(String content, int rating, Event event, Member member) {
+        this(null, content, rating, event, member);
     }
 }
