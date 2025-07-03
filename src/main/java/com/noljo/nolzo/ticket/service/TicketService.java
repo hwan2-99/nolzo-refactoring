@@ -49,6 +49,10 @@ public class TicketService {
         return TicketResponse.from(ticket);
     }
 
+    public void updateTicketStatusUsed(LocalDate targetDate, LocalTime targetTime) {
+        ticketRepository.updateExpiredTickets(targetDate, targetTime);
+    }
+
     private List<Long> findReservationIdListByMemberId(Member member) {
         return reservationRepository.findByMemberId(member.getId())
                 .stream()
@@ -61,7 +65,4 @@ public class TicketService {
                 .orElseThrow(() -> new IllegalArgumentException("Ticket Not Found"));
     }
 
-    public void updateTicketStatusUsed(LocalDate targetDate, LocalTime targetTime) {
-        ticketRepository.updateExpiredTickets(targetDate, targetTime);
-    }
 }
