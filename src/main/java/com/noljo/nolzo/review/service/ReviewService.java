@@ -24,7 +24,6 @@ public class ReviewService {
         }
 
         review.update(request.content(), request.rating());
-        reviewRepository.save(review);
 
         return ReviewUpdateResponse.from(review);
     }
