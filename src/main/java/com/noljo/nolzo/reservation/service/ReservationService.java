@@ -49,9 +49,7 @@ public class ReservationService {
                 createReservationNumber(), member);
 
         seatService.updateWithReservation(request.seats());
-        for (Seat seat : request.seats()) {
-            ticketService.create(reservation, seat);
-        }
+        createSeats(request, reservation);
         return ReservationResponse.from(reservationRepository.save(reservation));
     }
 
@@ -129,6 +127,12 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalStateException("예약에 연결된 공연이 없습니다."));
 
         return ReservationEventInfo.detailsOf(event, reservation, payment);
+    }
+
+    private void createSeats(ReservationRequest request, Reservation reservation) {
+        for (Seat seat : request.seats()) {
+            ticketService.create(reservation, seat);
+        }
     }
 }
 
