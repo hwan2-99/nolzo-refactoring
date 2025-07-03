@@ -9,6 +9,9 @@ import com.noljo.nolzo.ticket.dto.TicketResponse;
 import com.noljo.nolzo.ticket.entity.Ticket;
 import com.noljo.nolzo.ticket.entity.TicketStatus;
 import com.noljo.nolzo.ticket.repository.TicketRepository;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -56,5 +59,9 @@ public class TicketService {
     private Ticket findTicketById(Long ticketId) {
         return ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new IllegalArgumentException("Ticket Not Found"));
+    }
+
+    public void updateTicketStatusUsed(LocalDate targetDate, LocalTime targetTime) {
+        ticketRepository.updateExpiredTickets(targetDate, targetTime);
     }
 }
