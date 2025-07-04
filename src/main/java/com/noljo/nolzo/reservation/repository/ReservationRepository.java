@@ -1,6 +1,8 @@
 package com.noljo.nolzo.reservation.repository;
 
 import com.noljo.nolzo.reservation.entity.Reservation;
+import com.noljo.nolzo.reservation.entity.ReservationStatus;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -70,4 +72,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     WHERE r.member.id = :memberId AND r.id = :reservationId
 """)
     Reservation findReservationDetailsByMemberId(@Param("memberId") Long memberId, @Param("reservationId") Long reservationId);
+
+    List<Reservation> findByStatusAndCreatedAtBefore(ReservationStatus status, LocalDateTime time);
 }
