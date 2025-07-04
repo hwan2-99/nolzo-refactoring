@@ -1,7 +1,6 @@
 package com.noljo.nolzo.review.dto.response;
 
 import com.noljo.nolzo.review.entity.Review;
-
 import java.time.LocalDateTime;
 
 public record ReviewResponse(
