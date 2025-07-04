@@ -39,7 +39,6 @@ public class ReviewService {
         Review review = reviewRepository.getOrThrow(reviewId);
         validateReviewOwner(review, memberId);
         review.update(request.content(), request.rating());
-
         return ReviewUpdateResponse.from(review);
     }
 
@@ -52,8 +51,7 @@ public class ReviewService {
     private void validateEventParticipation(Long memberId, Long eventId){
         boolean isUsed = reservationRepository.findTicketStatusUsedByMemberId(memberId).stream()
                 .anyMatch(reservation -> reservation.getTickets().stream()
-                        .anyMatch(ticket -> ticket.getSeat().getSchedule().getEvent().getId().equals(eventId))
-                );
+                        .anyMatch(ticket -> ticket.getSeat().getSchedule().getEvent().getId().equals(eventId)));
         if (!isUsed) {
             throw new IllegalStateException("리뷰는 관람 완료된 이벤트에 대해서만 작성할 수 있습니다.");
         }
