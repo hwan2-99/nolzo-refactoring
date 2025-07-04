@@ -24,6 +24,17 @@ public class ReviewService {
     private final MemberRepository memberRepository;
     private final ReservationRepository reservationRepository;
 
+    public ReviewResponse create(Long memberId, ReviewCreateRequest request){
+        Member member = memberRepository.getOrThrow(memberId);
+        Event event = eventRepository.getOrThrow(request.eventId());
+
+        validateEventParticipation(memberId, request.eventId());
+        validateAlreadyReviewed(memberId, request.eventId());
+
+        Review review = new Review(request.content(), request.rating(), event, member);
+        return ReviewResponse.from(reviewRepository.save(review));
+    }
+
     public ReviewUpdateResponse update(Long memberId, Long reviewId, ReviewUpdateRequest request) {
         Review review = reviewRepository.getOrThrow(reviewId);
         validateReviewOwner(review, memberId);
@@ -35,20 +46,10 @@ public class ReviewService {
     private void validateReviewOwner(Review review, Long memberId) {
         if (!review.getMember().getId().equals(memberId)) {
             throw new IllegalStateException("해당 리뷰를 수정할 권한이 없습니다.");
-    
-
-    public ReviewResponse create(Long memberId, ReviewCreateRequest request) {
-        Member member = memberRepository.getOrThrow(memberId);
-        Event event = eventRepository.getOrThrow(request.eventId());
-
-        validateEventParticipation(memberId, request.eventId());
-        validateAlreadyReviewed(memberId, request.eventId());
-
-        Review review = new Review(request.content(), request.rating(), event, member);
-        return ReviewResponse.from(reviewRepository.save(review));
+        }
     }
 
-    private void validateEventParticipation(Long memberId, Long eventId) {
+    private void validateEventParticipation(Long memberId, Long eventId){
         boolean isUsed = reservationRepository.findTicketStatusUsedByMemberId(memberId).stream()
                 .anyMatch(reservation -> reservation.getTickets().stream()
                         .anyMatch(ticket -> ticket.getSeat().getSchedule().getEvent().getId().equals(eventId))
@@ -58,7 +59,7 @@ public class ReviewService {
         }
     }
 
-    private void validateAlreadyReviewed(Long memberId, Long eventId) {
+    private void validateAlreadyReviewed(Long memberId, Long eventId){
         boolean isAlreadyReviewed = reviewRepository.findByMemberIdAndEventId(memberId, eventId).isPresent();
         if (isAlreadyReviewed) {
             throw new IllegalStateException("이미 해당 이벤트에 대한 리뷰를 작성하였습니다.");
