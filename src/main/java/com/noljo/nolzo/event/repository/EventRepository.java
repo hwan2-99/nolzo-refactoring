@@ -15,4 +15,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findTop6ByOrderByViewCountDesc();
   
     List<Event> findByTitleContaining(String search);
+
+    default Event getOrThrow(Long id) {
+        return findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이벤트입니다. (ID: " + id + ")"));
+    }
 }

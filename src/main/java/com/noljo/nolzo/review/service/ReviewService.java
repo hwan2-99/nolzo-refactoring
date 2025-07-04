@@ -22,9 +22,7 @@ public class ReviewService {
 
     public ReviewResponse create(Long memberId, ReviewCreateRequest request) {
         Member member = memberRepository.getOrThrow(memberId);
-
-        Event event = eventRepository.findById(request.eventId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이벤트입니다."));
+        Event event = eventRepository.getOrThrow(request.eventId());
 
         Review review = new Review(request.content(), request.rating(), event, member);
 
