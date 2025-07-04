@@ -42,4 +42,9 @@ public class Review extends BaseEntity {
         this.event = event;
         this.member = member;
     }
+
+    public void update(String content, int rating) {
+        this.content = content;
+        this.rating = rating;
+    }
 }

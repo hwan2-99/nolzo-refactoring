@@ -1,5 +1,7 @@
 package com.noljo.nolzo.review.service;
 
+import com.noljo.nolzo.review.dto.request.ReviewUpdateRequest;
+import com.noljo.nolzo.review.dto.response.ReviewUpdateResponse;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.repository.EventRepository;
 import com.noljo.nolzo.member.entity.Member;
@@ -21,6 +23,19 @@ public class ReviewService {
     private final EventRepository eventRepository;
     private final MemberRepository memberRepository;
     private final ReservationRepository reservationRepository;
+
+    public ReviewUpdateResponse update(Long memberId, Long reviewId, ReviewUpdateRequest request) {
+        Review review = reviewRepository.getOrThrow(reviewId);
+        validateReviewOwner(review, memberId);
+        review.update(request.content(), request.rating());
+
+        return ReviewUpdateResponse.from(review);
+    }
+
+    private void validateReviewOwner(Review review, Long memberId) {
+        if (!review.getMember().getId().equals(memberId)) {
+            throw new IllegalStateException("해당 리뷰를 수정할 권한이 없습니다.");
+    
 
     public ReviewResponse create(Long memberId, ReviewCreateRequest request) {
         Member member = memberRepository.getOrThrow(memberId);
