@@ -14,7 +14,7 @@ public class TickerScheduler {
 
     private final TicketService ticketService;
 
-    @Scheduled(fixedRate = 1800000 )
+    @Scheduled(fixedRate = 1800000)
     public void changeUsed() {
         LocalDate today = LocalDate.now();
         LocalTime currentTime = LocalTime.now();
