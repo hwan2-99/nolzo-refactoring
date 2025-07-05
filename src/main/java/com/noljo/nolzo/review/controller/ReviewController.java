@@ -26,8 +26,7 @@ public class ReviewController {
     }
 
     @PutMapping("/{reviewId}")
-    public ResponseEntity<ReviewUpdateResponse> updateReview(
-            @AuthenticationPrincipal CustomUserDetails user, @PathVariable Long reviewId, @Valid @RequestBody ReviewUpdateRequest request) {
+    public ResponseEntity<ReviewUpdateResponse> updateReview(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Long reviewId, @Valid @RequestBody ReviewUpdateRequest request) {
         ReviewUpdateResponse response = reviewService.update(user.getMemberId(), reviewId, request);
         return ResponseEntity.ok(response);
     }
