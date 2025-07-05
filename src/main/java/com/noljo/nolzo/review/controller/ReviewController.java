@@ -23,16 +23,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ReviewController {
     private final ReviewService reviewService;
 
-    @PutMapping("/{reviewId}")
-    public ResponseEntity<ReviewUpdateResponse> updateReview(
-            @AuthenticationPrincipal CustomUserDetails user,
-            @PathVariable Long reviewId,
-            @Valid @RequestBody ReviewUpdateRequest request) {
-        ReviewUpdateResponse response = reviewService.update(user.getMemberId(), reviewId, request);
-
     @PostMapping
     public ResponseEntity<ReviewResponse> createReview(@AuthenticationPrincipal CustomUserDetails user, @Valid @RequestBody ReviewCreateRequest request) {
         ReviewResponse response = reviewService.create(user.getMemberId(), request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{reviewId}")
+    public ResponseEntity<ReviewUpdateResponse> updateReview(
+            @AuthenticationPrincipal CustomUserDetails user,
+            @PathVariable Long reviewId, @Valid @RequestBody ReviewUpdateRequest request) {
+        ReviewUpdateResponse response = reviewService.update(user.getMemberId(), reviewId, request);
         return ResponseEntity.ok(response);
     }
 }
