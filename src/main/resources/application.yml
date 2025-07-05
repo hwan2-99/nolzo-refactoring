@@ -89,3 +89,28 @@ cloud:
     stack:
       auto: false
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "prometheus,health,metrics"
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
+  server:
+    port: 8080
+  metrics:
+    tags:
+      application: nolzo-app
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      slo:
+        http.server.requests: 500ms, 1500ms
+  prometheus:
+    metrics:
+      export:
+        enabled: true
