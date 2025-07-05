@@ -40,7 +40,7 @@ public class EventService {
 
     @Transactional(readOnly = true)
     public List<EventResponse> findAllByCategory(EventCategory category) {
-        return eventRepository.findAllByEventCategory(category).stream()
+        return eventRepository.findAllByEventCategoryOrderByCreatedDateDesc(category).stream()
                 .map(EventResponse::from)
                 .toList();
     }

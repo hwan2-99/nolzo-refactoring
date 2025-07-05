@@ -4,13 +4,15 @@ import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.entity.EventCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.Collection;
 import java.util.List;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
-    List<Event> findAllByEventCategory(EventCategory eventCategory);
-
     List<Event> findTop10ByEventCategoryOrderByViewCountDesc(EventCategory eventCategory);
+
+    List<Event> findAllByEventCategoryOrderByCreatedDateDesc(EventCategory eventCategory);
 
     List<Event> findTop6ByOrderByViewCountDesc();
   
