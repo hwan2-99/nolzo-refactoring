@@ -35,6 +35,8 @@ public class SecurityConfig {
             "/auth/**",
             "/ws/**",
             "/auth/**",
+            "/actuator/**",
+            "/metrics",
     };
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
