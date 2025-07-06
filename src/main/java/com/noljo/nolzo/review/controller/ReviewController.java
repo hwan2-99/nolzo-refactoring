@@ -7,6 +7,7 @@ import com.noljo.nolzo.review.dto.request.ReviewCreateRequest;
 import com.noljo.nolzo.review.dto.response.ReviewResponse;
 import com.noljo.nolzo.review.service.ReviewService;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,6 +30,13 @@ public class ReviewController {
     @GetMapping("/{reviewId}")
     public ResponseEntity<ReviewResponse> getReview(@PathVariable Long reviewId) {
         ReviewResponse response = reviewService.getReview(reviewId);
+        return ResponseEntity.ok(response);
+    }
+
+    @Transactional(readOnly = true)
+    @GetMapping("/my")
+    public ResponseEntity<List<ReviewResponse>> getMemberReview(@AuthenticationPrincipal(expression = "memberId") Long memberId) {
+        List<ReviewResponse> response = reviewService.getReviewsByMemberId(memberId);
         return ResponseEntity.ok(response);
     }
 

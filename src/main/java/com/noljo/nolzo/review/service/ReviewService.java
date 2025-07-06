@@ -11,6 +11,7 @@ import com.noljo.nolzo.review.dto.request.ReviewCreateRequest;
 import com.noljo.nolzo.review.dto.response.ReviewResponse;
 import com.noljo.nolzo.review.entity.Review;
 import com.noljo.nolzo.review.repository.ReviewRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +46,13 @@ public class ReviewService {
     public ReviewResponse getReview(Long reviewId) {
         Review review = reviewRepository.getOrThrow(reviewId);
         return ReviewResponse.from(review);
+    }
+
+    public List<ReviewResponse> getReviewsByMemberId(Long memberId) {
+        List<Review> reviews = reviewRepository.findByMemberId(memberId);
+        return reviews.stream()
+                .map(ReviewResponse::from)
+                .toList();
     }
 
     private void validateReviewOwner(Review review, Long memberId) {
