@@ -42,6 +42,11 @@ public class ReviewService {
         return ReviewUpdateResponse.from(review);
     }
 
+    public ReviewResponse getReview(Long reviewId) {
+        Review review = reviewRepository.getOrThrow(reviewId);
+        return ReviewResponse.from(review);
+    }
+
     private void validateReviewOwner(Review review, Long memberId) {
         if (!review.getMember().getId().equals(memberId)) {
             throw new IllegalStateException("해당 리뷰를 수정할 권한이 없습니다.");
