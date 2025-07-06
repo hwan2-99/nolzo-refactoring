@@ -5,6 +5,7 @@ import com.noljo.nolzo.event.repository.EventRepository;
 import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.repository.MemberRepository;
 import com.noljo.nolzo.review.dto.request.ReviewUpdateRequest;
+import com.noljo.nolzo.review.dto.response.ReviewResponse;
 import com.noljo.nolzo.review.dto.response.ReviewUpdateResponse;
 import com.noljo.nolzo.review.dto.request.ReviewCreateRequest;
 import com.noljo.nolzo.review.entity.Review;
@@ -76,5 +77,21 @@ public class ReviewServiceTest {
 
         assertThat(response.content()).isEqualTo("수정된 리뷰");
         assertThat(response.rating()).isEqualTo(5);
+    }
+
+    @Test
+    void 이벤트_ID와_회원_ID로_관련_리뷰를_조회할_수_있다() {
+        Member member = MemberFixture.회원();
+        memberRepository.save(member);
+
+        Event event = EventFixture.캣츠();
+        eventRepository.save(event);
+
+        Review review = ReviewFixture.연극리뷰(event, member);
+        reviewRepository.save(review);
+
+        ReviewResponse result = reviewService.getReviewByMemberIdAndEventId(member.getId(), event.getId());
+        assertThat(result.content()).isEqualTo(review.getContent());
+        assertThat(result.rating()).isEqualTo(review.getRating());
     }
 }

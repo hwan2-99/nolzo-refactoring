@@ -40,6 +40,14 @@ public class ReviewController {
         return ResponseEntity.ok(response);
     }
 
+    @Transactional(readOnly = true)
+    @GetMapping("/events/{eventId}/my")
+    public ResponseEntity<ReviewResponse> getMyReviewByEvent(
+            @AuthenticationPrincipal(expression = "memberId") Long memberId, @PathVariable Long eventId) {
+        ReviewResponse response = reviewService.getReviewByMemberIdAndEventId(memberId, eventId);
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping
     public ResponseEntity<ReviewResponse> createReview(@AuthenticationPrincipal CustomUserDetails user, @Valid @RequestBody ReviewCreateRequest request) {
         ReviewResponse response = reviewService.create(user.getMemberId(), request);

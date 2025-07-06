@@ -12,6 +12,7 @@ import com.noljo.nolzo.review.dto.response.ReviewResponse;
 import com.noljo.nolzo.review.entity.Review;
 import com.noljo.nolzo.review.repository.ReviewRepository;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,6 +54,12 @@ public class ReviewService {
         return reviews.stream()
                 .map(ReviewResponse::from)
                 .toList();
+    }
+
+    public ReviewResponse getReviewByMemberIdAndEventId(Long memberId, Long eventId) {
+        Review review = reviewRepository.findByMemberIdAndEventId(memberId, eventId)
+                .orElseThrow(() -> new IllegalArgumentException("리뷰를 조회할 수 없습니다"));
+        return ReviewResponse.from(review);
     }
 
     private void validateReviewOwner(Review review, Long memberId) {
