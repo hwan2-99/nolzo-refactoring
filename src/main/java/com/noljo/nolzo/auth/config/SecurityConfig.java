@@ -56,8 +56,9 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**", "/event/**").permitAll()
                         .requestMatchers(GET, "/reservations/reservation/**").permitAll()
                         .requestMatchers(POST, "/reservations/*").permitAll()
-                        .requestMatchers("/member/**", "/payments/**", "/reservations/**", "/tickets/**")
-                        .hasRole("USER")
+                        .requestMatchers(GET, "/reviews/*/").permitAll()
+                        .requestMatchers(GET, "/reviews/events/*").permitAll()
+                        .requestMatchers("/member/**", "/payments/**", "/reservations/**", "/reviews/**", "/tickets/**").hasRole("USER")
                         .anyRequest().authenticated())
 
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
