@@ -7,6 +7,7 @@ public record ReviewResponse(
         Long id,
         String content,
         int rating,
+        Long eventId,
         LocalDateTime createdAt
 ) {
     public static ReviewResponse from(Review review) {
@@ -14,6 +15,7 @@ public record ReviewResponse(
                 review.getId(),
                 review.getContent(),
                 review.getRating(),
+                review.getEvent().getId(),
                 review.getCreatedAt()
         );
     }
