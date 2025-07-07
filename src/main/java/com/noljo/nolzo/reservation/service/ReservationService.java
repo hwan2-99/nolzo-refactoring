@@ -134,5 +134,20 @@ public class ReservationService {
             ticketService.create(reservation, seat);
         }
     }
+
+    public ReservationCancelResponse cancelReservationById(Long memberId, Long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 예약 정보가 없습니다"));
+
+        if(!reservation.getMember().getId().equals(memberId)){
+            throw new IllegalArgumentException("해당 예약자만 예약을 취소할 수 있습니다");
+        }
+
+        reservation.softDelete();
+        reservation.updateStatus(ReservationStatus.CANCELLED);
+        reservation.cancelAllTickets();
+
+        return ReservationCancelResponse.from(reservation);
+    }
 }
 
