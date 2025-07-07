@@ -43,6 +43,10 @@ public class Review extends BaseEntity {
         this.member = member;
     }
 
+    public boolean isOwner(Long memberId) {
+        return this.member.getId().equals(memberId);
+    }
+
     public void update(String content, int rating) {
         this.content = content;
         this.rating = rating;

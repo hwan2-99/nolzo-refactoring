@@ -43,7 +43,7 @@ public class ReviewService {
     }
 
     private void validateReviewOwner(Review review, Long memberId) {
-        if (!review.getMember().getId().equals(memberId)) {
+        if (!review.isOwner(memberId)) {
             throw new IllegalStateException("해당 리뷰를 수정할 권한이 없습니다.");
         }
     }
