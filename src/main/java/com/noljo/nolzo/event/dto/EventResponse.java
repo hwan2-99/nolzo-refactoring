@@ -46,12 +46,8 @@ public class EventResponse {
                 .eventCategory(event.getEventCategory())
                 .runtime(event.getRuntime())
                 .ageLimit(event.getAgeLimit())
-                .rating(event.getRating())
-                .reviewCount(event.getReviewCount())
                 .schedules(schedules)
                 .viewCount(event.getViewCount())
-                .reservationStart(event.getReservationStart())
-                .reservationEnd(event.getReservationEnd())
                 .build();
     }
 }

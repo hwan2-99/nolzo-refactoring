@@ -44,12 +44,6 @@ public class EventRequest {
 
     private int ageLimit;
 
-    @NotNull (message = "예약시작시점 지정 필수")
-    private LocalDateTime reservationStart;
-
-    @NotNull (message = "예약종료시점 지정 필수")
-    private LocalDateTime reservationEnd;
-
     @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
     private List<ScheduleInfo> schedules;
 
@@ -64,16 +58,13 @@ public class EventRequest {
                 .eventCategory(eventCategory)
                 .runtime(runtime)
                 .ageLimit(ageLimit)
-                .rating(0)
-                .reviewCount(0)
-                .reservationStart(reservationStart)
-                .reservationEnd(reservationEnd)
                 .build();
 
         schedules.forEach(req->{
             Schedule schedule = Schedule.builder()
                     .showDate(req.getShowDate())
                     .showTime(req.getShowTime())
+                    .reservationStart(req.getReservationStart())
                     .build();
             schedule.setEvent(event);
             event.addSchedule(schedule);

@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -42,13 +43,6 @@ public class Event extends BaseEntity {
 
     private int ageLimit;
 
-    private int rating;
-
-    private int reviewCount;
-
-    private LocalDateTime reservationStart;
-
-    private LocalDateTime reservationEnd;
 
     @Column(nullable = false)
     private long viewCount = 0;
@@ -58,8 +52,7 @@ public class Event extends BaseEntity {
 
     @Builder
     public Event(Long id, String title, String venue, String description, String posterImageUrl, LocalDate startDate, LocalDate endDate,
-                 EventCategory eventCategory, int runtime, int ageLimit, int rating, int reviewCount,
-                 LocalDateTime reservationStart,LocalDateTime reservationEnd) {
+                 EventCategory eventCategory, int runtime, int ageLimit) {
         this.id = id;
         this.title = title;
         this.venue = venue;
@@ -70,10 +63,6 @@ public class Event extends BaseEntity {
         this.eventCategory = eventCategory;
         this.runtime = runtime;
         this.ageLimit = ageLimit;
-        this.rating = rating;
-        this.reviewCount = reviewCount;
-        this.reservationStart=reservationStart;
-        this.reservationEnd=reservationEnd;
     }
 
     public void addSchedule(Schedule schedule) {
@@ -86,12 +75,11 @@ public class Event extends BaseEntity {
     }
 
     public void updateFrom(EventUpdateRequest dto) {
-        this.title         = dto.getTitle();
-        this.venue         = dto.getVenue();
-        this.description   = dto.getDescription();
-        this.startDate     = dto.getStartDate();
-        this.endDate       = dto.getEndDate();
-        this.reservationStart=dto.getReservationStart();
-        this.reservationEnd=dto.getReservationEnd();
+        Optional.ofNullable(dto.getTitle()).ifPresent(t -> this.title = t);
+        Optional.ofNullable(dto.getVenue()).ifPresent(v -> this.venue = v);
+        Optional.ofNullable(dto.getDescription()).ifPresent(d -> this.description = d);
+        Optional.ofNullable(dto.getStartDate()).ifPresent(sd -> this.startDate = sd);
+        Optional.ofNullable(dto.getEndDate()).ifPresent(ed -> this.endDate = ed);
     }
+
 }
