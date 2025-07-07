@@ -1,10 +1,12 @@
 package com.noljo.nolzo.auth.controller;
 
+import com.noljo.nolzo.auth.dto.AccessTokenResponse;
 import com.noljo.nolzo.auth.dto.LoginRequest;
 import com.noljo.nolzo.auth.dto.RegisterRequest;
 import com.noljo.nolzo.auth.dto.RegisterResponse;
 import com.noljo.nolzo.auth.dto.TokensResponse;
 import com.noljo.nolzo.auth.service.AuthService;
+import com.noljo.nolzo.auth.service.JwtTokenService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.time.Duration;
@@ -27,15 +29,12 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class AuthController {
 
-    @Value("${jwt.access-token-validity-in-seconds}")
-    private long accessTokenValidityInSeconds;
+    private static final String REFRESH_TOKEN = "refreshToken";
+    private final AuthService authService;
+    private final JwtTokenService jwtTokenService;
+
     @Value("${jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenValidityInSeconds;
-
-    private static final String ACCESS_TOKEN = "accessToken";
-    private static final String REFRESH_TOKEN = "refreshToken";
-
-    private final AuthService authService;
 
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
@@ -44,12 +43,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokensResponse> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
+    public ResponseEntity<TokensResponse> login(@Valid @RequestBody LoginRequest request,
+                                                HttpServletResponse response) {
         TokensResponse tokens = authService.login(request);
-
-        addCookie(response, ACCESS_TOKEN, tokens.accessToken(), Duration.ofSeconds(accessTokenValidityInSeconds), false);
-        addCookie(response, REFRESH_TOKEN, tokens.refreshToken(), Duration.ofSeconds(refreshTokenValidityInSeconds), true);
-
+        addRefreshTokenCookie(response, tokens.refreshToken(), Duration.ofSeconds(refreshTokenValidityInSeconds));
         return ResponseEntity.ok(tokens);
     }
 
@@ -58,27 +55,26 @@ public class AuthController {
             @CookieValue(value = REFRESH_TOKEN, required = false) String refreshToken,
             HttpServletResponse response
     ) {
-        authService.logout(refreshToken);
-
-        clearCookie(response, ACCESS_TOKEN, false);
-        clearCookie(response, REFRESH_TOKEN, true);
-
+        if (refreshToken != null) {
+            authService.logout(refreshToken);
+        }
+        clearRefreshTokenCookie(response);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/reissue")
-    public ResponseEntity<Void> reissueAccessToken(
+    public ResponseEntity<AccessTokenResponse> reissueAccessToken(
             @CookieValue(REFRESH_TOKEN) String refreshToken,
             HttpServletResponse response
     ) {
-        String newAccessToken = authService.reissueAccessToken(refreshToken).accessToken();
-        addCookie(response, ACCESS_TOKEN, newAccessToken, Duration.ofSeconds(accessTokenValidityInSeconds), false);
-        return ResponseEntity.noContent().build();
+        String accessToken = authService.reissueAccessToken(refreshToken).accessToken();
+        AccessTokenResponse accessTokenResponse = new AccessTokenResponse(accessToken);
+        return ResponseEntity.ok(accessTokenResponse);
     }
 
-    private void addCookie(HttpServletResponse response, String name, String value, Duration maxAge, boolean httpOnly) {
-        ResponseCookie cookie = ResponseCookie.from(name, value)
-                .httpOnly(httpOnly)
+    private void addRefreshTokenCookie(HttpServletResponse response, String value, Duration maxAge) {
+        ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN, value)
+                .httpOnly(true)
                 .secure(false) // 이후 https 사용시 true로 전환
                 .path("/")
                 .maxAge(maxAge)
@@ -87,7 +83,7 @@ public class AuthController {
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 
-    private void clearCookie(HttpServletResponse response, String name, boolean httpOnly) {
-        addCookie(response, name, "", Duration.ZERO, httpOnly);
+    private void clearRefreshTokenCookie(HttpServletResponse response) {
+        addRefreshTokenCookie(response, "", Duration.ZERO);
     }
 }
