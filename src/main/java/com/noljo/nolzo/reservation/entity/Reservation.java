@@ -53,4 +53,8 @@ public class Reservation extends BaseEntity {
     public void updateStatus(ReservationStatus reservationStatus) {
         this.status = reservationStatus;
     }
+
+    public void cancelAllTickets() {
+        this.tickets.forEach(Ticket::cancel);
+    }
 }
