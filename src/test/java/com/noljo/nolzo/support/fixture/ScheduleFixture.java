@@ -3,6 +3,7 @@ package com.noljo.nolzo.support.fixture;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.schedule.entity.Schedule;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import lombok.Getter;
 
@@ -20,6 +21,6 @@ public enum ScheduleFixture {
     }
 
     public static Schedule 공연_스케쥴(Event event) {
-        return new Schedule(공연스케쥴.showDate, 공연스케쥴.showTime, event);
+        return new Schedule(공연스케쥴.showDate, 공연스케쥴.showTime, event, LocalDateTime.of(2025,6,25,11,0,0));
     }
 }

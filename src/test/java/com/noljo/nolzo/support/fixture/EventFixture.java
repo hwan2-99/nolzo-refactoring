@@ -73,15 +73,13 @@ public enum EventFixture {
 
     public static Event 캣츠() {
         Event event = new Event(null, 캣츠.title, 캣츠.venue, 캣츠.description, 캣츠.posterImageUrl,
-                캣츠.startDate, 캣츠.endDate, 캣츠.eventCategory, 캣츠.runtime, 캣츠.ageLimit, 캣츠.rating, 캣츠.reviewCount,
-                캣츠.reservationStart, 캣츠.reservationEnd);
+                캣츠.startDate, 캣츠.endDate, 캣츠.eventCategory, 캣츠.runtime, 캣츠.ageLimit);
         return event;
     }
 
     public static Event 햄릿() {
         Event event = new Event(null, 햄릿.title, 햄릿.venue, 햄릿.description, 햄릿.posterImageUrl,
-                햄릿.startDate, 햄릿.endDate, 햄릿.eventCategory, 햄릿.runtime, 햄릿.ageLimit, 햄릿.rating, 햄릿.reviewCount,
-                햄릿.reservationStart, 햄릿.reservationEnd);
+                햄릿.startDate, 햄릿.endDate, 햄릿.eventCategory, 햄릿.runtime, 햄릿.ageLimit);
         return event;
     }
 
@@ -99,11 +97,10 @@ public enum EventFixture {
                 .schedules(List.of(
                         new ScheduleInfo(
                                 LocalDate.of(2024, 5, 10),
-                                LocalTime.of(19, 30)
+                                LocalTime.of(19, 30),
+                                null
                         )
                 ))
-                .reservationStart(캣츠.reservationStart)
-                .reservationEnd(캣츠.reservationEnd)
                 .build();
     }
 
@@ -119,7 +116,8 @@ public enum EventFixture {
                 .schedule(List.of(
                         new ScheduleInfo(
                                 LocalDate.of(2024, 5, 12),
-                                LocalTime.of(18, 0)
+                                LocalTime.of(18, 0),
+                                null
                         )
                 ))
                 .build();
@@ -139,11 +137,10 @@ public enum EventFixture {
                 .schedules(List.of(
                         new ScheduleInfo(
                                 LocalDate.of(2024, 5, 10),
-                                LocalTime.of(19, 30)
+                                LocalTime.of(19, 30),
+                                null
                         )
                 ))
-                .reservationStart(햄릿.reservationStart)
-                .reservationEnd(햄릿.reservationEnd)
                 .build();
     }
 
@@ -161,11 +158,10 @@ public enum EventFixture {
                 .schedules(List.of(
                         new ScheduleInfo(
                                 LocalDate.of(2024, 5, 10),
-                                LocalTime.of(19, 30)
+                                LocalTime.of(19, 30),
+                                null
                         )
                 ))
-                .reservationStart(햄릿일정.reservationStart)
-                .reservationEnd(햄릿일정.reservationEnd)
                 .build();
     }
 }
