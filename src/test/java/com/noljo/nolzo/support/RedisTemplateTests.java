@@ -1,15 +1,15 @@
 package com.noljo.nolzo.support;
 
+import com.noljo.nolzo.support.annotation.ServiceTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest
+@ServiceTest
 @ActiveProfiles("test")
 class RedisTemplateTests {
 
