@@ -1,6 +1,6 @@
 on:
   push:
-    branches: [main,feat/82]
+    branches: [main,develop]
 jobs:
   build:
     runs-on: ubuntu-latest
