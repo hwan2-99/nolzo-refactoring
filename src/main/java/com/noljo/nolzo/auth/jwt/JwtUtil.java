@@ -9,6 +9,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -36,11 +38,25 @@ public class JwtUtil {
     }
 
     public String createAccessToken(Member member) {
-        return createToken(member, accessTokenValidity);
+        Date now = new Date();
+        return Jwts.builder()
+                .subject(member.getId().toString())
+                .claim("email", member.getEmail())
+                .claim("role", member.getRole().name())
+                .issuedAt(now)
+                .expiration(Date.from(now.toInstant().plus(accessTokenValidity)))
+                .signWith(secretKey)
+                .compact();
     }
 
     public String createRefreshToken(Member member) {
-        return createToken(member, refreshTokenValidity);
+        Date now = new Date();
+        return Jwts.builder()
+                .subject(member.getId().toString())
+                .issuedAt(now)
+                .expiration(Date.from(now.toInstant().plus(refreshTokenValidity)))
+                .signWith(secretKey)
+                .compact();
     }
 
     public Long getMemberId(String token) {
@@ -73,18 +89,6 @@ public class JwtUtil {
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
-    }
-
-    private String createToken(Member member, Duration validity) {
-        Date now = new Date();
-        return Jwts.builder()
-                .subject(member.getId().toString())
-                .claim("email", member.getEmail())
-                .claim("role", member.getRole().name())
-                .issuedAt(now)
-                .expiration(Date.from(now.toInstant().plus(validity)))
-                .signWith(secretKey)
-                .compact();
     }
 
     private Claims parseClaims(String token) {
