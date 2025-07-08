@@ -3,6 +3,7 @@ package com.noljo.nolzo.ticket.entity;
 import com.noljo.nolzo.global.BaseEntity;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import com.noljo.nolzo.seat.entity.Seat;
+import com.noljo.nolzo.seat.entity.SeatStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -46,5 +47,6 @@ public class Ticket extends BaseEntity {
 
     public void cancel() {
         this.status = TicketStatus.CANCELLED;
+        seat.updateStatus(SeatStatus.AVAILABLE);
     }
 }
