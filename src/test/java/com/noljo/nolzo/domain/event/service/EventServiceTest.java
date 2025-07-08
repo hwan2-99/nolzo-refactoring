@@ -142,12 +142,12 @@ class EventServiceTest {
         List<ScheduleResponse> updatedSchedules = eventService.findById(id).getSchedules();
 
         Assertions.assertThat(updatedSchedules)
-                .hasSameSizeAs(updateRequest.getSchedule());
+                .hasSameSizeAs(updateRequest.getSchedules());
         for (int i = 0; i < updatedSchedules.size(); i++) {
             Assertions.assertThat(updatedSchedules.get(i).getShowDate())
-                    .isEqualTo(updateRequest.getSchedule().get(i).getShowDate());
+                    .isEqualTo(updateRequest.getSchedules().get(i).getShowDate());
             Assertions.assertThat(updatedSchedules.get(i).getShowTime())
-                    .isEqualTo(updateRequest.getSchedule().get(i).getShowTime());
+                    .isEqualTo(updateRequest.getSchedules().get(i).getShowTime());
         }
     }
 

@@ -21,6 +21,8 @@ public enum ScheduleFixture {
     }
 
     public static Schedule 공연_스케쥴(Event event) {
-        return new Schedule(공연스케쥴.showDate, 공연스케쥴.showTime, event, LocalDateTime.of(2025,6,25,11,0,0));
+        return new Schedule(공연스케쥴.showDate, 공연스케쥴.showTime, event,
+                LocalDateTime.of(2025,6,25,11,0,0),
+                LocalDateTime.of(2026,6,25,11,0,0));
     }
 }
