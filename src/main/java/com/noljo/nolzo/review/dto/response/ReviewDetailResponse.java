@@ -3,19 +3,19 @@ package com.noljo.nolzo.review.dto.response;
 import com.noljo.nolzo.review.entity.Review;
 import java.time.LocalDateTime;
 
-public record ReviewResponse(
+public record ReviewDetailResponse(
         Long id,
         String content,
         int rating,
-        Long eventId,
+        String author,
         LocalDateTime createdAt
 ) {
-    public static ReviewResponse from(Review review) {
-        return new ReviewResponse(
+    public static ReviewDetailResponse from(Review review) {
+        return new ReviewDetailResponse(
                 review.getId(),
                 review.getContent(),
                 review.getRating(),
-                review.getEvent().getId(),
+                review.getMember().getName(),
                 review.getCreatedAt()
         );
     }

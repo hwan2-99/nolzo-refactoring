@@ -1,6 +1,8 @@
 package com.noljo.nolzo.review.service;
 
 import com.noljo.nolzo.review.dto.request.ReviewUpdateRequest;
+import com.noljo.nolzo.review.dto.response.EventReviewDetailsResponse;
+import com.noljo.nolzo.review.dto.response.ReviewDetailResponse;
 import com.noljo.nolzo.review.dto.response.ReviewUpdateResponse;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.repository.EventRepository;
@@ -11,6 +13,7 @@ import com.noljo.nolzo.review.dto.request.ReviewCreateRequest;
 import com.noljo.nolzo.review.dto.response.ReviewResponse;
 import com.noljo.nolzo.review.entity.Review;
 import com.noljo.nolzo.review.repository.ReviewRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +45,30 @@ public class ReviewService {
         return ReviewUpdateResponse.from(review);
     }
 
+    public ReviewResponse getReview(Long reviewId) {
+        Review review = reviewRepository.getOrThrow(reviewId);
+        return ReviewResponse.from(review);
+    }
+
+    public List<ReviewResponse> getReviewsByMemberId(Long memberId) {
+        List<Review> reviews = reviewRepository.findByMemberId(memberId);
+        return reviews.stream()
+                .map(ReviewResponse::from)
+                .toList();
+    }
+
+    public ReviewResponse getReviewByMemberIdAndEventId(Long memberId, Long eventId) {
+        Review review = reviewRepository.findByMemberIdAndEventId(memberId, eventId)
+                .orElseThrow(() -> new IllegalArgumentException("리뷰를 조회할 수 없습니다"));
+        return ReviewResponse.from(review);
+    }
+
+    public EventReviewDetailsResponse getReviewsByEventId(Long eventId) {
+        List<ReviewDetailResponse> reviews  = findDetailReviewsByEvent(eventId);
+        double averageRating = getAverageRating(reviews);
+        return new EventReviewDetailsResponse(averageRating, reviews.size(), reviews);
+    }
+  
     public void delete(Long memberId, Long reviewId) {
         Review review = reviewRepository.getOrThrow(reviewId);
         validateReviewOwner(review, memberId);
@@ -68,5 +95,19 @@ public class ReviewService {
         if (isAlreadyReviewed) {
             throw new IllegalStateException("이미 해당 이벤트에 대한 리뷰를 작성하였습니다.");
         }
+    }
+
+    private List<ReviewDetailResponse> findDetailReviewsByEvent(Long eventId) {
+        return reviewRepository.findByEventId(eventId)
+                .stream()
+                .map(ReviewDetailResponse::from)
+                .toList();
+    }
+
+    private static double getAverageRating(List<ReviewDetailResponse> reviews) {
+        return reviews.stream()
+                .mapToInt(ReviewDetailResponse::rating)
+                .average()
+                .orElse(0.0);
     }
 }
