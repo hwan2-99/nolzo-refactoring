@@ -10,6 +10,7 @@ import com.noljo.nolzo.global.upload.S3Uploader;
 import com.noljo.nolzo.schedule.dto.internal.ScheduleInfo;
 import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.seat.service.SeatService;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -26,6 +29,7 @@ public class EventService {
     private final EventRepository eventRepository;
     private final SeatService seatService;
     private final S3Uploader s3Uploader;
+    private final EntityManager em;
 
     public Event getEvent(Long id) {
         return eventRepository.findById(id)
@@ -86,7 +90,17 @@ public class EventService {
 
     public EventResponse update(Long id, EventUpdateRequest dto) {
         Event original = getEvent(id);
+        Set<Long> originalSchedules = original.getSchedules().stream()
+                        .map(Schedule::getId)
+                                .collect(Collectors.toSet());
+
         original.updateFrom(dto);
+
+        em.flush();
+
+        original.getSchedules().stream()
+                .filter(schedule -> !originalSchedules.contains(schedule.getId()))
+                .forEach(schedule -> seatService.createSeats(schedule.getId()));
 
         return EventResponse.from(original);
     }
