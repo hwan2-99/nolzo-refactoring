@@ -67,8 +67,6 @@ class EventServiceTest {
                 .eventCategory(EventCategory.MUSICAL)
                 .runtime(155)
                 .ageLimit(15)
-                .rating(0)
-                .reviewCount(0)
                 .build());
 
         Event event2 = eventRepository.save(Event.builder()
@@ -81,8 +79,6 @@ class EventServiceTest {
                 .eventCategory(EventCategory.MUSICAL)
                 .runtime(155)
                 .ageLimit(15)
-                .rating(0)
-                .reviewCount(0)
                 .build());
 
         List<EventResponse> result = eventService.searchEventList("셜록");
@@ -167,8 +163,6 @@ class EventServiceTest {
                 .eventCategory(EventCategory.MUSICAL)
                 .runtime(120)
                 .ageLimit(12)
-                .rating(5)
-                .reviewCount(10)
                 .build();
 
         event = eventRepository.save(event);
