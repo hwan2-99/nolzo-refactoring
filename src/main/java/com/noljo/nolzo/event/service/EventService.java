@@ -88,15 +88,6 @@ public class EventService {
         Event original = getEvent(id);
         original.updateFrom(dto);
 
-        List<Schedule> schedules = original.getSchedules();
-        List<ScheduleInfo> updatedInfo = dto.getSchedule();
-
-        for (int i = 0; i < schedules.size(); i++) {
-            Schedule schedule = schedules.get(i);
-            ScheduleInfo info = updatedInfo.get(i);
-            schedule.updateFrom(info.getShowDate(), info.getShowTime());
-        }
-
         return EventResponse.from(original);
     }
 
