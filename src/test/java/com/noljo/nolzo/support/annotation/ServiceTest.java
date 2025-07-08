@@ -1,6 +1,7 @@
 package com.noljo.nolzo.support.annotation;
 
 import com.noljo.nolzo.support.DatabaseCleanerExtension;
+import com.noljo.nolzo.support.RedisServerExtension;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -14,6 +15,6 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Retention(RetentionPolicy.RUNTIME)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-@ExtendWith(DatabaseCleanerExtension.class)
+@ExtendWith({DatabaseCleanerExtension.class, RedisServerExtension.class})
 public @interface ServiceTest {
 }

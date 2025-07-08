@@ -11,6 +11,7 @@ import com.noljo.nolzo.schedule.dto.internal.ScheduleInfo;
 import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.seat.service.SeatService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,8 +40,8 @@ public class EventService {
     }
 
     @Transactional(readOnly = true)
-    public List<EventResponse> findAllByCategory(EventCategory category) {
-        return eventRepository.findAllByEventCategory(category).stream()
+    public List<EventResponse> findAllByCategory(EventCategory eventCategory) {
+        return eventRepository.findAllByEventCategory(eventCategory, Sort.by(Sort.Direction.DESC, "createdAt")).stream()
                 .map(EventResponse::from)
                 .toList();
     }

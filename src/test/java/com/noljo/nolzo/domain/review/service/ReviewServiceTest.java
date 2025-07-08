@@ -116,4 +116,19 @@ public class ReviewServiceTest {
         assertThat(result.reviewCount()).isEqualTo(2);
         assertThat(result.averageRating()).isEqualTo((review1.getRating() + review2.getRating()) / 2.0);
     }
+  
+    @Test
+    void 리뷰를_삭제할_수_있다() {
+        Member member = MemberFixture.회원();
+        memberRepository.save(member);
+
+        Event event = EventFixture.캣츠();
+        eventRepository.save(event);
+
+        Review review = ReviewFixture.연극리뷰(event, member);
+        reviewRepository.save(review);
+
+        reviewService.delete(member.getId(), review.getId());
+        assertThat(reviewRepository.findById(review.getId())).isEmpty();
+    } 
 }

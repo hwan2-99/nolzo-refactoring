@@ -68,9 +68,15 @@ public class ReviewService {
         double averageRating = getAverageRating(reviews);
         return new EventReviewDetailsResponse(averageRating, reviews.size(), reviews);
     }
+  
+    public void delete(Long memberId, Long reviewId) {
+        Review review = reviewRepository.getOrThrow(reviewId);
+        validateReviewOwner(review, memberId);
+        reviewRepository.delete(review);
+    }
 
     private void validateReviewOwner(Review review, Long memberId) {
-        if (!review.getMember().getId().equals(memberId)) {
+        if (!review.isOwner(memberId)) {
             throw new IllegalStateException("해당 리뷰를 수정할 권한이 없습니다.");
         }
     }

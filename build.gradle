@@ -52,6 +52,7 @@ dependencies {
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 	testRuntimeOnly 'com.h2database:h2'
+	testImplementation 'com.github.codemonstur:embedded-redis:1.4.3'
 
 	// jwt
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'

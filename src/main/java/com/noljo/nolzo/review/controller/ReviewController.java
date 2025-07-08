@@ -12,14 +12,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,7 +38,9 @@ public class ReviewController {
     @Transactional(readOnly = true)
     @GetMapping("/events/{eventId}/my")
     public ResponseEntity<ReviewResponse> getMyReviewByEvent(
-            @AuthenticationPrincipal(expression = "memberId") Long memberId, @PathVariable Long eventId) {
+            @AuthenticationPrincipal(expression = "memberId") Long memberId, 
+            @PathVariable Long eventId
+    ) {
         ReviewResponse response = reviewService.getReviewByMemberIdAndEventId(memberId, eventId);
         return ResponseEntity.ok(response);
     }
@@ -57,7 +53,10 @@ public class ReviewController {
     }
 
     @PostMapping
-    public ResponseEntity<ReviewResponse> createReview(@AuthenticationPrincipal CustomUserDetails user, @Valid @RequestBody ReviewCreateRequest request) {
+    public ResponseEntity<ReviewResponse> createReview(
+            @AuthenticationPrincipal CustomUserDetails user,
+            @Valid @RequestBody ReviewCreateRequest request
+    ) {
         ReviewResponse response = reviewService.create(user.getMemberId(), request);
         return ResponseEntity.ok(response);
     }
@@ -65,8 +64,19 @@ public class ReviewController {
     @PutMapping("/{reviewId}")
     public ResponseEntity<ReviewUpdateResponse> updateReview(
             @AuthenticationPrincipal CustomUserDetails user,
-            @PathVariable Long reviewId, @Valid @RequestBody ReviewUpdateRequest request) {
+            @PathVariable Long reviewId,
+            @Valid @RequestBody ReviewUpdateRequest request
+    ) {
         ReviewUpdateResponse response = reviewService.update(user.getMemberId(), reviewId, request);
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<Void> deleteReview(
+            @AuthenticationPrincipal CustomUserDetails user, 
+            @PathVariable Long reviewId
+    ) {
+        reviewService.delete(user.getMemberId(), reviewId);
+        return ResponseEntity.noContent().build();
     }
 }
