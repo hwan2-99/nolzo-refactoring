@@ -5,7 +5,6 @@ import com.noljo.nolzo.event.repository.EventRepository;
 import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.repository.MemberRepository;
 import com.noljo.nolzo.review.dto.request.ReviewUpdateRequest;
-import com.noljo.nolzo.review.dto.response.EventReviewDetailsResponse;
 import com.noljo.nolzo.review.dto.response.ReviewResponse;
 import com.noljo.nolzo.review.dto.response.ReviewUpdateResponse;
 import com.noljo.nolzo.review.dto.request.ReviewCreateRequest;
@@ -130,5 +129,5 @@ public class ReviewServiceTest {
 
         reviewService.delete(member.getId(), review.getId());
         assertThat(reviewRepository.findById(review.getId())).isEmpty();
-    } 
+    }
 }
