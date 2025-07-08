@@ -50,8 +50,10 @@ public class Schedule {
         this.event = event;
     }
 
-    public void updateFrom(LocalDate showDate, LocalTime showTime) {
+    public void updateFrom(LocalDate showDate, LocalTime showTime,LocalDateTime reservationStart,LocalDateTime reservationEnd) {
         this.showDate = showDate;
         this.showTime = showTime;
+        this.reservationStart=reservationStart;
+        this.reservationEnd=reservationEnd;
     }
 }
