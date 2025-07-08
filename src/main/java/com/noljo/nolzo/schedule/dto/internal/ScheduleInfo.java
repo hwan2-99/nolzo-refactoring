@@ -12,10 +12,12 @@ public class ScheduleInfo {
     private LocalDate showDate;
     private LocalTime showTime;
     private LocalDateTime reservationStart;
+    private LocalDateTime reservationEnd;
 
-    public ScheduleInfo(LocalDate showDate, LocalTime showTime, LocalDateTime reservationStart){
+    public ScheduleInfo(LocalDate showDate, LocalTime showTime, LocalDateTime reservationStart, LocalDateTime reservationEnd){
         this.showDate=showDate;
         this.showTime=showTime;
         this.reservationStart=reservationStart;
+        this.reservationEnd=reservationEnd;
     }
 }

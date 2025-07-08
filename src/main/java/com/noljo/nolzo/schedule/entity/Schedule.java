@@ -28,6 +28,7 @@ public class Schedule {
     private LocalTime showTime;
 
     private LocalDateTime reservationStart;
+    private LocalDateTime reservationEnd;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
@@ -41,10 +42,11 @@ public class Schedule {
     }
 
     @Builder
-    public Schedule(LocalDate showDate, LocalTime showTime, Event event,LocalDateTime reservationStart) {
+    public Schedule(LocalDate showDate, LocalTime showTime, Event event,LocalDateTime reservationStart,LocalDateTime reservationEnd) {
         this.showDate = showDate;
         this.showTime = showTime;
         this.reservationStart=reservationStart;
+        this.reservationEnd=reservationEnd;
         this.event = event;
     }
 

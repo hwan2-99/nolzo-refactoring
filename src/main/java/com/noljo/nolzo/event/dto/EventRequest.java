@@ -65,6 +65,7 @@ public class EventRequest {
                     .showDate(req.getShowDate())
                     .showTime(req.getShowTime())
                     .reservationStart(req.getReservationStart())
+                    .reservationEnd(req.getReservationEnd())
                     .build();
             schedule.setEvent(event);
             event.addSchedule(schedule);
