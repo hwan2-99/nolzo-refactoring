@@ -12,6 +12,7 @@ import com.noljo.nolzo.reservation.dto.EventDateTimeResponse;
 import com.noljo.nolzo.reservation.dto.ReservationEventInfo;
 import com.noljo.nolzo.reservation.dto.ReservationRequest;
 import com.noljo.nolzo.reservation.entity.Reservation;
+import com.noljo.nolzo.reservation.entity.ReservationStatus;
 import com.noljo.nolzo.reservation.repository.ReservationRepository;
 import com.noljo.nolzo.reservation.service.ReservationService;
 import com.noljo.nolzo.schedule.entity.Schedule;
@@ -20,6 +21,7 @@ import com.noljo.nolzo.seat.entity.Seat;
 import com.noljo.nolzo.seat.repository.SeatRepository;
 import com.noljo.nolzo.support.annotation.ServiceTest;
 import com.noljo.nolzo.support.fixture.*;
+import com.noljo.nolzo.ticket.entity.TicketStatus;
 import com.noljo.nolzo.ticket.repository.TicketRepository;
 
 import org.junit.jupiter.api.Test;
@@ -115,4 +117,24 @@ public class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.readSelectedEventDateTime(event.getId(), correctDate, wrongTime))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void 예매한_공연에_대해서_취소() {
+        //given
+        Member member = memberRepository.save(MemberFixture.회원());
+        Reservation reservation = reservationRepository.save(ReservationFixture.예약(member));
+        Reservation reservation2 = reservationRepository.save(ReservationFixture.예약2(member));
+
+        //when
+        reservationService.cancelReservationById(member.getId(), reservation.getId());
+        //then
+        Reservation cancelledReservation = reservationRepository.findById(reservation.getId())
+                .orElseThrow(() -> new AssertionError("취소된 예약을 찾을 수 없습니다."));
+
+        assertEquals(ReservationStatus.CANCELLED,cancelledReservation.getStatus());
+        reservation.getTickets().forEach(ticket ->
+                assertEquals(TicketStatus.CANCELLED, ticket.getStatus()));
+        reservation2.getTickets().forEach(ticket ->
+                assertEquals(TicketStatus.NOT_USED, ticket.getStatus()));
+        }
 }

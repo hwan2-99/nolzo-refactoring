@@ -2,10 +2,7 @@ package com.noljo.nolzo.reservation.controller;
 
 
 import com.noljo.nolzo.auth.security.CustomUserDetails;
-import com.noljo.nolzo.reservation.dto.ReservationEventInfo;
-import com.noljo.nolzo.reservation.dto.EventDateTimeResponse;
-import com.noljo.nolzo.reservation.dto.ReservationRequest;
-import com.noljo.nolzo.reservation.dto.ReservationResponse;
+import com.noljo.nolzo.reservation.dto.*;
 import com.noljo.nolzo.reservation.service.ReservationService;
 import com.noljo.nolzo.seat.dto.SeatResponse;
 import com.noljo.nolzo.seat.service.SeatService;
@@ -89,5 +86,12 @@ public class ReservationController {
             @RequestParam String date,
             @RequestParam String time) {
         return ResponseEntity.ok(seatService.findSeats(eventId, date, time));
+    }
+
+    @DeleteMapping("/reservation/{reservationId}")
+    public ResponseEntity<ReservationCancelResponse> cancelReservation(
+            @AuthenticationPrincipal(expression = "memberId") Long memberId,
+            @PathVariable Long reservationId){
+        return ResponseEntity.ok(reservationService.cancelReservationById(memberId,reservationId));
     }
 }
