@@ -1,7 +1,7 @@
 package com.noljo.nolzo.auth.service;
 
-import com.noljo.nolzo.auth.dto.LoginRequest;
 import com.noljo.nolzo.auth.dto.AccessTokenResponse;
+import com.noljo.nolzo.auth.dto.LoginRequest;
 import com.noljo.nolzo.auth.dto.RegisterRequest;
 import com.noljo.nolzo.auth.dto.RegisterResponse;
 import com.noljo.nolzo.auth.dto.TokensResponse;
@@ -23,10 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final MemberRepository memberRepository;
-    private final JwtTokenService jwtTokenService;
-    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenService jwtTokenService;
+    private final MemberRepository memberRepository;
     private final JwtUtil jwtUtil;
 
     public RegisterResponse register(RegisterRequest request) {
@@ -57,9 +57,7 @@ public class AuthService {
     }
 
     public void logout(String refreshToken) {
-        Long memberId = jwtUtil.getMemberId(refreshToken);
-        validateRefreshTokenExists(memberId);
-        jwtTokenService.removeRefreshToken(memberId);
+        jwtTokenService.removeRefreshTokenByToken(refreshToken);
     }
 
     public AccessTokenResponse reissueAccessToken(String refreshToken) {
@@ -77,12 +75,6 @@ public class AuthService {
     private void validateDuplicateEmail(String email) {
         if (memberRepository.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 회원입니다.");
-        }
-    }
-
-    private void validateRefreshTokenExists(Long memberId) {
-        if (!jwtTokenService.hasRefreshToken(memberId)) {
-            throw new IllegalArgumentException("로그인 상태가 아닙니다.");
         }
     }
 }
