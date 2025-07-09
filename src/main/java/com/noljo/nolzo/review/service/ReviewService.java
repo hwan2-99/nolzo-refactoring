@@ -71,7 +71,7 @@ public class ReviewService {
         Page<Review> reviewPage = reviewRepository.findPageByEventId(eventId, pageable);
         var reviewResponses = getReviewDetailResponsesFromReviewPage(reviewPage);
         Double averageRating = reviewRepository.getAverageByEventId(eventId);
-        return EventReviewPageResponse.from(reviewPage, reviewResponses, averageRating, page, size);
+        return EventReviewPageResponse.of(reviewPage, reviewResponses, averageRating, page, size);
     }
 
     public void delete(Long memberId, Long reviewId) {

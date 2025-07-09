@@ -14,7 +14,7 @@ public record EventReviewPageResponse(
         boolean hasNext,
         boolean hasPrevious
 ) {
-    public static EventReviewPageResponse from(
+    public static EventReviewPageResponse of(
             Page<Review> reviewPage,
             List<ReviewDetailResponse> reviewResponses,
             double averageRating,
