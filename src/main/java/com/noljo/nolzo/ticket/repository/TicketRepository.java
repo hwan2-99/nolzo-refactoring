@@ -16,15 +16,13 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     List<Ticket> findByReservationIdIn(List<Long> reservationIdList);
 
     @Modifying
-    @Query(value = """
-            UPDATE ticket t
-            JOIN seat s ON t.seat_id = s.seat_id
-            JOIN schedule sc ON s.schedule_id = sc.schedule_id
-            SET t.status = 'USED'
-            WHERE t.status != 'USED'
-            AND sc.show_date = :targetDate
-            AND sc.show_time <= :targetTime
-            """, nativeQuery = true)
+    @Query("""
+    UPDATE Ticket t
+    SET t.status = 'USED'
+    WHERE t.status != 'USED'
+    AND t.seat.schedule.showDate = :targetDate
+    AND t.seat.schedule.showTime <= :targetTime
+""")
     void updateExpiredTickets(@Param("targetDate") LocalDate targetDate,
                               @Param("targetTime") LocalTime targetTime);
 }
