@@ -30,19 +30,27 @@ public class RefreshToken {
     private Long memberId;
 
     @Column(nullable = false)
-    private String token;
+    private String refreshToken;
+
+    @Column
+    private String ipAddress;
 
     @Column(nullable = false)
     private LocalDateTime expiryDate;
 
-    public RefreshToken(Long memberId, String token, LocalDateTime expiryDate) {
+    public RefreshToken(Long memberId, String refreshToken, LocalDateTime expiryDate) {
         this.memberId = memberId;
-        this.token = token;
+        this.refreshToken = refreshToken;
         this.expiryDate = expiryDate;
     }
 
+    public RefreshToken(Long memberId, String refreshToken, LocalDateTime expiryDate, String ipAddress) {
+        this(memberId, refreshToken, expiryDate);
+        this.ipAddress = ipAddress;
+    }
+
     public void updateToken(String token, LocalDateTime expiryDate) {
-        this.token = token;
+        this.refreshToken = token;
         this.expiryDate = expiryDate;
     }
 }
