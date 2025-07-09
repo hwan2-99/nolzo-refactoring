@@ -32,7 +32,7 @@ public class EventController {
     }
 
     @GetMapping
-    public ResponseEntity<Slice<EventResponse>> getEventByCategory(@RequestParam EventCategory category, @RequestParam("page") int page) { // Pageable 객체를 파라미터로 추가
+    public ResponseEntity<Slice<EventResponse>> getEventByCategory(@RequestParam EventCategory category, @RequestParam("page") int page) {
         return ResponseEntity.ok(eventService.findAllByCategory(category, page));
     }
 
