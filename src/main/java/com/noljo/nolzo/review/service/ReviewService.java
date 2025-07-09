@@ -69,7 +69,7 @@ public class ReviewService {
     public EventReviewPageResponse getPagingReviewsByEventId(Long eventId, int page, int size) {
         PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<Review> reviewPage = reviewRepository.findPageByEventId(eventId, pageable);
-        var reviewResponses = getReviewDetailResponsesFromReviewPage(reviewPage);
+        List<ReviewDetailResponse> reviewResponses = getReviewDetailResponsesFromReviewPage(reviewPage);
         Double averageRating = reviewRepository.getAverageByEventId(eventId);
         return EventReviewPageResponse.of(reviewPage, reviewResponses, averageRating, page, size);
     }
