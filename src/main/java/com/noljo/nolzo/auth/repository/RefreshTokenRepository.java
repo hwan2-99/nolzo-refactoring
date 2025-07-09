@@ -1,9 +1,16 @@
 package com.noljo.nolzo.auth.repository;
 
-public interface RefreshTokenRepository {
-    void save(Long memberId, String refreshToken);
+import com.noljo.nolzo.auth.entity.RefreshToken;
+import java.time.LocalDateTime;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-    String findByMemberId(Long memberId);
+public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
+    RefreshToken findByToken(String token);
+
+    Optional<RefreshToken> findByMemberId(Long memberId);
 
     void deleteByMemberId(Long memberId);
+
+    void deleteAllByExpiryDateBefore(LocalDateTime now);
 }

@@ -31,7 +31,6 @@ public class AuthController {
 
     private static final String REFRESH_TOKEN = "refreshToken";
     private final AuthService authService;
-    private final JwtTokenService jwtTokenService;
 
     @Value("${jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenValidityInSeconds;
@@ -75,7 +74,7 @@ public class AuthController {
     private void addRefreshTokenCookie(HttpServletResponse response, String value, Duration maxAge) {
         ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN, value)
                 .httpOnly(true)
-                .secure(false) // 이후 https 사용시 true로 전환
+                .secure(true)
                 .path("/")
                 .maxAge(maxAge)
                 .sameSite("Strict")

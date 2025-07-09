@@ -9,6 +9,7 @@ import com.noljo.nolzo.auth.dto.RegisterRequest;
 import com.noljo.nolzo.auth.dto.RegisterResponse;
 import com.noljo.nolzo.auth.dto.TokensResponse;
 import com.noljo.nolzo.auth.jwt.JwtUtil;
+import com.noljo.nolzo.auth.repository.RefreshTokenRepository;
 import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.repository.MemberRepository;
 import com.noljo.nolzo.support.annotation.ServiceTest;
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 
 @ServiceTest
 class AuthServiceTest {
@@ -27,6 +29,9 @@ class AuthServiceTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private RefreshTokenRepository refreshTokenRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -59,21 +64,14 @@ class AuthServiceTest {
     }
 
     @Test
+    @Transactional
     void 로그인시_토큰이_정상적으로_발급된다() {
         Member member = MemberFixture.회원();
-        RegisterRequest register = new RegisterRequest(
-                member.getEmail(),
-                member.getPassword(),
-                member.getName(),
-                member.getBirth()
-        );
-        authService.register(register);
-
-        LoginRequest login = new LoginRequest(member.getEmail(), member.getPassword());
-        TokensResponse tokens = authService.login(login);
+        TokensResponse tokens = registerAndLogin(member);
 
         assertThat(jwtUtil.isTokenValid(tokens.accessToken())).isTrue();
         assertThat(jwtUtil.isTokenValid(tokens.refreshToken())).isTrue();
+        assertThat(refreshTokenRepository.findAll()).hasSize(1);
     }
 
     @Test
@@ -100,9 +98,7 @@ class AuthServiceTest {
         TokensResponse tokens = registerAndLogin(member);
 
         authService.logout(tokens.refreshToken());
-
-        assertThatThrownBy(() -> authService.logout(tokens.refreshToken()))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThat(refreshTokenRepository.findByToken(tokens.refreshToken())).isNull();
     }
 
     @Test
