@@ -27,8 +27,6 @@ public class EventResponse {
     private int rating;
     private int reviewCount;
     private long viewCount;
-    private LocalDateTime reservationStart;
-    private LocalDateTime reservationEnd;
 
     public static EventResponse from(Event event) {
         List<ScheduleResponse> schedules = event.getSchedules().stream()

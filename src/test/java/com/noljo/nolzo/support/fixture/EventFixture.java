@@ -15,23 +15,23 @@ import lombok.Getter;
 @Getter
 public enum EventFixture {
     캣츠("Cats", "서울 예술의 전당", "세계적으로 유명한 뮤지컬, 고양이들의 이야기를 그린 작품입니다.",
-            "https://example.com/cats.jpg", LocalDate.of(2024, 3, 1), LocalDate.of(2024, 6, 30),
+            "https://example.com/cats.jpg", LocalDate.of(2024, 3, 1), LocalDate.of(2026, 6, 30),
             EventCategory.CONCERT, 180, 12, 5, 120
-            , LocalDateTime.of(2024, 2, 25, 12, 0), LocalDateTime.of(2024, 2, 27, 12, 0)
+            , LocalDateTime.of(2024, 2, 25, 12, 0), LocalDateTime.of(2026, 2, 27, 12, 0)
     ),
     캣츠2("Cats2", "서울 예술의 전당", "세계적으로 유명한 뮤지컬, 고양이들의 이야기를 그린 작품입니다.",
-            "https://example.com/cats.jpg", LocalDate.of(2024, 3, 1), LocalDate.of(2024, 6, 30),
+            "https://example.com/cats.jpg", LocalDate.of(2024, 3, 1), LocalDate.of(2026, 6, 30),
             EventCategory.CONCERT, 180, 12, 5, 120
-            , LocalDateTime.of(2024, 2, 25, 12, 0), LocalDateTime.of(2024, 2, 27, 12, 0)),
+            , LocalDateTime.of(2024, 2, 25, 12, 0), LocalDateTime.of(2026, 2, 27, 12, 0)),
     햄릿("Hamlet", "국립극장 해오름극장", "셰익스피어 4대 비극 중 하나인 '햄릿'의 현대적 재해석 공연입니다.",
-            "https://example.com/hamlet.jpg", LocalDate.of(2025, 7, 1), LocalDate.of(2025, 7, 15),
+            "https://example.com/hamlet.jpg", LocalDate.of(2024, 7, 1), LocalDate.of(2026, 7, 15),
             EventCategory.CONCERT, 150, 15, 4, 80
 
-            , LocalDateTime.of(2024, 2, 25, 12, 0), LocalDateTime.of(2024, 2, 27, 12, 0)),
+            , LocalDateTime.of(2024, 2, 25, 12, 0), LocalDateTime.of(2026, 2, 27, 12, 0)),
     햄릿일정("Hamlet", "국립극장 해오름극장", "셰익스피어 4대 비극 중 하나인 '햄릿'의 현대적 재해석 공연.",
-            "https://example.com/hamlet.jpg", LocalDate.of(2025, 7, 1), LocalDate.of(2025, 7, 15),
+            "https://example.com/hamlet.jpg", LocalDate.of(2024, 7, 1), LocalDate.of(2026, 7, 15),
             EventCategory.CONCERT, 150, 15, 4, 80
-            , LocalDateTime.of(2024, 2, 25, 12, 0), LocalDateTime.of(2024, 2, 27, 12, 0));
+            , LocalDateTime.of(2024, 2, 25, 12, 0), LocalDateTime.of(2026, 2, 27, 12, 0));
 
     private String title;
     private String venue;
@@ -96,9 +96,10 @@ public enum EventFixture {
                 .ageLimit(캣츠.ageLimit)
                 .schedules(List.of(
                         new ScheduleInfo(
-                                LocalDate.of(2024, 5, 10),
+                                LocalDate.of(2025, 5, 10),
                                 LocalTime.of(19, 30),
-                                null
+                                LocalDateTime.of(2023,6,25,11,0,0),
+                                LocalDateTime.of(2026,6,25,11,0,0)
                         )
                 ))
                 .build();
@@ -111,13 +112,12 @@ public enum EventFixture {
                 .description(캣츠2.description)
                 .startDate(캣츠2.startDate)
                 .endDate(캣츠2.endDate)
-                .reservationStart (캣츠2. reservationStart)
-                .reservationEnd(캣츠2.reservationEnd)
-                .schedule(List.of(
+                .schedules(List.of(
                         new ScheduleInfo(
-                                LocalDate.of(2024, 5, 12),
+                                LocalDate.of(2025, 5, 12),
                                 LocalTime.of(18, 0),
-                                null
+                                LocalDateTime.of(2025,6,25,11,0,0),
+                                LocalDateTime.of(2026,6,25,11,0,0)
                         )
                 ))
                 .build();
@@ -136,9 +136,10 @@ public enum EventFixture {
                 .ageLimit(햄릿.ageLimit)
                 .schedules(List.of(
                         new ScheduleInfo(
-                                LocalDate.of(2024, 5, 10),
+                                LocalDate.of(2025, 5, 10),
                                 LocalTime.of(19, 30),
-                                null
+                                LocalDateTime.of(2023,6,25,11,0,0),
+                                LocalDateTime.of(2026,6,25,11,0,0)
                         )
                 ))
                 .build();
@@ -157,9 +158,10 @@ public enum EventFixture {
                 .ageLimit(햄릿일정.ageLimit)
                 .schedules(List.of(
                         new ScheduleInfo(
-                                LocalDate.of(2024, 5, 10),
+                                LocalDate.of(2025, 5, 10),
                                 LocalTime.of(19, 30),
-                                null
+                                LocalDateTime.of(2023,6,25,11,0,0),
+                                LocalDateTime.of(2026,6,25,11,0,0)
                         )
                 ))
                 .build();

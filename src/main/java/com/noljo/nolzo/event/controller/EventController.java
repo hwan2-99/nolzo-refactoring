@@ -55,8 +55,21 @@ public class EventController {
         return ResponseEntity.ok(eventService.getTop6PopularEvents());
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<EventResponse> updateEvent(@PathVariable Long id, @RequestBody @Valid EventUpdateRequest dto) {
+    @PatchMapping(value = "/{id}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<EventResponse> updateEvent(
+            @PathVariable Long id,
+            @RequestPart("dto") @Valid EventUpdateRequest dto,
+            @RequestPart(value = "eventImage", required = false) MultipartFile image
+    ) {
+        return ResponseEntity.ok(eventService.update(id, dto));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<EventResponse> updateJson(
+            @PathVariable Long id,
+            @RequestBody @Valid EventUpdateRequest dto
+    ) {
         return ResponseEntity.ok(eventService.update(id, dto));
     }
 
