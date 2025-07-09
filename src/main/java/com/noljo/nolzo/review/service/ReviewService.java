@@ -1,20 +1,23 @@
 package com.noljo.nolzo.review.service;
 
-import com.noljo.nolzo.review.dto.request.ReviewUpdateRequest;
-import com.noljo.nolzo.review.dto.response.EventReviewDetailsResponse;
-import com.noljo.nolzo.review.dto.response.ReviewDetailResponse;
-import com.noljo.nolzo.review.dto.response.ReviewUpdateResponse;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.repository.EventRepository;
 import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.repository.MemberRepository;
 import com.noljo.nolzo.reservation.repository.ReservationRepository;
 import com.noljo.nolzo.review.dto.request.ReviewCreateRequest;
+import com.noljo.nolzo.review.dto.request.ReviewUpdateRequest;
+import com.noljo.nolzo.review.dto.response.EventReviewPageResponse;
+import com.noljo.nolzo.review.dto.response.ReviewDetailResponse;
 import com.noljo.nolzo.review.dto.response.ReviewResponse;
+import com.noljo.nolzo.review.dto.response.ReviewUpdateResponse;
 import com.noljo.nolzo.review.entity.Review;
 import com.noljo.nolzo.review.repository.ReviewRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +30,7 @@ public class ReviewService {
     private final MemberRepository memberRepository;
     private final ReservationRepository reservationRepository;
 
-    public ReviewResponse create(Long memberId, ReviewCreateRequest request){
+    public ReviewResponse create(Long memberId, ReviewCreateRequest request) {
         Member member = memberRepository.getOrThrow(memberId);
         Event event = eventRepository.getOrThrow(request.eventId());
 
@@ -63,12 +66,14 @@ public class ReviewService {
         return ReviewResponse.from(review);
     }
 
-    public EventReviewDetailsResponse getReviewsByEventId(Long eventId) {
-        List<ReviewDetailResponse> reviews  = findDetailReviewsByEvent(eventId);
-        double averageRating = getAverageRating(reviews);
-        return new EventReviewDetailsResponse(averageRating, reviews.size(), reviews);
+    public EventReviewPageResponse getPagingReviewsByEventId(Long eventId, int page, int size) {
+        PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Review> reviewPage = reviewRepository.findPageByEventId(eventId, pageable);
+        var reviewResponses = getReviewDetailResponsesFromReviewPage(reviewPage);
+        Double averageRating = reviewRepository.getAverageByEventId(eventId);
+        return EventReviewPageResponse.from(reviewPage, reviewResponses, averageRating, page, size);
     }
-  
+
     public void delete(Long memberId, Long reviewId) {
         Review review = reviewRepository.getOrThrow(reviewId);
         validateReviewOwner(review, memberId);
@@ -81,7 +86,7 @@ public class ReviewService {
         }
     }
 
-    private void validateEventParticipation(Long memberId, Long eventId){
+    private void validateEventParticipation(Long memberId, Long eventId) {
         boolean isUsed = reservationRepository.findTicketStatusUsedByMemberId(memberId).stream()
                 .anyMatch(reservation -> reservation.getTickets().stream()
                         .anyMatch(ticket -> ticket.getSeat().getSchedule().getEvent().getId().equals(eventId)));
@@ -90,24 +95,17 @@ public class ReviewService {
         }
     }
 
-    private void validateAlreadyReviewed(Long memberId, Long eventId){
+    private void validateAlreadyReviewed(Long memberId, Long eventId) {
         boolean isAlreadyReviewed = reviewRepository.findByMemberIdAndEventId(memberId, eventId).isPresent();
         if (isAlreadyReviewed) {
             throw new IllegalStateException("이미 해당 이벤트에 대한 리뷰를 작성하였습니다.");
         }
     }
 
-    private List<ReviewDetailResponse> findDetailReviewsByEvent(Long eventId) {
-        return reviewRepository.findByEventId(eventId)
+    private List<ReviewDetailResponse> getReviewDetailResponsesFromReviewPage(Page<Review> reviewPage) {
+        return reviewPage.getContent()
                 .stream()
                 .map(ReviewDetailResponse::from)
                 .toList();
-    }
-
-    private static double getAverageRating(List<ReviewDetailResponse> reviews) {
-        return reviews.stream()
-                .mapToInt(ReviewDetailResponse::rating)
-                .average()
-                .orElse(0.0);
     }
 }

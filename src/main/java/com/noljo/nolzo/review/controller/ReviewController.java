@@ -1,11 +1,11 @@
 package com.noljo.nolzo.review.controller;
 
 import com.noljo.nolzo.auth.security.CustomUserDetails;
-import com.noljo.nolzo.review.dto.request.ReviewUpdateRequest;
-import com.noljo.nolzo.review.dto.response.EventReviewDetailsResponse;
-import com.noljo.nolzo.review.dto.response.ReviewUpdateResponse;
 import com.noljo.nolzo.review.dto.request.ReviewCreateRequest;
+import com.noljo.nolzo.review.dto.request.ReviewUpdateRequest;
+import com.noljo.nolzo.review.dto.response.EventReviewPageResponse;
 import com.noljo.nolzo.review.dto.response.ReviewResponse;
+import com.noljo.nolzo.review.dto.response.ReviewUpdateResponse;
 import com.noljo.nolzo.review.service.ReviewService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -47,8 +47,12 @@ public class ReviewController {
 
     @Transactional(readOnly = true)
     @GetMapping("/events/{eventId}")
-    public ResponseEntity<EventReviewDetailsResponse> getReviewsByEvent(@PathVariable Long eventId) {
-        EventReviewDetailsResponse response = reviewService.getReviewsByEventId(eventId);
+    public ResponseEntity<EventReviewPageResponse> getReviewsByEvent(
+            @PathVariable Long eventId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        EventReviewPageResponse response = reviewService.getPagingReviewsByEventId(eventId, page, size);
         return ResponseEntity.ok(response);
     }
 
@@ -73,7 +77,7 @@ public class ReviewController {
 
     @DeleteMapping("/{reviewId}")
     public ResponseEntity<Void> deleteReview(
-            @AuthenticationPrincipal CustomUserDetails user, 
+            @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long reviewId
     ) {
         reviewService.delete(user.getMemberId(), reviewId);
