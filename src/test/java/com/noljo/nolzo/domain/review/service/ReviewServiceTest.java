@@ -110,9 +110,9 @@ public class ReviewServiceTest {
         reviewRepository.save(review1);
         reviewRepository.save(review2);
 
-        var result = reviewService.getReviewsByEventId(event.getId());
+        var result = reviewService.getPagingReviewsByEventId(event.getId(), 5, 5);
 
-        assertThat(result.reviewCount()).isEqualTo(2);
+        assertThat(result.totalReviewCount()).isEqualTo(2);
         assertThat(result.averageRating()).isEqualTo((review1.getRating() + review2.getRating()) / 2.0);
     }
   
