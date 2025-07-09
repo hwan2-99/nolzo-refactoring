@@ -21,10 +21,11 @@ public class ScheduleInfo {
         this.reservationStart=reservationStart;
         this.reservationEnd=reservationEnd;
     }
-    public ScheduleInfo(LocalDate showDate, LocalTime showTime, LocalDateTime reservationStart, Long id){
+    public ScheduleInfo(LocalDate showDate, LocalTime showTime, LocalDateTime reservationStart,LocalDateTime reservationEnd, Long id){
         this.showDate=showDate;
         this.showTime=showTime;
         this.reservationStart=reservationStart;
+        this.reservationEnd=reservationEnd;
         this.id=id;
     }
 }
