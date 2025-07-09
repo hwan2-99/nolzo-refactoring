@@ -7,6 +7,7 @@ import com.noljo.nolzo.event.entity.EventCategory;
 import com.noljo.nolzo.event.service.EventService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,9 +31,9 @@ public class EventController {
         return ResponseEntity.ok(eventService.save(dto,eventImage));
     }
 
-    @GetMapping(params = "category")
-    public ResponseEntity<List<EventResponse>> getEventByCategory(@RequestParam EventCategory category) {
-        return ResponseEntity.ok(eventService.findAllByCategory(category));
+    @GetMapping
+    public ResponseEntity<Slice<EventResponse>> getEventByCategory(@RequestParam EventCategory category, @RequestParam("page") int page) { // Pageable 객체를 파라미터로 추가
+        return ResponseEntity.ok(eventService.findAllByCategory(category, page));
     }
 
     @GetMapping("/{id}")
