@@ -5,23 +5,22 @@ import com.noljo.nolzo.auth.entity.RefreshToken;
 import com.noljo.nolzo.auth.jwt.JwtUtil;
 import com.noljo.nolzo.auth.repository.RefreshTokenRepository;
 import com.noljo.nolzo.member.entity.Member;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class JwtTokenService {
 
-    @Value("${jwt.refresh-token-validity-in-seconds}")
-    private long refreshTokenValidityInSeconds;
-
     private final JwtUtil jwtUtil;
     private final RefreshTokenRepository refreshTokenRepository;
+
+    @Value("${jwt.refresh-token-validity-in-seconds}")
+    private long refreshTokenValidityInSeconds;
 
     public TokensResponse issueToken(Member member) {
         String accessToken = jwtUtil.createAccessToken(member);
