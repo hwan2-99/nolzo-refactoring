@@ -7,6 +7,7 @@ import com.noljo.nolzo.auth.dto.RegisterResponse;
 import com.noljo.nolzo.auth.dto.TokensResponse;
 import com.noljo.nolzo.auth.service.AuthService;
 import com.noljo.nolzo.auth.service.JwtTokenService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.time.Duration;
@@ -43,10 +44,16 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<TokensResponse> login(@Valid @RequestBody LoginRequest request,
-                                                HttpServletResponse response) {
-        TokensResponse tokens = authService.login(request);
-        addRefreshTokenCookie(response, tokens.refreshToken(), Duration.ofSeconds(refreshTokenValidityInSeconds));
-        return ResponseEntity.ok(tokens);
+                                                HttpServletResponse response,
+                                                HttpServletRequest httpRequest) {
+        String clientIp = authService.getClientIp(httpRequest);
+        log.info("로그인 시도 IP: {}", clientIp);
+
+        TokensResponse tokenResponse = authService.login(request, clientIp);
+        addRefreshTokenCookie(response, tokenResponse.refreshToken(),
+                Duration.ofSeconds(refreshTokenValidityInSeconds));
+
+        return ResponseEntity.ok(tokenResponse);
     }
 
     @PostMapping("/logout")

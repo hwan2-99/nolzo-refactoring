@@ -1,15 +1,23 @@
 package com.noljo.nolzo.auth.service;
 
+import static javax.crypto.Cipher.SECRET_KEY;
+
 import com.noljo.nolzo.auth.dto.AccessTokenResponse;
 import com.noljo.nolzo.auth.dto.LoginRequest;
 import com.noljo.nolzo.auth.dto.RegisterRequest;
 import com.noljo.nolzo.auth.dto.RegisterResponse;
 import com.noljo.nolzo.auth.dto.TokensResponse;
+import com.noljo.nolzo.auth.entity.RefreshToken;
 import com.noljo.nolzo.auth.jwt.JwtUtil;
 import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.entity.Role;
 import com.noljo.nolzo.member.repository.MemberRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Base64;
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -29,6 +37,9 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final JwtUtil jwtUtil;
 
+    @Value("${ENCRYPTION_SECRET_KEY}")
+    private String encryptionSecretKey;
+
     public RegisterResponse register(RegisterRequest request) {
         validateDuplicateEmail(request.email());
 
@@ -44,16 +55,22 @@ public class AuthService {
         return RegisterResponse.from(savedMember);
     }
 
-    public TokensResponse login(LoginRequest request) {
+    // todo: 로그인 실패시 에러 메시지 처리 구체화
+    public TokensResponse login(LoginRequest request, String clientIp) {
         Member member = findMemberByEmail(request.email());
+        createAutenticate(request);
+        RefreshToken refreshToken = jwtTokenService.findRefreshTokenByMember(member.getId());
+        if(refreshToken != null && !isSameIp(refreshToken,clientIp)) {
+            logout(refreshToken.getRefreshToken());
+        }
+        return jwtTokenService.issueToken(member, encryptIp(clientIp));
+    }
 
-        // todo: 로그인 실패시 에러 메시지 처리 구체화
+    private void createAutenticate(LoginRequest request) {
         Authentication authenticate = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.email(), request.password())
         );
-
         SecurityContextHolder.getContext().setAuthentication(authenticate);
-        return jwtTokenService.issueToken(member);
     }
 
     public void logout(String refreshToken) {
@@ -76,5 +93,48 @@ public class AuthService {
         if (memberRepository.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 회원입니다.");
         }
+    }
+
+    public String getClientIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isBlank() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.isBlank() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.isBlank() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        return ip.split(",")[0];
+    }
+
+    private String encryptIp(String ip) {
+        try {
+            SecretKeySpec secretKey = new SecretKeySpec(encryptionSecretKey.getBytes(), "AES");
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+            byte[] encryptedBytes = cipher.doFinal(ip.getBytes());
+            return Base64.getEncoder().encodeToString(encryptedBytes);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to encrypt IP address", e);
+        }
+    }
+
+    private String decryptIp(String encryptedIp) {
+        try {
+            SecretKeySpec secretKey = new SecretKeySpec(encryptionSecretKey.getBytes(), "AES");
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            cipher.init(Cipher.DECRYPT_MODE, secretKey);
+            byte[] decodedBytes = Base64.getDecoder().decode(encryptedIp);
+            byte[] decryptedBytes = cipher.doFinal(decodedBytes);
+            return new String(decryptedBytes);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to decrypt IP address", e);
+        }
+    }
+
+    private boolean isSameIp(RefreshToken refreshToken, String clientIp) {
+        return decryptIp(refreshToken.getRefreshToken()).equals(clientIp);
     }
 }
