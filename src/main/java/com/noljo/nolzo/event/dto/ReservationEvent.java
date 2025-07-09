@@ -2,11 +2,10 @@ package com.noljo.nolzo.event.dto;
 
 import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.event.entity.Event;
-import lombok.Builder;
-import lombok.Getter;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
+import lombok.Builder;
+import lombok.Getter;
 
 @Builder
 @Getter
@@ -40,4 +39,3 @@ public class ReservationEvent {
                 .build();
     }
 }
-

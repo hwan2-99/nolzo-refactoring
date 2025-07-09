@@ -5,17 +5,13 @@ import com.noljo.nolzo.schedule.dto.internal.ScheduleInfo;
 import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.global.BaseEntity;
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.cglib.core.Local;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +48,6 @@ public class Event extends BaseEntity {
 
     private int ageLimit;
 
-
     @Column(nullable = false)
     private long viewCount = 0;
 
@@ -80,7 +75,6 @@ public class Event extends BaseEntity {
         schedule.setEvent(this);
     }
 
-
     public void addViewCount() {
         this.viewCount++;
     }
@@ -102,9 +96,7 @@ public class Event extends BaseEntity {
         }
     }
 
-
     public void updateFrom(EventUpdateRequest dto) {
-
         Optional.ofNullable(dto.getTitle()).ifPresent(t -> this.title = t);
         Optional.ofNullable(dto.getVenue()).ifPresent(v -> this.venue = v);
         Optional.ofNullable(dto.getDescription()).ifPresent(d -> this.description = d);
@@ -137,5 +129,4 @@ public class Event extends BaseEntity {
             schedules.add(newSchedule);
         }
     }
-
 }
