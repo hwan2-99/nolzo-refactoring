@@ -21,6 +21,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     Page<Review> findPageByEventId(Long eventId, Pageable pageable);
 
-    @Query("SELECT AVG(r.rating) FROM Review r WHERE r.event.id = :eventId")
+    @Query("SELECT IFNULL(AVG(r.rating), 0.0) FROM Review r WHERE r.event.id = :eventId")
     Double getAverageByEventId(@Param("eventId") Long eventId);
 }
