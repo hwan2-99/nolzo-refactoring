@@ -7,11 +7,13 @@ import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.entity.EventCategory;
 import com.noljo.nolzo.event.repository.EventRepository;
 import com.noljo.nolzo.global.upload.S3Uploader;
-import com.noljo.nolzo.schedule.dto.internal.ScheduleInfo;
 import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.seat.service.SeatService;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EventService {
 
+    private static final int SIZE = 12;
+    private static final String SORT_BY_DATE = "createdAt";
     private final EventRepository eventRepository;
     private final SeatService seatService;
     private final S3Uploader s3Uploader;
@@ -44,10 +48,10 @@ public class EventService {
     }
 
     @Transactional(readOnly = true)
-    public List<EventResponse> findAllByCategory(EventCategory eventCategory) {
-        return eventRepository.findAllByEventCategory(eventCategory, Sort.by(Sort.Direction.DESC, "createdAt")).stream()
-                .map(EventResponse::from)
-                .toList();
+    public Slice<EventResponse> findAllByCategory(EventCategory eventCategory, int page) {
+        Pageable pageable = PageRequest.of(page, SIZE, Sort.by(Sort.Direction.DESC, SORT_BY_DATE));
+        Slice<Event> events = eventRepository.findAllByEventCategory(eventCategory, pageable);
+        return events.map(EventResponse::from);
     }
 
     public EventResponse save(EventRequest dto, MultipartFile image) {
