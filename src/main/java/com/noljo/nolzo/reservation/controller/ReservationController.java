@@ -81,9 +81,9 @@ public class ReservationController {
 
     @GetMapping("/reservation/{eventId}")
     public ResponseEntity<List<SeatResponse>> findSeatsByEventId(
-            @PathVariable Long eventId,
-            @RequestParam String date,
-            @RequestParam String time) {
+            @PathVariable(name = "eventId") Long eventId,
+            @RequestParam(name = "date") String date,
+            @RequestParam(name = "time") String time) {
         return ResponseEntity.ok(seatService.findSeats(eventId, date, time));
     }
 
