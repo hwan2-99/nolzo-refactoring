@@ -84,11 +84,8 @@ public class SeatService {
 
     @Transactional(readOnly = true)
     public List<SeatResponse> findSeats(Long eventId, String date, String time) {
-        Schedule schedule = findScheduleByEventIdWithDate(eventId, date, time);
-
-        return schedule.getSeats().stream()
-                .map(SeatResponse::from)
-                .toList();
+        return scheduleRepository.findSeatResponsesBySchedule(
+                eventId, LocalDate.parse(date), LocalTime.parse(time));
     }
 
     private Schedule findScheduleByEventIdWithDate(Long eventId, String date, String time) {
