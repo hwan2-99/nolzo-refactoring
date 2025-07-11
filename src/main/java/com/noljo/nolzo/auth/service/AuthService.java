@@ -13,6 +13,8 @@ import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.entity.Role;
 import com.noljo.nolzo.member.repository.MemberRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -63,7 +65,7 @@ public class AuthService {
         if(refreshToken != null && !isSameIp(refreshToken,clientIp)) {
             logout(refreshToken.getRefreshToken());
         }
-        return jwtTokenService.issueToken(member, encryptIp(clientIp));
+        return jwtTokenService.issueToken(member, clientIp);
     }
 
     private void createAutenticate(LoginRequest request) {
@@ -109,32 +111,7 @@ public class AuthService {
         return ip.split(",")[0];
     }
 
-    private String encryptIp(String ip) {
-        try {
-            SecretKeySpec secretKey = new SecretKeySpec(encryptionSecretKey.getBytes(), "AES");
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-            byte[] encryptedBytes = cipher.doFinal(ip.getBytes());
-            return Base64.getEncoder().encodeToString(encryptedBytes);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to encrypt IP address", e);
-        }
-    }
-
-    private String decryptIp(String encryptedIp) {
-        try {
-            SecretKeySpec secretKey = new SecretKeySpec(encryptionSecretKey.getBytes(), "AES");
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-            cipher.init(Cipher.DECRYPT_MODE, secretKey);
-            byte[] decodedBytes = Base64.getDecoder().decode(encryptedIp);
-            byte[] decryptedBytes = cipher.doFinal(decodedBytes);
-            return new String(decryptedBytes);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to decrypt IP address", e);
-        }
-    }
-
     private boolean isSameIp(RefreshToken refreshToken, String clientIp) {
-        return decryptIp(refreshToken.getRefreshToken()).equals(clientIp);
+        return refreshToken.getRefreshToken().equals(clientIp);
     }
 }
