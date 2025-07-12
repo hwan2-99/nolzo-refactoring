@@ -31,7 +31,6 @@ public class ReservationController {
     }
 
     @PostMapping("/{eventId}")
-
     public ResponseEntity<EventDateTimeResponse> chooseEventDateTime(@PathVariable Long eventId,
                                                                      @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate selectDate,
                                                                      @RequestParam @DateTimeFormat(pattern = "HH:mm:ss") LocalTime selectTime) {
@@ -91,7 +90,7 @@ public class ReservationController {
     @DeleteMapping("/reservation/{reservationId}")
     public ResponseEntity<ReservationCancelResponse> cancelReservation(
             @AuthenticationPrincipal(expression = "memberId") Long memberId,
-            @PathVariable Long reservationId){
-        return ResponseEntity.ok(reservationService.cancelReservationById(memberId,reservationId));
+            @PathVariable Long reservationId) {
+        return ResponseEntity.ok(reservationService.cancelReservationById(memberId, reservationId));
     }
 }
