@@ -32,9 +32,19 @@ public class EventController {
     }
 
     @GetMapping
-    public ResponseEntity<Slice<EventResponse>> getEventByCategory(@RequestParam EventCategory category, @RequestParam("page") int page) {
-        return ResponseEntity.ok(eventService.findAllByCategory(category, page));
+    public Slice<EventResponse> getEventsByCategory(
+            @RequestParam EventCategory category,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(defaultValue = "viewCount",required = false) String condition,
+            @RequestParam(required = false) Integer age
+    ) {
+        return eventService.getEventByCategory(category, condition, page, age);
     }
+
+//    @GetMapping
+//    public ResponseEntity<Slice<EventResponse>> getEventByCategory(@RequestParam EventCategory category, @RequestParam("page") int page) {
+//        return ResponseEntity.ok(eventService.findAllByCategory(category, page));
+//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<EventResponse> getEventDetail(@PathVariable Long id) {
@@ -80,3 +90,4 @@ public class EventController {
         return ResponseEntity.noContent().build();
     }
 }
+

@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.nio.channels.FileChannel;
 import java.util.List;
 
 @Repository
@@ -15,10 +17,13 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     Slice<Event> findAllByEventCategory(EventCategory eventCategory, Pageable pageable);
 
     List<Event> findTop6ByOrderByViewCountDesc();
-  
+
     List<Event> findByTitleContaining(String search);
 
     default Event getOrThrow(Long id) {
         return findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이벤트입니다. (ID: " + id + ")"));
     }
+
+    Slice<Event> findByEventCategoryAndAgeLimitLessThanEqual(EventCategory category, Integer age, Pageable pageable);
 }
+
