@@ -70,8 +70,8 @@ public class ReviewService {
         PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<Review> reviewPage = reviewRepository.findPageByEventId(eventId, pageable);
         List<ReviewDetailResponse> reviewResponses = getReviewDetailResponsesFromReviewPage(reviewPage);
-        Double averageRating = reviewRepository.getAverageByEventId(eventId);
-        return EventReviewPageResponse.of(reviewPage, reviewResponses, averageRating, page, size);
+        Event event = eventRepository.getOrThrow(eventId);
+        return EventReviewPageResponse.of(reviewPage, reviewResponses, event.getAverageRating(), page, size);
     }
 
     public void delete(Long memberId, Long reviewId) {
