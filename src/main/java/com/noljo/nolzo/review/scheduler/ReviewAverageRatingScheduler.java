@@ -16,16 +16,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ReviewAverageRatingScheduler {
 
+    private static final long THIRTY_MINUTES = 10 * 60 * 1000L;
     private final EventRepository eventRepository;
     private final ReviewRepository reviewRepository;
 
     @EventListener(ApplicationReadyEvent.class)
-
     public void initializeEventAverageRatings() {
         updateEventAverageRate();
     }
 
-    @Scheduled(fixedRate = 30 * 60 * 1000)
+    @Scheduled(fixedRate = THIRTY_MINUTES)
     public void updateEventAverageRate() {
         List<Event> events = eventRepository.findAll();
         events.forEach(event -> {
