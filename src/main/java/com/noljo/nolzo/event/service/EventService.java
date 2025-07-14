@@ -47,11 +47,23 @@ public class EventService {
                 .toList();
     }
 
-    @Transactional(readOnly = true)
-    public Slice<EventResponse> findAllByCategory(EventCategory eventCategory, int page) {
-        Pageable pageable = PageRequest.of(page, SIZE, Sort.by(Sort.Direction.DESC, SORT_BY_DATE));
-        Slice<Event> events = eventRepository.findAllByEventCategory(eventCategory, pageable);
-        return events.map(EventResponse::from);
+    public Slice<EventResponse> getEventByCategory(EventCategory eventCategory, String condition, int page, Integer age) {
+        Pageable pageable = PageRequest.of(page, SIZE, getCondition(condition));
+        if (age != null) {
+            return eventRepository.findByEventCategoryAndAgeLimitLessThanEqual(eventCategory, age, pageable)
+                    .map(EventResponse::from);
+        }
+        return eventRepository.findAllByEventCategory(eventCategory, pageable)
+                .map(EventResponse::from);
+    }
+
+    private Sort getCondition(String condition) {
+        return switch (condition) {
+            case "reviewCount" -> Sort.by(Sort.Direction.DESC, "viewCount");
+            case "reviewStar"  -> Sort.by(Sort.Direction.DESC, "ratingAvg");
+            case "ranking"     -> Sort.by(Sort.Direction.DESC, "viewCount");
+            default            -> Sort.by(Sort.Direction.DESC, SORT_BY_DATE);
+        };
     }
 
     public EventResponse save(EventRequest dto, MultipartFile image) {
@@ -95,8 +107,8 @@ public class EventService {
     public EventResponse update(Long id, EventUpdateRequest dto) {
         Event original = getEvent(id);
         Set<Long> originalSchedules = original.getSchedules().stream()
-                        .map(Schedule::getId)
-                                .collect(Collectors.toSet());
+                .map(Schedule::getId)
+                .collect(Collectors.toSet());
 
         original.updateFrom(dto);
 
@@ -125,3 +137,4 @@ public class EventService {
                 .toList();
     }
 }
+

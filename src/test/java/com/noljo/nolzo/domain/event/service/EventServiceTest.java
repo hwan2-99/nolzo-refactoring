@@ -76,7 +76,7 @@ class EventServiceTest {
         EventRequest dto3 = EventFixture.셜록_앤더슨_dto();
         EventResponse response3 = eventService.save(dto3, image);
 
-        Slice<EventResponse> result = eventService.findAllByCategory(EventCategory.MUSICAL, 0);
+        Slice<EventResponse> result = eventService.getEventByCategory(EventCategory.MUSICAL, "ranking",0,20);
 
         Assertions.assertThat(result.getContent())
                 .hasSize(2)
@@ -90,7 +90,7 @@ class EventServiceTest {
         EventRequest concertEvent = EventFixture.캣츠dto();
         eventService.save(concertEvent, image);
 
-        Slice<EventResponse> otherEvents = eventService.findAllByCategory(EventCategory.MUSICAL, 0);
+        Slice<EventResponse> otherEvents = eventService.getEventByCategory(EventCategory.MUSICAL, "null",0,0);
 
         Assertions.assertThat(otherEvents.getContent()).isEmpty();
     }
