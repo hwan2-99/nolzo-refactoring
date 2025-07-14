@@ -25,18 +25,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             @Param("showTime") LocalTime showTime
     );
 
-//    @Query("""
-//            SELECT s FROM Schedule s
-//            WHERE s.event.id = :eventId
-//            AND s.showDate = :showDate
-//            AND s.showTime = :showTime
-//            """)
-//    Optional<Schedule> findByEventIdAndShowDateAndShowTime(
-//            @Param("eventId") Long eventId,
-//            @Param("showDate") LocalDate showDate,
-//            @Param("showTime") LocalTime showTime
-//    );
-
     @Query("""
     SELECT new com.noljo.nolzo.seat.dto.SeatResponse(se.id, se.rowName, se.seatNumber, se.seatSection, se.floor, se.price, se.status)
     FROM Schedule s
