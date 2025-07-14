@@ -49,8 +49,8 @@ class JwtTokenServiceTest {
         Member member = MemberFixture.회원();
         memberRepository.save(member);
 
-        TokensResponse tokensResponse = jwtTokenService.issueToken(member);
-        assertThat(refreshTokenRepository.findByMemberId(member.getId()).get().getToken()).isEqualTo(
+        TokensResponse tokensResponse = jwtTokenService.issueToken(member, "test");
+        assertThat(refreshTokenRepository.findByMemberId(member.getId()).get().getRefreshToken()).isEqualTo(
                 tokensResponse.refreshToken());
     }
 
@@ -58,7 +58,7 @@ class JwtTokenServiceTest {
     void accessToken은_재발급이_가능하다() {
         Member member = MemberFixture.회원();
         memberRepository.save(member);
-        TokensResponse tokens = jwtTokenService.issueToken(member);
+        TokensResponse tokens = jwtTokenService.issueToken(member, "test");
 
         String newAccessToken = jwtTokenService.reissueAccessToken(member, tokens.refreshToken());
 
@@ -95,7 +95,7 @@ class JwtTokenServiceTest {
         Member member = MemberFixture.회원();
         memberRepository.save(member);
 
-        TokensResponse tokens = jwtTokenService.issueToken(member);
+        TokensResponse tokens = jwtTokenService.issueToken(member, "test");
 
         String fakeToken = tokens.refreshToken() + "fake-token";
 
@@ -107,7 +107,7 @@ class JwtTokenServiceTest {
     void refreshToken으로_토큰_삭제_성공() {
         Member member = MemberFixture.회원();
         memberRepository.save(member);
-        TokensResponse tokens = jwtTokenService.issueToken(member);
+        TokensResponse tokens = jwtTokenService.issueToken(member, "test");
         String refreshToken = tokens.refreshToken();
 
         jwtTokenService.removeRefreshTokenByToken(refreshToken);
@@ -135,6 +135,6 @@ class JwtTokenServiceTest {
 
         List<RefreshToken> remainingTokens = refreshTokenRepository.findAll();
         assertThat(remainingTokens).hasSize(1);
-        assertThat(remainingTokens.get(0).getToken()).isEqualTo("valid-token");
+        assertThat(remainingTokens.get(0).getRefreshToken()).isEqualTo("valid-token");
     }
 }

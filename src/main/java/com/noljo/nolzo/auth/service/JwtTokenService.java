@@ -22,12 +22,10 @@ public class JwtTokenService {
     @Value("${jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenValidityInSeconds;
 
-    public TokensResponse issueToken(Member member) {
-        String accessToken = jwtUtil.createAccessToken(member);
-        String refreshToken = jwtUtil.createRefreshToken(member);
-        LocalDateTime expiryDate = calculateExpiryDate();
-        saveOrUpdateRefreshToken(member, refreshToken, expiryDate);
-        return new TokensResponse(accessToken, refreshToken);
+    public TokensResponse issueToken(Member member, String clientIp) {
+        RefreshToken refreshToken = saveRefreshToken(member, jwtUtil.createRefreshToken(member), calculateExpiryDate(),
+                clientIp);
+        return new TokensResponse(jwtUtil.createAccessToken(member), refreshToken.getRefreshToken());
     }
 
     public String reissueAccessToken(Member member, String refreshToken) {
@@ -45,12 +43,14 @@ public class JwtTokenService {
         }
     }
 
-    private void saveOrUpdateRefreshToken(Member member, String refreshToken, LocalDateTime expiryDate) {
-        refreshTokenRepository.findByMemberId(member.getId())
-                .ifPresentOrElse(
-                        existingToken -> existingToken.updateToken(refreshToken, expiryDate),
-                        () -> refreshTokenRepository.save(new RefreshToken(member.getId(), refreshToken, expiryDate))
-                );
+    public RefreshToken findRefreshTokenByMember(Long memberId) {
+        return refreshTokenRepository.findByMemberId(memberId)
+                .orElse(null);
+    }
+
+    private RefreshToken saveRefreshToken(Member member, String refreshToken, LocalDateTime expiryDate,
+                                          String clientIp) {
+        return refreshTokenRepository.save(new RefreshToken(member.getId(), refreshToken, expiryDate, clientIp));
     }
 
     private LocalDateTime calculateExpiryDate() {
@@ -76,7 +76,7 @@ public class JwtTokenService {
     }
 
     private void validateRefreshTokenMatches(RefreshToken savedRefreshToken, String refreshToken) {
-        if (!refreshToken.equals(savedRefreshToken.getToken())) {
+        if (!refreshToken.equals(savedRefreshToken.getRefreshToken())) {
             throw new IllegalStateException("RefreshToken이 일치하지 않습니다.");
         }
     }

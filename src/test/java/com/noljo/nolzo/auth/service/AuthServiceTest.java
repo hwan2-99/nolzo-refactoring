@@ -15,6 +15,7 @@ import com.noljo.nolzo.member.repository.MemberRepository;
 import com.noljo.nolzo.support.annotation.ServiceTest;
 import com.noljo.nolzo.support.fixture.MemberFixture;
 import io.jsonwebtoken.security.SignatureException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -78,7 +79,7 @@ class AuthServiceTest {
     void 존재하지_않는_이메일로_로그인하면_예외가_발생한다() {
         LoginRequest login = new LoginRequest("notfound@example.com", "1234");
 
-        assertThatThrownBy(() -> authService.login(login))
+        assertThatThrownBy(() -> authService.login(login, "testIp"))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -88,7 +89,7 @@ class AuthServiceTest {
         registerAndLogin(member);
         LoginRequest login = new LoginRequest(member.getEmail(), "wrong");
 
-        assertThatThrownBy(() -> authService.login(login))
+        assertThatThrownBy(() -> authService.login(login, "testIp"))
                 .isInstanceOf(BadCredentialsException.class);
     }
 
@@ -127,6 +128,6 @@ class AuthServiceTest {
         authService.register(registerRequest);
 
         LoginRequest loginRequest = new LoginRequest(member.getEmail(), member.getPassword());
-        return authService.login(loginRequest);
+        return authService.login(loginRequest, "testIp");
     }
 }
