@@ -66,13 +66,6 @@ public class EventService {
         };
     }
 
-//    @Transactional(readOnly = true)
-//    public Slice<EventResponse> findAllByCategory(EventCategory eventCategory, int page) {
-//        Pageable pageable = PageRequest.of(page, SIZE, Sort.by(Sort.Direction.DESC, SORT_BY_DATE));
-//        Slice<Event> events = eventRepository.findAllByEventCategory(eventCategory, pageable);
-//        return events.map(EventResponse::from);
-//    }
-
     public EventResponse save(EventRequest dto, MultipartFile image) {
         String imageUrl = null;
 

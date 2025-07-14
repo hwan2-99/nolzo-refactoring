@@ -40,12 +40,7 @@ public class EventController {
     ) {
         return eventService.getEventByCategory(category, condition, page, age);
     }
-
-//    @GetMapping
-//    public ResponseEntity<Slice<EventResponse>> getEventByCategory(@RequestParam EventCategory category, @RequestParam("page") int page) {
-//        return ResponseEntity.ok(eventService.findAllByCategory(category, page));
-//    }
-
+    
     @GetMapping("/{id}")
     public ResponseEntity<EventResponse> getEventDetail(@PathVariable Long id) {
         return ResponseEntity.ok(eventService.findById(id));
