@@ -39,9 +39,6 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final JwtUtil jwtUtil;
 
-    @Value("${ENCRYPTION_SECRET_KEY}")
-    private String encryptionSecretKey;
-
     public RegisterResponse register(RegisterRequest request) {
         validateDuplicateEmail(request.email());
 
