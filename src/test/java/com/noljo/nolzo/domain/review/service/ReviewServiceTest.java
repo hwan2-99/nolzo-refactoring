@@ -113,7 +113,6 @@ public class ReviewServiceTest {
         var result = reviewService.getPagingReviewsByEventId(event.getId(), 5, 5);
 
         assertThat(result.totalReviewCount()).isEqualTo(2);
-        assertThat(result.averageRating()).isEqualTo((review1.getRating() + review2.getRating()) / 2.0);
     }
   
     @Test

@@ -51,11 +51,14 @@ public class Event extends BaseEntity {
     @Column(nullable = false)
     private long viewCount = 0;
 
+    private double averageRating = 0.0;
+
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Schedule> schedules = new ArrayList<>();
 
     @Builder
-    public Event(Long id, String title, String venue, String description, String posterImageUrl, LocalDate startDate, LocalDate endDate,
+    public Event(Long id, String title, String venue, String description, String posterImageUrl, LocalDate startDate,
+                 LocalDate endDate,
                  EventCategory eventCategory, int runtime, int ageLimit) {
         this.id = id;
         this.title = title;
@@ -77,6 +80,10 @@ public class Event extends BaseEntity {
 
     public void addViewCount() {
         this.viewCount++;
+    }
+
+    public void updateAverageRating(double rating) {
+        this.averageRating = rating;
     }
 
     public void validUpdateSchedule(Schedule dto) {
@@ -106,7 +113,7 @@ public class Event extends BaseEntity {
             Map<Long, Schedule> originalSchedule = schedules.stream()
                     .collect(Collectors.toMap(Schedule::getId, Function.identity()));
             for (ScheduleInfo schedule : dto.getSchedules()) {
-                manageSchedule(schedule,originalSchedule);
+                manageSchedule(schedule, originalSchedule);
             }
             for (Schedule removeTarget : originalSchedule.values()) {
                 schedules.remove(removeTarget);
@@ -118,7 +125,8 @@ public class Event extends BaseEntity {
         if (schedule.getId() != null && originalSchedule.containsKey(schedule.getId())) {
             Schedule selectedSchedule = originalSchedule.remove(schedule.getId());
             validUpdateSchedule(selectedSchedule);
-            selectedSchedule.updateFrom(schedule.getShowDate(), schedule.getShowTime(), schedule.getReservationStart(), schedule.getReservationEnd());
+            selectedSchedule.updateFrom(schedule.getShowDate(), schedule.getShowTime(), schedule.getReservationStart(),
+                    schedule.getReservationEnd());
         } else {
             Schedule newSchedule = Schedule.builder().showDate(schedule.getShowDate())
                     .showTime(schedule.getShowTime())
