@@ -33,7 +33,7 @@ class EventServiceTest {
     @Test
     void 이벤트를_저장할_수_있다() {
         EventRequest dto = EventFixture.캣츠dto();
-        EventResponse response = eventService.save(dto, image);
+        EventResponse response = eventService.save(dto, null);
         Assertions.assertThat(response.getId()).isNotNull();
         Assertions.assertThat(response.getTitle()).isEqualTo("Cats");
     }
@@ -41,7 +41,7 @@ class EventServiceTest {
     @Test
     void 이벤트를_조회할_수_있다() {
         EventRequest dto = EventFixture.캣츠dto();
-        EventResponse response = eventService.save(dto, image);
+        EventResponse response = eventService.save(dto, null);
         Assertions.assertThat(response.getId()).isEqualTo(eventService.findAll().get(0).getId());
     }
 
@@ -49,7 +49,7 @@ class EventServiceTest {
     void 개별_이벤트를_조회할_수_있다() {
         EventRequest dto = EventFixture.캣츠dto();
 
-        EventResponse response = eventService.save(dto, image);
+        EventResponse response = eventService.save(dto, null);
         Long id = response.getId();
 
         Assertions.assertThat("Cats").isEqualTo(eventService.findById(id).getTitle());
@@ -71,10 +71,10 @@ class EventServiceTest {
     @Test
     void 카테고리별_페이징_처리_및_이벤트_조회_테스트() {
         EventRequest dto2 = EventFixture.셜록_블러디_dto();
-        EventResponse response2 = eventService.save(dto2, image);
+        EventResponse response2 = eventService.save(dto2, null);
 
         EventRequest dto3 = EventFixture.셜록_앤더슨_dto();
-        EventResponse response3 = eventService.save(dto3, image);
+        EventResponse response3 = eventService.save(dto3, null);
 
         Slice<EventResponse> result = eventService.getEventByCategory(EventCategory.MUSICAL, "ranking",0,20);
 
@@ -88,7 +88,7 @@ class EventServiceTest {
     @Test
     void 존재하지_않는_카테고리의_이벤트_조회시_빈_리스트를_반환한다() {
         EventRequest concertEvent = EventFixture.캣츠dto();
-        eventService.save(concertEvent, image);
+        eventService.save(concertEvent, null);
 
         Slice<EventResponse> otherEvents = eventService.getEventByCategory(EventCategory.MUSICAL, "null",0,0);
 
@@ -98,7 +98,7 @@ class EventServiceTest {
     @Test
     void 이벤트를_삭제할_수_있다() {
         EventRequest dto = EventFixture.캣츠dto();
-        EventResponse response = eventService.save(dto, image);
+        EventResponse response = eventService.save(dto, null);
         Long id = response.getId();
 
         eventService.delete(id);
@@ -111,7 +111,7 @@ class EventServiceTest {
         EventRequest originalRequest = EventFixture.캣츠dto();
         EventUpdateRequest updateRequest = EventFixture.캣츠2dto();
 
-        EventResponse savedResponse = eventService.save(originalRequest, image);
+        EventResponse savedResponse = eventService.save(originalRequest, null);
         Long id = savedResponse.getId();
 
         EventResponse updatedResponse = eventService.update(id, updateRequest);
@@ -138,7 +138,7 @@ class EventServiceTest {
                 .title("뮤지컬 캣츠")
                 .venue("세종문화회관")
                 .description("전설의 고양이")
-                .posterImageUrl("http://image.url")
+                .posterImageUrl(null)
                 .startDate(LocalDate.of(2025, 7, 1))
                 .endDate(LocalDate.of(2025, 7, 10))
                 .eventCategory(EventCategory.MUSICAL)
