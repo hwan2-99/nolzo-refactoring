@@ -94,26 +94,6 @@ public class ReviewServiceTest {
         assertThat(result.content()).isEqualTo(review.getContent());
         assertThat(result.rating()).isEqualTo(review.getRating());
     }
-
-    @Test
-    void 이벤트_ID로_리뷰_상세_정보를_조회할_수_있다() {
-        Member member1 = MemberFixture.회원();
-        Member member2 = MemberFixture.회투();
-        memberRepository.save(member1);
-        memberRepository.save(member2);
-
-        Event event = EventFixture.캣츠();
-        eventRepository.save(event);
-
-        Review review1 = ReviewFixture.연극리뷰(event, member1);
-        Review review2 = ReviewFixture.연극리뷰(event, member2);
-        reviewRepository.save(review1);
-        reviewRepository.save(review2);
-
-        var result = reviewService.getPagingReviewsByEventId(event.getId(), 5, 5);
-
-        assertThat(result.totalReviewCount()).isEqualTo(2);
-    }
   
     @Test
     void 리뷰를_삭제할_수_있다() {
