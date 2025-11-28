@@ -43,3 +43,6 @@ out/
 
 ### Log
 .log
+
+### YML files ###
+*.yml
