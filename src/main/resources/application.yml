@@ -17,8 +17,6 @@ server:
 api:
   version: v1
 
-
-
 spring:
   data:
     redis:
@@ -31,9 +29,9 @@ spring:
   config:
     import: optional:file:./.env[.properties]
   datasource:
-    url: ${MYSQL_DATABASE_URL}
-    username: ${MYSQL_USERNAME}
-    password: ${MYSQL_PASSWORD}
+    url: jdbc:mysql://mysql:3306/nolzo?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=utf8
+    username: root
+    password: rlaxoghks12
     hikari:
       maximum-pool-size: 50
       minimum-idle: 10
@@ -49,7 +47,7 @@ spring:
         keep-alive: 60s
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         default_batch_fetch_size: 500
@@ -60,13 +58,13 @@ spring:
 
 # JWT 설정
 jwt:
-  secret: ${JWT_SECRET}
-  access-token-validity-in-seconds: ${JWT_ACCESS_TOKEN_VALIDITY_IN_SECONDS}
-  refresh-token-validity-in-seconds: ${JWT_REFRESH_TOKEN_VALIDITY_IN_SECONDS}
+  secret: "qwepoiasdkljzxcmaskldjnowjgnhwqaknfjoasddnflkasjdlkasjl"
+  access-token-validity-in-seconds: 900
+  refresh-token-validity-in-seconds: 1209600
 
 # CORS 설정
 cors:
-  allowed-origins: ${CORS_ALLOWED_ORIGIN}
+  allowed-origins: http://localhost:3000/
   allowed-methods: GET,POST,PUT,DELETE,OPTIONS,PATCH
   allowed-headers: '*'
   max-age: 3600
@@ -80,10 +78,10 @@ swagger:
 cloud:
   aws:
     s3:
-      bucketName: ${BUCKET_NAME}
+      bucketName: nolzobucket
     credentials:
-      access-key: ${ACCESS_KEY}
-      secret-key: ${SECRET_KEY}
+      access-key: AKIASXKDVEY2X66TGXW7
+      secret-key: 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
     region:
       static: ap-northeast-2
     stack:
@@ -93,7 +91,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "prometheus,health,metrics"
+        include: health,info,metrics,prometheus
       base-path: /actuator
   endpoint:
     health:
