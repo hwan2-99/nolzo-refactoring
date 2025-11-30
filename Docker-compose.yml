@@ -8,12 +8,16 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: rlaxoghks12
       MYSQL_DATABASE: nolzo
-      MYSQL_USER: nolzo
+      MYSQL_USER: root
       MYSQL_PASSWORD: nolzo
     ports:
       - "3307:3306"
     networks:
       - monitoring
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 10
 
   springboot:
     build: .
