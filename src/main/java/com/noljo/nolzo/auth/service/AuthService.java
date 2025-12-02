@@ -19,6 +19,7 @@ import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,13 +29,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
-    private final PasswordEncoder passwordEncoder;
     private final JwtTokenService jwtTokenService;
     private final MemberRepository memberRepository;
     private final JwtUtil jwtUtil;
@@ -45,7 +46,7 @@ public class AuthService {
         Member member = Member.of(
                 request.name(),
                 request.email(),
-                passwordEncoder.encode(request.password()),
+                request.password(),
                 request.birth(),
                 Role.USER
         );
@@ -56,20 +57,14 @@ public class AuthService {
 
     // todo: 로그인 실패시 에러 메시지 처리 구체화
     public TokensResponse login(LoginRequest request, String clientIp) {
-        Member member = findMemberByEmail(request.email());
-        createAutenticate(request);
+        log.info("요청한 Member의 ID: {}", request.email());
+        Member member = findMemberByEmail(request.email(), request.password());
+        log.info("로그인한 Member의 ID: {}", member.getId());
         RefreshToken refreshToken = jwtTokenService.findRefreshTokenByMember(member.getId());
-        if(refreshToken != null && !isSameIp(refreshToken,clientIp)) {
+        if (refreshToken != null && !isSameIp(refreshToken, clientIp)) {
             logout(refreshToken.getRefreshToken());
         }
         return jwtTokenService.issueToken(member, clientIp);
-    }
-
-    private void createAutenticate(LoginRequest request) {
-        Authentication authenticate = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.email(), request.password())
-        );
-        SecurityContextHolder.getContext().setAuthentication(authenticate);
     }
 
     public void logout(String refreshToken) {
@@ -83,8 +78,8 @@ public class AuthService {
         return new AccessTokenResponse(reissuedAccessToken);
     }
 
-    private Member findMemberByEmail(String email) {
-        return memberRepository.findByEmail(email)
+    private Member findMemberByEmail(String email, String password) {
+        return memberRepository.findByEmailAndPassword(email, password)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원 입니다."));
     }
 

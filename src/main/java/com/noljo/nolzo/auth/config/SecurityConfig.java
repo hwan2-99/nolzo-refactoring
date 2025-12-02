@@ -37,12 +37,14 @@ public class SecurityConfig {
             "/auth/**",
             "/actuator/**",
             "/metrics",
+            "/member/**"
     };
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, DaoAuthenticationProvider daoAuthProvider) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, DaoAuthenticationProvider daoAuthProvider)
+            throws Exception {
         http.authenticationProvider(daoAuthProvider)
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
@@ -58,7 +60,8 @@ public class SecurityConfig {
                         .requestMatchers(POST, "/reservations/*").permitAll()
                         .requestMatchers(GET, "/reviews/*/").permitAll()
                         .requestMatchers(GET, "/reviews/events/*").permitAll()
-                        .requestMatchers("/member/**", "/payments/**", "/reservations/**", "/reviews/**", "/tickets/**").hasRole("USER")
+                        .requestMatchers("/payments/**", "/reservations/**", "/reviews/**", "/tickets/**")
+                        .hasRole("USER")
                         .anyRequest().authenticated())
 
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -67,21 +70,15 @@ public class SecurityConfig {
 
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider(
-            CustomUserDetailsService userDetailsService,
-            PasswordEncoder passwordEncoder
-    ) {
-        var provider = new DaoAuthenticationProvider(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder);
+            CustomUserDetailsService userDetailsService) {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
         return provider;
     }
 
     @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 }

@@ -34,23 +34,9 @@ class AuthServiceTest {
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private JwtUtil jwtUtil;
-
-    @Test
-    void 회원가입시_비밀번호가_암호화되서_회원이_저장된다() {
-        Member member = MemberFixture.회원();
-        RegisterRequest request = new RegisterRequest(member.getEmail(), member.getPassword(), member.getName(),
-                member.getBirth());
-        RegisterResponse response = authService.register(request);
-
-        Member savedMember = memberRepository.findByEmail(request.email()).get();
-        assertThat(savedMember.getId()).isEqualTo(response.memberId());
-        assertThat(passwordEncoder.matches(request.password(), savedMember.getPassword())).isTrue();
-    }
 
     @Test
     void 중복된_이메일로_회원가입시_예외가_발생한다() {
@@ -90,7 +76,7 @@ class AuthServiceTest {
         LoginRequest login = new LoginRequest(member.getEmail(), "wrong");
 
         assertThatThrownBy(() -> authService.login(login, "testIp"))
-                .isInstanceOf(BadCredentialsException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
