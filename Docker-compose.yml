@@ -23,11 +23,18 @@ services:
     build: .
     container_name: springboot
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     ports:
       - "8080:8080"
     networks:
       - monitoring
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -s http://localhost:8080 > /dev/null" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
 
   prometheus:
     image: prom/prometheus
@@ -50,6 +57,19 @@ services:
       - monitoring
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
+
+  k6:
+    image: loadimpact/k6
+    container_name: k6
+    platform: linux/amd64
+    depends_on:
+      springboot:
+        condition: service_healthy
+    networks:
+      - monitoring
+    command: [ "run", "/test.js" ]
+    volumes:
+      - ./k6/test.js:/test.js
 
 networks:
   monitoring:
