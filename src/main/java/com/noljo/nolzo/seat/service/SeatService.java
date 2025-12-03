@@ -59,11 +59,13 @@ public class SeatService {
     }
 
     public void updateWithReservation(List<Seat> seats) {
-        seats.forEach(seat -> {
-            validateIsAvailable(seat);
+        for (Seat seat : seats) {
             Seat lockedSeat = findSeatByIdWithPessimisticLock(seat.getId());
+            if (lockedSeat.getStatus() != SeatStatus.AVAILABLE) {
+                throw new IllegalArgumentException("Seat with id " + seat.getId() + " is already reserved.");
+            }
             lockedSeat.updateStatus(SeatStatus.WAITING);
-        });
+        }
     }
 
     public void updateWithPayment(List<Ticket> tickets, SeatStatus seatStatus) {
@@ -79,7 +81,6 @@ public class SeatService {
     }
 
     private void validateIsAvailable(Seat seat) {
-        log.info(String.valueOf(seat.getStatus()));
         if (seat.getStatus() != SeatStatus.AVAILABLE) {
             throw new IllegalArgumentException("Seat with id " + seat.getId() + " is not available");
         }

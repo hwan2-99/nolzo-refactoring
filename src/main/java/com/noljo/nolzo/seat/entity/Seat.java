@@ -82,4 +82,17 @@ public class Seat extends BaseEntity {
     public void updateStatus(SeatStatus status) {
         this.status = status;
     }
+
+    @Override
+    public String toString() {
+        return "Seat{" +
+                "id=" + id +
+                ", rowName='" + rowName + '\'' +
+                ", seatNumber=" + seatNumber +
+                ", seatSection='" + seatSection + '\'' +
+                ", floor='" + floor + '\'' +
+                ", price=" + price +
+                ", status=" + status +
+                '}';
+    }
 }
