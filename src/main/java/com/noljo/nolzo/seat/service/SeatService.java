@@ -13,9 +13,11 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Transactional
 @Service
 @RequiredArgsConstructor
@@ -77,6 +79,7 @@ public class SeatService {
     }
 
     private void validateIsAvailable(Seat seat) {
+        log.info(String.valueOf(seat.getStatus()));
         if (seat.getStatus() != SeatStatus.AVAILABLE) {
             throw new IllegalArgumentException("Seat with id " + seat.getId() + " is not available");
         }

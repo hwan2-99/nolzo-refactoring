@@ -47,6 +47,7 @@ public class AuthController {
                                                 HttpServletResponse response,
                                                 HttpServletRequest httpRequest) {
         String clientIp = authService.getClientIp(httpRequest);
+
         TokensResponse tokenResponse = authService.login(request, clientIp);
         addRefreshTokenCookie(response, tokenResponse.refreshToken(),
                 Duration.ofSeconds(refreshTokenValidityInSeconds));
