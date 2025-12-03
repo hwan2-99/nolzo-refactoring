@@ -57,9 +57,7 @@ public class AuthService {
 
     // todo: 로그인 실패시 에러 메시지 처리 구체화
     public TokensResponse login(LoginRequest request, String clientIp) {
-        log.info("요청한 Member의 ID: {}", request.email());
         Member member = findMemberByEmail(request.email(), request.password());
-        log.info("로그인한 Member의 ID: {}", member.getId());
         RefreshToken refreshToken = jwtTokenService.findRefreshTokenByMember(member.getId());
         if (refreshToken != null && !isSameIp(refreshToken, clientIp)) {
             logout(refreshToken.getRefreshToken());

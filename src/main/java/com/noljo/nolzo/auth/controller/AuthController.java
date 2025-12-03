@@ -47,10 +47,6 @@ public class AuthController {
                                                 HttpServletResponse response,
                                                 HttpServletRequest httpRequest) {
         String clientIp = authService.getClientIp(httpRequest);
-        log.info("로그인 시도 IP: {}", clientIp);
-        log.info("로그인 시도 Email: {}", request.email());
-        log.info("로그인 시도 password: {}", request.password());
-
         TokensResponse tokenResponse = authService.login(request, clientIp);
         addRefreshTokenCookie(response, tokenResponse.refreshToken(),
                 Duration.ofSeconds(refreshTokenValidityInSeconds));
