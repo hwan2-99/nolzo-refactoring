@@ -1,6 +1,15 @@
 version: '3.8'
 
 services:
+  influxdb:
+    image: influxdb:1.8
+    networks:
+      - monitoring
+    ports:
+      - "8086:8086"
+    environment:
+      - INFLUXDB_DB=k6
+
   mysql:
     image: mysql:8.0
     container_name: mysql
@@ -8,22 +17,32 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: rlaxoghks12
       MYSQL_DATABASE: nolzo
-      MYSQL_USER: nolzo
+      MYSQL_USER: root
       MYSQL_PASSWORD: nolzo
     ports:
       - "3307:3306"
     networks:
       - monitoring
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 10
 
   springboot:
     build: .
     container_name: springboot
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     ports:
       - "8080:8080"
     networks:
       - monitoring
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -s http://localhost:8080 > /dev/null" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   prometheus:
     image: prom/prometheus
@@ -46,6 +65,21 @@ services:
       - monitoring
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
+
+  k6:
+    image: loadimpact/k6
+    container_name: k6
+    platform: linux/amd64
+    depends_on:
+      springboot:
+        condition: service_healthy
+    networks:
+      - monitoring
+    command: [ "run", "/test.js" ]
+    environment:
+      - K6_OUT=influxdb=http://influxdb:8086/k6
+    volumes:
+      - ./k6/test.js:/test.js
 
 networks:
   monitoring:

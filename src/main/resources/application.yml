@@ -1,7 +1,5 @@
 server:
   port: 8080
-  servlet:
-    context-path: /api/${api.version}
   name: nolzo
   forward-headers-strategy: framework
   tomcat:
@@ -13,9 +11,6 @@ server:
     max-connections: 10000
     accept-count: 200
     connection-timeout: 20000
-
-api:
-  version: v1
 
 spring:
   data:
@@ -108,7 +103,3 @@ management:
         http.server.requests: true
       slo:
         http.server.requests: 500ms, 1500ms
-  prometheus:
-    metrics:
-      export:
-        enabled: true

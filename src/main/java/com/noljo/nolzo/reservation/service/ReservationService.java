@@ -20,6 +20,7 @@ import java.time.LocalDate;
 
 import com.noljo.nolzo.ticket.entity.Ticket;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalTime;
 import java.util.List;
 
-@Transactional
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReservationService {
@@ -43,11 +44,11 @@ public class ReservationService {
     private final TicketService ticketService;
 
     //todo Permistic lock을 사용해서 구현한 내용 추후 multi-thread or Optimistic Lock or Redis 사용후 비교예정
+    @Transactional
     public ReservationResponse create(Long memberId, ReservationRequest request) {
         Member member = memberRepository.getOrThrow(memberId);
         Reservation reservation = new Reservation(ReservationStatus.PENDING, request.calculateTotalPrice(),
                 createReservationNumber(), member);
-
         seatService.updateWithReservation(request.seats());
         createSeats(request, reservation);
         return ReservationResponse.from(reservationRepository.save(reservation));
@@ -61,6 +62,7 @@ public class ReservationService {
         return RESERVATION_NUMBER_PREFIX + yearSuffix + reservationId;
     }
 
+    @Transactional(readOnly = true)
     public EventDateTimeResponse readSelectedEventDateTime(Long eventId, LocalDate selectDate, LocalTime selectTime) {
 
         Event event = eventRepository.findById(eventId)
@@ -135,6 +137,7 @@ public class ReservationService {
         }
     }
 
+    @Transactional
     public ReservationCancelResponse cancelReservationById(Long memberId, Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 예약 정보가 없습니다"));

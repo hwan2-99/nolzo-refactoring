@@ -13,9 +13,11 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Transactional
 @Service
 @RequiredArgsConstructor
@@ -57,11 +59,13 @@ public class SeatService {
     }
 
     public void updateWithReservation(List<Seat> seats) {
-        seats.forEach(seat -> {
-            validateIsAvailable(seat);
+        for (Seat seat : seats) {
             Seat lockedSeat = findSeatByIdWithPessimisticLock(seat.getId());
+            if (lockedSeat.getStatus() != SeatStatus.AVAILABLE) {
+                throw new IllegalArgumentException("Seat with id " + seat.getId() + " is already reserved.");
+            }
             lockedSeat.updateStatus(SeatStatus.WAITING);
-        });
+        }
     }
 
     public void updateWithPayment(List<Ticket> tickets, SeatStatus seatStatus) {

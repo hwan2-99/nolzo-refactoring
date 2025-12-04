@@ -1,6 +1,7 @@
 package com.noljo.nolzo.member.controller;
 
 import com.noljo.nolzo.member.service.MemberService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,28 +20,33 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/member")
 public class MemberController {
 
-  private final MemberService memberService;
+    private final MemberService memberService;
 
-  @DeleteMapping
-  public ResponseEntity<?> changePassword(
-          @AuthenticationPrincipal(expression = "memberId") Long memberId) {
-    memberService.deleteMember(memberId);
-    return ResponseEntity.ok("delete successful.");
-  }
+    @GetMapping("/readAll")
+    public ResponseEntity<List<MemberDto>> getAllMembers() {
+        return ResponseEntity.ok(memberService.readAll());
+    }
 
-  @PostMapping("/password")
-  public ResponseEntity<?> changePassword(
-          @AuthenticationPrincipal(expression = "memberId") Long memberId,
-          @RequestBody @Valid PasswordChangeRequest request) {
-    memberService.changeMemberPassword(memberId, request);
+    @DeleteMapping
+    public ResponseEntity<?> changePassword(
+            @AuthenticationPrincipal(expression = "memberId") Long memberId) {
+        memberService.deleteMember(memberId);
+        return ResponseEntity.ok("delete successful.");
+    }
 
-    return ResponseEntity.ok("password change successful.");
-  }
+    @PostMapping("/password")
+    public ResponseEntity<?> changePassword(
+            @AuthenticationPrincipal(expression = "memberId") Long memberId,
+            @RequestBody @Valid PasswordChangeRequest request) {
+        memberService.changeMemberPassword(memberId, request);
 
-  @GetMapping
-  public ResponseEntity<MemberDto> getMember(@AuthenticationPrincipal(expression = "memberId") Long memberId) {
-    return ResponseEntity.ok(memberService.readMember(memberId));
-  }
+        return ResponseEntity.ok("password change successful.");
+    }
+
+    @GetMapping
+    public ResponseEntity<MemberDto> getMember(@AuthenticationPrincipal(expression = "memberId") Long memberId) {
+        return ResponseEntity.ok(memberService.readMember(memberId));
+    }
 }
 
 
