@@ -1,6 +1,15 @@
 version: '3.8'
 
 services:
+  influxdb:
+    image: influxdb:1.8
+    networks:
+      - monitoring
+    ports:
+      - "8086:8086"
+    environment:
+      - INFLUXDB_DB=k6
+
   mysql:
     image: mysql:8.0
     container_name: mysql
@@ -35,7 +44,6 @@ services:
       timeout: 5s
       retries: 20
 
-
   prometheus:
     image: prom/prometheus
     container_name: prometheus
@@ -68,6 +76,8 @@ services:
     networks:
       - monitoring
     command: [ "run", "/test.js" ]
+    environment:
+      - K6_OUT=influxdb=http://influxdb:8086/k6
     volumes:
       - ./k6/test.js:/test.js
 
