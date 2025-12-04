@@ -31,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class AuthService {
 
@@ -40,6 +39,7 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final JwtUtil jwtUtil;
 
+    @Transactional
     public RegisterResponse register(RegisterRequest request) {
         validateDuplicateEmail(request.email());
 
@@ -56,6 +56,7 @@ public class AuthService {
     }
 
     // todo: 로그인 실패시 에러 메시지 처리 구체화
+    @Transactional
     public TokensResponse login(LoginRequest request, String clientIp) {
         Member member = findMemberByEmail(request.email(), request.password());
         RefreshToken refreshToken = jwtTokenService.findRefreshTokenByMember(member.getId());
@@ -65,10 +66,12 @@ public class AuthService {
         return jwtTokenService.issueToken(member, clientIp);
     }
 
+    @Transactional
     public void logout(String refreshToken) {
         jwtTokenService.removeRefreshTokenByToken(refreshToken);
     }
 
+    @Transactional
     public AccessTokenResponse reissueAccessToken(String refreshToken) {
         Long memberId = jwtUtil.getMemberId(refreshToken);
         Member member = memberRepository.getOrThrow(memberId);
