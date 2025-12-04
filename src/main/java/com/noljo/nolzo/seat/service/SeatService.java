@@ -61,9 +61,7 @@ public class SeatService {
     public void updateWithReservation(List<Seat> seats) {
         for (Seat seat : seats) {
             Seat lockedSeat = findSeatByIdWithPessimisticLock(seat.getId());
-            if (lockedSeat.getStatus() != SeatStatus.AVAILABLE) {
-                throw new IllegalArgumentException("Seat with id " + seat.getId() + " is already reserved.");
-            }
+            validateIsAvailable(lockedSeat);
             lockedSeat.updateStatus(SeatStatus.WAITING);
         }
     }
@@ -82,7 +80,7 @@ public class SeatService {
 
     private void validateIsAvailable(Seat seat) {
         if (seat.getStatus() != SeatStatus.AVAILABLE) {
-            throw new IllegalArgumentException("Seat with id " + seat.getId() + " is not available");
+            throw new IllegalArgumentException("Seat with id " + seat.getId() + " is already reserved.");
         }
     }
 
