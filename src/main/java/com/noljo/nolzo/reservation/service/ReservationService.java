@@ -11,8 +11,6 @@ import com.noljo.nolzo.member.repository.MemberRepository;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import com.noljo.nolzo.reservation.entity.ReservationStatus;
 import com.noljo.nolzo.reservation.repository.ReservationRepository;
-import com.noljo.nolzo.schedule.repository.ScheduleRepository;
-import com.noljo.nolzo.seat.dto.SeatResponse;
 import com.noljo.nolzo.seat.entity.Seat;
 import com.noljo.nolzo.seat.service.SeatService;
 import com.noljo.nolzo.ticket.service.TicketService;
@@ -50,7 +48,7 @@ public class ReservationService {
         Reservation reservation = new Reservation(ReservationStatus.PENDING, request.calculateTotalPrice(),
                 createReservationNumber(), member);
         seatService.updateWithReservation(request.seats());
-        createSeats(request, reservation);
+        createTicket(request, reservation);
         return ReservationResponse.from(reservationRepository.save(reservation));
     }
 
@@ -131,7 +129,7 @@ public class ReservationService {
         return ReservationEventInfo.detailsOf(event, reservation, payment);
     }
 
-    private void createSeats(ReservationRequest request, Reservation reservation) {
+    private void createTicket(ReservationRequest request, Reservation reservation) {
         for (Seat seat : request.seats()) {
             ticketService.create(reservation, seat);
         }
