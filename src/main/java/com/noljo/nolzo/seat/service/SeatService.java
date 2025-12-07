@@ -12,8 +12,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +34,7 @@ public class SeatService {
 
     private final SeatRepository seatRepository;
     private final ScheduleRepository scheduleRepository;
+    private final RedissonClient redissonClient;
 
     /*todo 공연과 공연 스캐쥴 등록시 해당 스케쥴에 대한 좌석들을 한번에 자동으로 만드는 메서드입니다.
            추후 공연장마저 관리할거면 수정해야할 메서드 입니다.
@@ -81,6 +85,44 @@ public class SeatService {
     private void validateIsAvailable(Seat seat) {
         if (seat.getStatus() != SeatStatus.AVAILABLE) {
             throw new IllegalArgumentException("Seat with id " + seat.getId() + " is already reserved.");
+        }
+    }
+
+    @Transactional
+    public void updateWithRedisson(List<Seat> seats) {
+        for (Seat seat : seats) {
+            selectSeat(seat.getId());
+        }
+    }
+
+    private void selectSeat(Long seatId) {
+        String lockKey = "seat-lock:" + seatId;
+        RLock lock = redissonClient.getLock(lockKey);
+
+        boolean locking = false;
+        try {
+            locking = lock.tryLock(1, 300, TimeUnit.SECONDS);
+            if (!locking) {
+                log.warn("Lock 획득 실패: seatId={}", seatId);
+                throw new IllegalStateException("해당 좌석은 현재 선택 중입니다. 잠시 후 다시 시도해주세요.");
+            }
+            Seat seat = seatRepository.getOrThrow(seatId);
+
+            if (seat.getStatus() != SeatStatus.AVAILABLE) {
+                log.info("선택 불가 좌석 상태: seatId={}, status={}", seatId, seat.getStatus());
+                throw new IllegalArgumentException("해당 좌석은 선택할 수 없습니다.");
+            }
+
+            seat.updateStatus(SeatStatus.WAITING);
+
+            seatRepository.save(seat);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("락 대기 중 인터럽트 발생", e);
+        } finally {
+            if (locking && lock.isHeldByCurrentThread()) {
+                lock.unlock();
+            }
         }
     }
 

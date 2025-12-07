@@ -47,7 +47,7 @@ public class ReservationService {
         Member member = memberRepository.getOrThrow(memberId);
         Reservation reservation = new Reservation(ReservationStatus.PENDING, request.calculateTotalPrice(),
                 createReservationNumber(), member);
-        seatService.updateWithReservation(request.seats());
+        seatService.updateWithRedisson(request.seats());
         createTicket(request, reservation);
         return ReservationResponse.from(reservationRepository.save(reservation));
     }

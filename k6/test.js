@@ -12,7 +12,7 @@ export const options = {
 function login(userId) {
     const email = `${userId}@example.com`;
 
-    const res = http.post('http://springboot:8080/auth/ㅌlogin', JSON.stringify({
+    const res = http.post('http://springboot:8080/auth/login', JSON.stringify({
         email: email,
         password: '1',
     }), {
