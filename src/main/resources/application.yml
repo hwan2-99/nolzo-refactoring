@@ -15,7 +15,7 @@ server:
 spring:
   data:
     redis:
-      host: localhost
+      host: redis
       port: 6379
   servlet:
     multipart:
@@ -49,7 +49,7 @@ spring:
         format_sql: true
         use_sql_comments: true
     open-in-view: false
-    show-sql: true
+    show-sql: false
 
 # JWT 설정
 jwt:
