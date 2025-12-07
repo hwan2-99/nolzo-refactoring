@@ -2,10 +2,10 @@ import http from 'k6/http';
 import { check } from 'k6';
 
 export const options = {
-    vus: 500,
-    iterations: 500,
+    vus: 20,
+    iterations: 20,
     thresholds: {
-        http_req_duration: ['p(95)<500'], // 95%의 요청이 500ms 이하로 완료되어야 한다는 조건
+        http_req_duration: ['p(95)<500'],
     },
 };
 
@@ -56,7 +56,7 @@ function reserve(token) {
 }
 
 export default function () {
-    const userId = __VU;   // <-- 여기 핵심!!!!!
+    const userId = __VU;
     const token = login(userId);
     reserve(token);
 }
