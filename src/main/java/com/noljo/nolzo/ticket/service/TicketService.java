@@ -5,6 +5,7 @@ import com.noljo.nolzo.member.repository.MemberRepository;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import com.noljo.nolzo.reservation.repository.ReservationRepository;
 import com.noljo.nolzo.seat.entity.Seat;
+import com.noljo.nolzo.seat.repository.SeatRepository;
 import com.noljo.nolzo.ticket.dto.TicketResponse;
 import com.noljo.nolzo.ticket.entity.Ticket;
 import com.noljo.nolzo.ticket.entity.TicketStatus;
@@ -24,8 +25,10 @@ public class TicketService {
     private final MemberRepository memberRepository;
     private final ReservationRepository reservationRepository;
     private final TicketRepository ticketRepository;
+    private final SeatRepository seatRepository;
 
-    public TicketResponse create(Reservation reservation, Seat seat) {
+    public TicketResponse create(Reservation reservation, Long seatId) {
+        Seat seat = seatRepository.getOrThrow(seatId);
         Ticket ticket = new Ticket(TicketStatus.NOT_USED, reservation, seat);
         ticketRepository.save(ticket);
         return TicketResponse.from(ticket);
