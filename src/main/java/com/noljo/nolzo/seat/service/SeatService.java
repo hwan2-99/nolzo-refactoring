@@ -1,5 +1,6 @@
 package com.noljo.nolzo.seat.service;
 
+import com.noljo.nolzo.global.aop.lock.DistributedLock;
 import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.schedule.repository.ScheduleRepository;
 import com.noljo.nolzo.seat.dto.SeatResponse;
@@ -18,10 +19,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
-@Transactional
 @Service
 @RequiredArgsConstructor
 public class SeatService {
@@ -40,6 +41,7 @@ public class SeatService {
            추후 공연장마저 관리할거면 수정해야할 메서드 입니다.
            성능상 문제가 상당히 많을 코드여서 추후 리팩토링 필수일 것 같습니다.
      */
+    @Transactional
     public List<SeatResponse> createSeats(Long scheduleId) {
         Schedule schedule = findScheduleById(scheduleId);
         List<Seat> seats = new ArrayList<>();
@@ -62,6 +64,7 @@ public class SeatService {
                 .toList();
     }
 
+    @Transactional
     public void updateWithReservation(List<Seat> seats) {
         for (Seat seat : seats) {
             Seat lockedSeat = findSeatByIdWithPessimisticLock(seat.getId());
@@ -70,6 +73,7 @@ public class SeatService {
         }
     }
 
+    @Transactional
     public void updateWithPayment(List<Ticket> tickets, SeatStatus seatStatus) {
         for (Ticket ticket : tickets) {
             Seat seat = ticket.getSeat();
@@ -88,42 +92,24 @@ public class SeatService {
         }
     }
 
-    @Transactional
-    public void updateWithRedisson(List<Seat> seats) {
-        for (Seat seat : seats) {
-            selectSeat(seat.getId());
+    @DistributedLock(key = "'seat:' + #seatId")
+    public void updateWithRedisson(List<Long> seatIds) {
+        for (Long seatId : seatIds) {
+            Seat seat = seatRepository.getOrThrow(seatId);
+            validateIsAvailable(seat);
+
+            seat.updateStatus(SeatStatus.WAITING);
+            log.info("Seat {} status updated to WAITING", seatId);
         }
     }
 
-    private void selectSeat(Long seatId) {
-        String lockKey = "seat-lock:" + seatId;
-        RLock lock = redissonClient.getLock(lockKey);
+    @Transactional(readOnly = true)
+    public int calculateTotalPrice(List<Long> seatIds) {
+        List<Seat> seats = seatRepository.findAllById(seatIds);
 
-        boolean locking = false;
-        try {
-            locking = lock.tryLock(1, 300, TimeUnit.SECONDS);
-            if (!locking) {
-                log.warn("Lock 획득 실패: seatId={}", seatId);
-                throw new IllegalStateException("해당 좌석은 현재 선택 중입니다. 잠시 후 다시 시도해주세요.");
-            }
-            Seat seat = seatRepository.getOrThrow(seatId);
-
-            if (seat.getStatus() != SeatStatus.AVAILABLE) {
-                log.info("선택 불가 좌석 상태: seatId={}, status={}", seatId, seat.getStatus());
-                throw new IllegalArgumentException("해당 좌석은 선택할 수 없습니다.");
-            }
-
-            seat.updateStatus(SeatStatus.WAITING);
-
-            seatRepository.save(seat);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new IllegalStateException("락 대기 중 인터럽트 발생", e);
-        } finally {
-            if (locking && lock.isHeldByCurrentThread()) {
-                lock.unlock();
-            }
-        }
+        return seats.stream()
+                .mapToInt(Seat::getPrice)
+                .sum();
     }
 
     @Transactional(readOnly = true)

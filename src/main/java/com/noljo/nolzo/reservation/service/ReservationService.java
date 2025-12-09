@@ -45,12 +45,16 @@ public class ReservationService {
     @Transactional
     public ReservationResponse create(Long memberId, ReservationRequest request) {
         Member member = memberRepository.getOrThrow(memberId);
-        Reservation reservation = new Reservation(ReservationStatus.PENDING, request.calculateTotalPrice(),
+        int totalPrice = seatService.calculateTotalPrice(request.seatIds());
+        Reservation reservation = new Reservation(ReservationStatus.PENDING, totalPrice,
                 createReservationNumber(), member);
-        seatService.updateWithRedisson(request.seats());
-        createTicket(request, reservation);
+
+        seatService.updateWithRedisson(request.seatIds());
+        createTicket(request.seatIds(), reservation);
+
         return ReservationResponse.from(reservationRepository.save(reservation));
     }
+
 
     private String createReservationNumber() {
         String yearSuffix = String.valueOf(LocalDate.now().getYear()).substring(YEAR_SUFFIX_LENGTH);
@@ -118,7 +122,7 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public ReservationEventInfo findReservationDetails(Long memberId, Long reservationId) {
-        Reservation reservation = reservationRepository.findReservationDetailsByMemberId(memberId,reservationId);
+        Reservation reservation = reservationRepository.findReservationDetailsByMemberId(memberId, reservationId);
         Payment payment = paymentRepository.findPaymentByMemberIdAndReservationId(memberId, reservation.getId());
 
         Event event = reservation.getTickets().stream()
@@ -129,9 +133,9 @@ public class ReservationService {
         return ReservationEventInfo.detailsOf(event, reservation, payment);
     }
 
-    private void createTicket(ReservationRequest request, Reservation reservation) {
-        for (Seat seat : request.seats()) {
-            ticketService.create(reservation, seat);
+    private void createTicket(List<Long> seatIds, Reservation reservation) {
+        for (Long seatId : seatIds) {
+            ticketService.create(reservation, seatId);
         }
     }
 
@@ -140,7 +144,7 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 예약 정보가 없습니다"));
 
-        if(!reservation.getMember().getId().equals(memberId)){
+        if (!reservation.getMember().getId().equals(memberId)) {
             throw new IllegalArgumentException("해당 예약자만 예약을 취소할 수 있습니다");
         }
 
