@@ -15,10 +15,8 @@ services:
     container_name: mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: rlaxoghks12
+      MYSQL_ROOT_PASSWORD: rlaxoghks12  # root 비밀번호 설정
       MYSQL_DATABASE: nolzo
-      MYSQL_USER: root
-      MYSQL_PASSWORD: nolzo
     ports:
       - "3307:3306"
     networks:
@@ -80,6 +78,13 @@ services:
       - K6_OUT=influxdb=http://influxdb:8086/k6
     volumes:
       - ./k6/test.js:/test.js
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - monitoring
 
 networks:
   monitoring:

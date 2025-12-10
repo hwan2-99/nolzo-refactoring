@@ -1,5 +1,6 @@
 package com.noljo.nolzo.seat.service;
 
+import com.noljo.nolzo.global.aop.lock.DistributedLock;
 import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.schedule.repository.ScheduleRepository;
 import com.noljo.nolzo.seat.dto.SeatResponse;
@@ -12,13 +13,16 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
-@Transactional
 @Service
 @RequiredArgsConstructor
 public class SeatService {
@@ -31,11 +35,13 @@ public class SeatService {
 
     private final SeatRepository seatRepository;
     private final ScheduleRepository scheduleRepository;
+    private final RedissonClient redissonClient;
 
     /*todo 공연과 공연 스캐쥴 등록시 해당 스케쥴에 대한 좌석들을 한번에 자동으로 만드는 메서드입니다.
            추후 공연장마저 관리할거면 수정해야할 메서드 입니다.
            성능상 문제가 상당히 많을 코드여서 추후 리팩토링 필수일 것 같습니다.
      */
+    @Transactional
     public List<SeatResponse> createSeats(Long scheduleId) {
         Schedule schedule = findScheduleById(scheduleId);
         List<Seat> seats = new ArrayList<>();
@@ -58,16 +64,16 @@ public class SeatService {
                 .toList();
     }
 
+    @Transactional
     public void updateWithReservation(List<Seat> seats) {
         for (Seat seat : seats) {
             Seat lockedSeat = findSeatByIdWithPessimisticLock(seat.getId());
-            if (lockedSeat.getStatus() != SeatStatus.AVAILABLE) {
-                throw new IllegalArgumentException("Seat with id " + seat.getId() + " is already reserved.");
-            }
+            validateIsAvailable(lockedSeat);
             lockedSeat.updateStatus(SeatStatus.WAITING);
         }
     }
 
+    @Transactional
     public void updateWithPayment(List<Ticket> tickets, SeatStatus seatStatus) {
         for (Ticket ticket : tickets) {
             Seat seat = ticket.getSeat();
@@ -82,8 +88,28 @@ public class SeatService {
 
     private void validateIsAvailable(Seat seat) {
         if (seat.getStatus() != SeatStatus.AVAILABLE) {
-            throw new IllegalArgumentException("Seat with id " + seat.getId() + " is not available");
+            throw new IllegalArgumentException("Seat with id " + seat.getId() + " is already reserved.");
         }
+    }
+
+    @DistributedLock(key = "'seat:' + #seatId")
+    public void updateWithRedisson(List<Long> seatIds) {
+        for (Long seatId : seatIds) {
+            Seat seat = seatRepository.getOrThrow(seatId);
+            validateIsAvailable(seat);
+
+            seat.updateStatus(SeatStatus.WAITING);
+            log.info("Seat {} status updated to WAITING", seatId);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public int calculateTotalPrice(List<Long> seatIds) {
+        List<Seat> seats = seatRepository.findAllById(seatIds);
+
+        return seats.stream()
+                .mapToInt(Seat::getPrice)
+                .sum();
     }
 
     @Transactional(readOnly = true)

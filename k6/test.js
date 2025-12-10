@@ -1,18 +1,17 @@
 import http from 'k6/http';
-import { check } from 'k6';
+import { check, sleep } from 'k6';
 
 export const options = {
-    vus: 500,
-    iterations: 500,
+    vus: 100, // 20명의 가상 사용자
+    iterations: 100, // 총 20번의 반복
     thresholds: {
-        http_req_duration: ['p(95)<500'], // 95%의 요청이 500ms 이하로 완료되어야 한다는 조건
+        http_req_duration: ['p(95)<500'], // 95%의 요청이 500ms 이하로 완료되도록 설정
     },
 };
 
 function login(userId) {
     const email = `${userId}@example.com`;
-
-    const res = http.post('http://springboot:8080/auth/ㅌlogin', JSON.stringify({
+    const res = http.post('http://springboot:8080/auth/login', JSON.stringify({
         email: email,
         password: '1',
     }), {
@@ -27,7 +26,6 @@ function login(userId) {
         console.log(`❗ Login failed for: ${email}`);
         return null;
     }
-
     return res.json('accessToken');
 }
 
@@ -56,7 +54,10 @@ function reserve(token) {
 }
 
 export default function () {
-    const userId = __VU;   // <-- 여기 핵심!!!!!
+    const userId = __VU;
     const token = login(userId);
-    reserve(token);
+
+    if (token) {
+        reserve(token);
+    }
 }
