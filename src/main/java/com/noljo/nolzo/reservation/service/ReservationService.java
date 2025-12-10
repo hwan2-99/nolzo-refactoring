@@ -45,12 +45,12 @@ public class ReservationService {
     @Transactional
     public ReservationResponse create(Long memberId, ReservationRequest request) {
         Member member = memberRepository.getOrThrow(memberId);
-        int totalPrice = seatService.calculateTotalPrice(request.seatIds());
+        int totalPrice = request.calculateTotalPrice();
         Reservation reservation = new Reservation(ReservationStatus.PENDING, totalPrice,
                 createReservationNumber(), member);
 
-        seatService.updateWithRedisson(request.seatIds());
-        createTicket(request.seatIds(), reservation);
+        seatService.updateWithReservation(request.seats());
+        createTicket(request.seats(), reservation);
 
         return ReservationResponse.from(reservationRepository.save(reservation));
     }
@@ -133,9 +133,9 @@ public class ReservationService {
         return ReservationEventInfo.detailsOf(event, reservation, payment);
     }
 
-    private void createTicket(List<Long> seatIds, Reservation reservation) {
-        for (Long seatId : seatIds) {
-            ticketService.create(reservation, seatId);
+    private void createTicket(List<Seat> seats, Reservation reservation) {
+        for (Seat seat : seats) {
+            ticketService.create(reservation, seat.getId());
         }
     }
 

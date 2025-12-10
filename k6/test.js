@@ -34,7 +34,13 @@ function reserve(token) {
 
     const res = http.post('http://springboot:8080/reservations', JSON.stringify({
         eventId: 1,
-        seatIds: [1], // 좌석 ID 리스트 (여기서는 단일 좌석만)
+        seats: [ {
+            id: 1,
+            rowName: 'A',
+            seatNumber: 1,
+            seatSection: '1구역',
+            price: 150000,
+            status: 'AVAILABLE' } ],
     }), {
         headers: {
             'Content-Type': 'application/json',
