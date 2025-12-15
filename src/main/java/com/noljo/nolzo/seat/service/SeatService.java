@@ -1,6 +1,7 @@
 package com.noljo.nolzo.seat.service;
 
 import com.noljo.nolzo.global.aop.lock.DistributedLock;
+import com.noljo.nolzo.global.error.exception.SeatException;
 import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.schedule.repository.ScheduleRepository;
 import com.noljo.nolzo.seat.dto.SeatResponse;
@@ -13,13 +14,10 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -88,7 +86,7 @@ public class SeatService {
 
     private void validateIsAvailable(Seat seat) {
         if (seat.getStatus() != SeatStatus.AVAILABLE) {
-            throw new IllegalArgumentException("Seat with id " + seat.getId() + " is already reserved.");
+            throw new SeatException(seat.getId());
         }
     }
 

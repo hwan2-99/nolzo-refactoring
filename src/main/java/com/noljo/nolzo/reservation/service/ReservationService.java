@@ -1,5 +1,6 @@
 package com.noljo.nolzo.reservation.service;
 
+import com.noljo.nolzo.global.aop.idempotent.Idempotent;
 import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.repository.EventRepository;
@@ -43,6 +44,7 @@ public class ReservationService {
 
     //todo Permistic lock을 사용해서 구현한 내용 추후 multi-thread or Optimistic Lock or Redis 사용후 비교예정
     @Transactional
+    @Idempotent(prefix = "reservation:succeed:", key = "#memberId")
     public ReservationResponse create(Long memberId, ReservationRequest request) {
         Member member = memberRepository.getOrThrow(memberId);
         int totalPrice = request.calculateTotalPrice();
