@@ -1,11 +1,13 @@
 package com.noljo.nolzo.domain.reservation.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.repository.EventRepository;
+import com.noljo.nolzo.global.error.exception.SeatException;
 import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.repository.MemberRepository;
 import com.noljo.nolzo.reservation.dto.EventDateTimeResponse;
@@ -24,6 +26,9 @@ import com.noljo.nolzo.support.fixture.*;
 import com.noljo.nolzo.ticket.entity.TicketStatus;
 import com.noljo.nolzo.ticket.repository.TicketRepository;
 
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -61,18 +66,37 @@ public class ReservationServiceTest {
         List<Seat> seats = List.of(seat1);
         ReservationRequest request = new ReservationRequest(event.getId(), seats);
 
-        Thread thread1 = new Thread(() -> reservationService.create(member.getId(), request));
-        Thread thread2 = new Thread(() -> reservationService.create(anotherMember.getId(), request));
+        AtomicReference<Throwable> thread1Error = new AtomicReference<>();
+        AtomicReference<Throwable> thread2Error = new AtomicReference<>();
+
+        Thread thread1 = new Thread(() -> {
+            try {
+                reservationService.create(member.getId(), request);
+            } catch (Throwable t) {
+                thread1Error.set(t);
+            }
+        });
+
+        Thread thread2 = new Thread(() -> {
+            try {
+                reservationService.create(anotherMember.getId(), request);
+            } catch (Throwable t) {
+                thread2Error.set(t);
+            }
+        });
 
         thread1.start();
         thread2.start();
-
         thread1.join();
         thread2.join();
 
-        assertThatThrownBy(() -> reservationService.create(anotherMember.getId(),
-                new ReservationRequest(event.getId(), seats)))
-                .isInstanceOf(IllegalArgumentException.class);
+        Throwable e1 = thread1Error.get();
+        Throwable e2 = thread2Error.get();
+
+        List<Throwable> errors = Arrays.asList(e1, e2);
+
+        assertThat(errors).anyMatch(Objects::isNull);
+        assertThat(errors).anyMatch(e -> e instanceof SeatException);
     }
 
     @Test
