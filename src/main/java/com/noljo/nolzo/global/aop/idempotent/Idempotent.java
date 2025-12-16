@@ -1,6 +1,6 @@
 package com.noljo.nolzo.global.aop.idempotent;
 
-import com.sun.jdi.request.DuplicateRequestException;
+import com.noljo.nolzo.global.error.exception.DuplicateRequestException;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

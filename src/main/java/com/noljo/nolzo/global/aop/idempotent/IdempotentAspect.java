@@ -44,8 +44,14 @@ public class IdempotentAspect {
             );
 
             if (Boolean.FALSE.equals(isSet)) {
+                Class<? extends RuntimeException> exClass = annotation.exceptionOnDuplicate();
                 log.info("멱등성 위반: {}", idempotentKey);
-                throw annotation.exceptionOnDuplicate().getConstructor().newInstance();
+                try {
+                    throw exClass.getConstructor(String.class)
+                            .newInstance("중복 요청입니다. key=" + idempotentKey);
+                } catch (NoSuchMethodException ignore) {
+                    throw exClass.getConstructor().newInstance();
+                }
             }
 
             log.info("멱등성 키 설정 성공: {}", idempotentKey);
