@@ -42,7 +42,6 @@ public class ReservationService {
     private final PaymentRepository paymentRepository;
     private final TicketService ticketService;
 
-    //todo Permistic lock을 사용해서 구현한 내용 추후 multi-thread or Optimistic Lock or Redis 사용후 비교예정
     @Transactional
     @Idempotent(prefix = "reservation:succeed:", key = "#memberId")
     public ReservationResponse create(Long memberId, ReservationRequest request) {
@@ -56,7 +55,6 @@ public class ReservationService {
 
         return ReservationResponse.from(reservationRepository.save(reservation));
     }
-
 
     private String createReservationNumber() {
         String yearSuffix = String.valueOf(LocalDate.now().getYear()).substring(YEAR_SUFFIX_LENGTH);
