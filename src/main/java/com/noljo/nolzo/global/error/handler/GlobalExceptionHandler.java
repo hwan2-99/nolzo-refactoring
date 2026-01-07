@@ -3,6 +3,7 @@ package com.noljo.nolzo.global.error.handler;
 import com.noljo.nolzo.global.error.core.BaseException;
 import com.noljo.nolzo.global.error.core.ErrorCode;
 import com.noljo.nolzo.global.error.core.ErrorResponse;
+import com.noljo.nolzo.global.error.exception.DuplicateRequestException;
 import com.noljo.nolzo.global.utils.GlobalLogger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,6 +24,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception e) {
         return getErrorResponse(e,GlobalErrorCode.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(DuplicateRequestException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateRequestException(DuplicateRequestException e) {
+        return getErrorResponse(e, GlobalErrorCode.DUPLICATE_REQUEST);
     }
 
     private static ResponseEntity<ErrorResponse> getErrorResponse(Exception e, GlobalErrorCode errorCode) {

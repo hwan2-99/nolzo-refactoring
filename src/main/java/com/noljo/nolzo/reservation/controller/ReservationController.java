@@ -24,10 +24,13 @@ public class ReservationController {
     private final ReservationService reservationService;
     private final SeatService seatService;
 
-    @PostMapping
-    public ResponseEntity<ReservationResponse> create(@AuthenticationPrincipal CustomUserDetails user,
-                                                      @RequestBody ReservationRequest request) {
-        return ResponseEntity.ok(reservationService.create(user.getMemberId(), request));
+    @PostMapping("/reservations")
+    public ResponseEntity<ReservationResponse> create(
+            @RequestHeader("Idempotency-Key") String idemKey,
+            @AuthenticationPrincipal CustomUserDetails user,
+            @RequestBody ReservationRequest request
+    ) {
+        return ResponseEntity.ok(reservationService.create(user.getMemberId(), request, idemKey));
     }
 
     @PostMapping("/{eventId}")

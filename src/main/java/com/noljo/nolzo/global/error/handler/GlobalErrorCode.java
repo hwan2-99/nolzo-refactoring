@@ -14,7 +14,8 @@ public enum GlobalErrorCode implements ErrorCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "권한이 없습니다."),
     MISSING_HEADER(HttpStatus.BAD_REQUEST, "요청에 필요한 헤더가 존재하지 않습니다."),
-    FORBIDDEN(HttpStatus.FORBIDDEN, "접근이 금지되었습니다.");
+    FORBIDDEN(HttpStatus.FORBIDDEN, "접근이 금지되었습니다."),
+    DUPLICATE_REQUEST(HttpStatus.BAD_REQUEST,"멱등성 체크 위반. 중복 요청입니다.");
 
     public static final String PREFIX = "[GLOBAL ERROR] ";
 

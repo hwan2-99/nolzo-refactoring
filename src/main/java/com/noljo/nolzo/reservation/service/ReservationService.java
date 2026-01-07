@@ -1,5 +1,6 @@
 package com.noljo.nolzo.reservation.service;
 
+import com.noljo.nolzo.global.aop.idempotent.Idempotent;
 import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.repository.EventRepository;
@@ -19,6 +20,7 @@ import java.time.LocalDate;
 import com.noljo.nolzo.ticket.entity.Ticket;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,20 +43,43 @@ public class ReservationService {
     private final PaymentRepository paymentRepository;
     private final TicketService ticketService;
 
-    //todo Permistic lock을 사용해서 구현한 내용 추후 multi-thread or Optimistic Lock or Redis 사용후 비교예정
+//    @Transactional
+//    @Idempotent(prefix = "reservation:succeed:", key = "#memberId")
+//    public ReservationResponse create(Long memberId, ReservationRequest request) {
+//        Member member = memberRepository.getOrThrow(memberId);
+//        int totalPrice = request.calculateTotalPrice();
+//        Reservation reservation = new Reservation(ReservationStatus.PENDING, totalPrice,
+//                createReservationNumber(), member);
+//
+//        seatService.updateWithReservation(request.seats());
+//        createTicket(request.seats(), reservation);
+//
+//        return ReservationResponse.from(reservationRepository.save(reservation));
+//    }
+
     @Transactional
-    public ReservationResponse create(Long memberId, ReservationRequest request) {
+    @Idempotent(prefix = "reservation:", key = "#idemKey")
+    public ReservationResponse create(Long memberId, ReservationRequest request, String idemKey) {
         Member member = memberRepository.getOrThrow(memberId);
         int totalPrice = request.calculateTotalPrice();
-        Reservation reservation = new Reservation(ReservationStatus.PENDING, totalPrice,
-                createReservationNumber(), member);
 
-        seatService.updateWithReservation(request.seats());
-        createTicket(request.seats(), reservation);
+        Reservation reservation = new Reservation(ReservationStatus.PENDING, totalPrice, createReservationNumber(),
+                member, idemKey);
 
-        return ReservationResponse.from(reservationRepository.save(reservation));
+        try {
+            reservationRepository.saveAndFlush(reservation);
+
+            seatService.updateWithReservation(request.seats());
+            createTicket(request.seats(), reservation);
+
+            return ReservationResponse.from(reservation);
+        } catch (DataIntegrityViolationException e) {
+            Reservation existing = reservationRepository.findByIdempotencyKey(idemKey)
+                    .orElseThrow(() -> e);
+
+            return ReservationResponse.from(existing);
+        }
     }
-
 
     private String createReservationNumber() {
         String yearSuffix = String.valueOf(LocalDate.now().getYear()).substring(YEAR_SUFFIX_LENGTH);

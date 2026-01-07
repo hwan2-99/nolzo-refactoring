@@ -26,6 +26,6 @@ public enum ReservationFixture {
     }
 
     public static Reservation 예약2(Member member) {
-        return new Reservation(null, 예약2.reservationStatus, 예약2.totalPrice, 예약2.reservationNumber, member);
+        return new Reservation(null, 예약2.reservationStatus, 예약2.totalPrice, 예약2.reservationNumber, null, member);
     }
 }
