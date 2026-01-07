@@ -12,8 +12,12 @@ import java.util.concurrent.TimeUnit;
 public @interface Idempotent {
 
     String key();
+
     String prefix();
+
     long expiration() default 5L;
+
     TimeUnit timeUnit() default TimeUnit.MINUTES;
+
     Class<? extends RuntimeException> exceptionOnDuplicate() default DuplicateRequestException.class;
 }
