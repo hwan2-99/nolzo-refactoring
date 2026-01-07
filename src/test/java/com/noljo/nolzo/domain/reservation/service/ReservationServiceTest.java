@@ -71,7 +71,7 @@ public class ReservationServiceTest {
 
         Thread thread1 = new Thread(() -> {
             try {
-                reservationService.create(member.getId(), request);
+                reservationService.create(member.getId(), request, "test");
             } catch (Throwable t) {
                 thread1Error.set(t);
             }
@@ -79,7 +79,7 @@ public class ReservationServiceTest {
 
         Thread thread2 = new Thread(() -> {
             try {
-                reservationService.create(anotherMember.getId(), request);
+                reservationService.create(anotherMember.getId(), request, "test2");
             } catch (Throwable t) {
                 thread2Error.set(t);
             }
@@ -105,8 +105,8 @@ public class ReservationServiceTest {
         Schedule schedule = scheduleRepository.save(ScheduleFixture.공연_스케쥴(event));
         event.addSchedule(schedule);
 
-
-        EventDateTimeResponse response = reservationService.readSelectedEventDateTime(event.getId(), schedule.getShowDate(),
+        EventDateTimeResponse response = reservationService.readSelectedEventDateTime(event.getId(),
+                schedule.getShowDate(),
                 schedule.getShowTime());
 
         assertNotNull(response);
@@ -154,10 +154,10 @@ public class ReservationServiceTest {
         Reservation cancelledReservation = reservationRepository.findById(reservation.getId())
                 .orElseThrow(() -> new AssertionError("취소된 예약을 찾을 수 없습니다."));
 
-        assertEquals(ReservationStatus.CANCELLED,cancelledReservation.getStatus());
+        assertEquals(ReservationStatus.CANCELLED, cancelledReservation.getStatus());
         reservation.getTickets().forEach(ticket ->
                 assertEquals(TicketStatus.CANCELLED, ticket.getStatus()));
         reservation2.getTickets().forEach(ticket ->
                 assertEquals(TicketStatus.NOT_USED, ticket.getStatus()));
-        }
+    }
 }
