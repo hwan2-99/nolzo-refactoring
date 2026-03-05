@@ -7,6 +7,7 @@ import com.noljo.nolzo.event.entity.EventCategory;
 import com.noljo.nolzo.event.service.EventService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,20 +28,20 @@ public class EventController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<EventResponse> createEvent(@RequestPart("dto") @Valid EventRequest dto,
-                                                     @RequestPart(value = "eventImage", required = false)MultipartFile eventImage) {
-        return ResponseEntity.ok(eventService.save(dto,eventImage));
+                                                     @RequestPart(value = "eventImage", required = false) MultipartFile eventImage) {
+        return ResponseEntity.ok(eventService.save(dto, eventImage));
     }
 
     @GetMapping
     public Slice<EventResponse> getEventsByCategory(
             @RequestParam EventCategory category,
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(defaultValue = "viewCount",required = false) String condition,
+            @RequestParam(defaultValue = "viewCount", required = false) String condition,
             @RequestParam(required = false) Integer age
     ) {
         return eventService.getEventByCategory(category, condition, page, age);
     }
-    
+
     @GetMapping("/{id}")
     public ResponseEntity<EventResponse> getEventDetail(@PathVariable Long id) {
         return ResponseEntity.ok(eventService.findById(id));
