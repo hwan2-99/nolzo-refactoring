@@ -42,18 +42,20 @@ public class Schedule {
     }
 
     @Builder
-    public Schedule(LocalDate showDate, LocalTime showTime, Event event,LocalDateTime reservationStart,LocalDateTime reservationEnd) {
+    public Schedule(LocalDate showDate, LocalTime showTime, Event event, LocalDateTime reservationStart,
+                    LocalDateTime reservationEnd) {
         this.showDate = showDate;
         this.showTime = showTime;
-        this.reservationStart=reservationStart;
-        this.reservationEnd=reservationEnd;
+        this.reservationStart = reservationStart;
+        this.reservationEnd = reservationEnd;
         this.event = event;
     }
 
-    public void updateFrom(LocalDate showDate, LocalTime showTime,LocalDateTime reservationStart,LocalDateTime reservationEnd) {
+    public void updateFrom(LocalDate showDate, LocalTime showTime, LocalDateTime reservationStart,
+                           LocalDateTime reservationEnd) {
         this.showDate = showDate;
         this.showTime = showTime;
-        this.reservationStart=reservationStart;
-        this.reservationEnd=reservationEnd;
+        this.reservationStart = reservationStart;
+        this.reservationEnd = reservationEnd;
     }
 }
