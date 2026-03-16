@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,17 +25,20 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class EventService {
 
     private static final int SIZE = 12;
     private static final String SORT_BY_DATE = "createdAt";
+    private final RedisTemplate<String, Object> redisTemplate;
+    private static final long FIRST_ELEMENT = 0;
+    private static final long LAST_ELEMENT = 50;
     private final EventRepository eventRepository;
     private final SeatService seatService;
     private final S3Uploader s3Uploader;
     private final EntityManager em;
 
+    @Transactional(readOnly = true)
     public Event getEvent(Long id) {
         return eventRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이벤트가 존재하지 않습니다 id : " + id));
@@ -47,6 +51,7 @@ public class EventService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public Slice<EventResponse> getEventByCategory(EventCategory eventCategory, String condition, int page, Integer age) {
         Pageable pageable = PageRequest.of(page, SIZE, getCondition(condition));
         if (age != null) {
@@ -66,6 +71,7 @@ public class EventService {
         };
     }
 
+    @Transactional
     public EventResponse save(EventRequest dto, MultipartFile image) {
         String imageUrl = null;
 
@@ -85,17 +91,20 @@ public class EventService {
         return EventResponse.from(saved);
     }
 
+    @Transactional
     public EventResponse findById(Long id) {
         Event event = getEvent(id);
         event.addViewCount();
         return EventResponse.from(event);
     }
 
+    @Transactional
     public void delete(Long id) {
         getEvent(id);
         eventRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public List<EventResponse> searchEventList(String search) {
         List<Event> events = eventRepository.findByTitleContaining(search);
         return events.stream()
@@ -103,6 +112,7 @@ public class EventService {
                 .toList();
     }
 
+    @Transactional
     public EventResponse update(Long id, EventUpdateRequest dto) {
         Event original = getEvent(id);
         Set<Long> originalSchedules = original.getSchedules().stream()
