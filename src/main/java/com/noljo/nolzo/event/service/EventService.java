@@ -85,7 +85,6 @@ public class EventService {
         return EventResponse.from(saved);
     }
 
-    @Transactional
     public EventResponse findById(Long id) {
         Event event = getEvent(id);
         event.addViewCount();
