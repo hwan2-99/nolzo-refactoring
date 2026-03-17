@@ -7,10 +7,12 @@ import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.entity.EventCategory;
 import com.noljo.nolzo.event.repository.EventRepository;
 import com.noljo.nolzo.global.upload.S3Uploader;
+import com.noljo.nolzo.member.repository.MemberRepository;
 import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.seat.service.SeatService;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EventService {
 
     private static final int SIZE = 12;
@@ -37,6 +40,7 @@ public class EventService {
     private final SeatService seatService;
     private final S3Uploader s3Uploader;
     private final EntityManager em;
+    private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
     public Event getEvent(Long id) {
@@ -92,8 +96,8 @@ public class EventService {
     }
 
     @Transactional
-    public EventResponse findById(Long id) {
-        Event event = getEvent(id);
+    public EventResponse findById(Long eventId) {
+        Event event = getEvent(eventId);
         event.addViewCount();
         return EventResponse.from(event);
     }

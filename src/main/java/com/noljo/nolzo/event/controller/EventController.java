@@ -1,5 +1,6 @@
 package com.noljo.nolzo.event.controller;
 
+import com.noljo.nolzo.auth.security.CustomUserDetails;
 import com.noljo.nolzo.event.dto.EventRequest;
 import com.noljo.nolzo.event.dto.EventResponse;
 import com.noljo.nolzo.event.dto.EventUpdateRequest;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
@@ -44,6 +46,7 @@ public class EventController {
 
     @GetMapping("/{id}")
     public ResponseEntity<EventResponse> getEventDetail(@PathVariable Long id) {
+
         return ResponseEntity.ok(eventService.findById(id));
     }
 
