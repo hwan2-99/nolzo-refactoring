@@ -24,7 +24,7 @@ public class ReservationController {
     private final ReservationService reservationService;
     private final SeatService seatService;
 
-    @PostMapping("/reservations")
+    @PostMapping()
     public ResponseEntity<ReservationResponse> create(
             @RequestHeader("Idempotency-Key") String idemKey,
             @AuthenticationPrincipal CustomUserDetails user,

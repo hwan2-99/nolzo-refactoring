@@ -15,8 +15,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -54,16 +52,9 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(PERMIT_URL_ARRAY).permitAll()
-                        .requestMatchers("/auth/**", "/event/**").permitAll()
-                        .requestMatchers(GET, "/reservations/reservation/**").permitAll()
-                        .requestMatchers(POST, "/reservations/*").permitAll()
-                        .requestMatchers(GET, "/reviews/*/").permitAll()
-                        .requestMatchers(GET, "/reviews/events/*").permitAll()
-                        .requestMatchers("/payments/**", "/reservations/**", "/reviews/**", "/tickets/**")
-                        .hasRole("USER")
-                        .anyRequest().authenticated())
-
+                .requestMatchers(PERMIT_URL_ARRAY).permitAll()
+                .anyRequest().permitAll()
+        )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

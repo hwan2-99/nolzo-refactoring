@@ -25,12 +25,12 @@ jobs:
       - name: Grant permission
         run: chmod +x gradlew
 
-      - name: Configure AWS credentials for S3
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id:     ${{ env.ACCESS_KEY }}
-          aws-secret-access-key: ${{ env.SECRET_KEY }}
-          aws-region:            ${{ env.AWS_REGION }}
+#      - name: Configure AWS credentials for S3
+#        uses: aws-actions/configure-aws-credentials@v1
+#        with:
+#          aws-access-key-id:     ${{ env.ACCESS_KEY }}
+#          aws-secret-access-key: ${{ env.SECRET_KEY }}
+#          aws-region:            ${{ env.AWS_REGION }}
 
       - name: Build with Gradle
         run: ./gradlew build

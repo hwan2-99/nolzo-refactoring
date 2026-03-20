@@ -42,6 +42,7 @@ public class ReservationService {
     private final SeatService seatService;
     private final PaymentRepository paymentRepository;
     private final TicketService ticketService;
+    private final QueueService queueService;
 
 //    @Transactional
 //    @Idempotent(prefix = "reservation:succeed:", key = "#memberId")
@@ -60,11 +61,18 @@ public class ReservationService {
     @Transactional
     @Idempotent(prefix = "reservation:", key = "#idemKey")
     public ReservationResponse create(Long memberId, ReservationRequest request, String idemKey) {
+        queueService.validateQueue(request.eventId(), memberId);
+
         Member member = memberRepository.getOrThrow(memberId);
         int totalPrice = request.calculateTotalPrice();
 
-        Reservation reservation = new Reservation(ReservationStatus.PENDING, totalPrice, createReservationNumber(),
-                member, idemKey);
+        Reservation reservation = new Reservation(
+                ReservationStatus.PENDING,
+                totalPrice,
+                createReservationNumber(),
+                member,
+                idemKey
+        );
 
         try {
             reservationRepository.saveAndFlush(reservation);
@@ -73,11 +81,15 @@ public class ReservationService {
             createTicket(request.seats(), reservation);
 
             return ReservationResponse.from(reservation);
+
         } catch (DataIntegrityViolationException e) {
             Reservation existing = reservationRepository.findByIdempotencyKey(idemKey)
                     .orElseThrow(() -> e);
 
             return ReservationResponse.from(existing);
+
+        } finally {
+            queueService.leaveEntrance(request.eventId(), memberId);
         }
     }
 
@@ -180,4 +192,3 @@ public class ReservationService {
         return ReservationCancelResponse.from(reservation);
     }
 }
-

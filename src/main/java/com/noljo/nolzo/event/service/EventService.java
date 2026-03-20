@@ -7,14 +7,17 @@ import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.entity.EventCategory;
 import com.noljo.nolzo.event.repository.EventRepository;
 import com.noljo.nolzo.global.upload.S3Uploader;
+import com.noljo.nolzo.member.repository.MemberRepository;
 import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.seat.service.SeatService;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,17 +27,22 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class EventService {
 
     private static final int SIZE = 12;
     private static final String SORT_BY_DATE = "createdAt";
+    private final RedisTemplate<String, Object> redisTemplate;
+    private static final long FIRST_ELEMENT = 0;
+    private static final long LAST_ELEMENT = 50;
     private final EventRepository eventRepository;
     private final SeatService seatService;
     private final S3Uploader s3Uploader;
     private final EntityManager em;
+    private final MemberRepository memberRepository;
 
+    @Transactional(readOnly = true)
     public Event getEvent(Long id) {
         return eventRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이벤트가 존재하지 않습니다 id : " + id));
@@ -47,6 +55,7 @@ public class EventService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public Slice<EventResponse> getEventByCategory(EventCategory eventCategory, String condition, int page, Integer age) {
         Pageable pageable = PageRequest.of(page, SIZE, getCondition(condition));
         if (age != null) {
@@ -66,6 +75,7 @@ public class EventService {
         };
     }
 
+    @Transactional
     public EventResponse save(EventRequest dto, MultipartFile image) {
         String imageUrl = null;
 
@@ -86,17 +96,19 @@ public class EventService {
     }
 
     @Transactional
-    public EventResponse findById(Long id) {
-        Event event = getEvent(id);
+    public EventResponse findById(Long eventId) {
+        Event event = getEvent(eventId);
         event.addViewCount();
         return EventResponse.from(event);
     }
 
+    @Transactional
     public void delete(Long id) {
         getEvent(id);
         eventRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public List<EventResponse> searchEventList(String search) {
         List<Event> events = eventRepository.findByTitleContaining(search);
         return events.stream()
@@ -104,6 +116,7 @@ public class EventService {
                 .toList();
     }
 
+    @Transactional
     public EventResponse update(Long id, EventUpdateRequest dto) {
         Event original = getEvent(id);
         Set<Long> originalSchedules = original.getSchedules().stream()
