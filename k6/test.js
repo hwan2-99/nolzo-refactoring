@@ -1,22 +1,28 @@
 import http from 'k6/http';
-import { check, sleep } from 'k6';
+import { check } from 'k6';
+import exec from 'k6/execution';
 
 export const options = {
-    vus: 100, // 20명의 가상 사용자
-    iterations: 100, // 총 20번의 반복
+    vus: 1000,
+    iterations: 1000,
     thresholds: {
-        http_req_duration: ['p(95)<500'], // 95%의 요청이 500ms 이하로 완료되도록 설정
+        http_req_duration: ['p(95)<500'],
     },
 };
 
 function login(userId) {
     const email = `${userId}@example.com`;
-    const res = http.post('http://springboot:8080/auth/login', JSON.stringify({
-        email: email,
-        password: '1',
-    }), {
-        headers: { 'Content-Type': 'application/json' },
-    });
+
+    const res = http.post(
+        'http://springboot:8080/auth/login',
+        JSON.stringify({
+            email: email,
+            password: '1',
+        }),
+        {
+            headers: { 'Content-Type': 'application/json' },
+        }
+    );
 
     check(res, {
         'login successful': (r) => r.status === 200,
@@ -26,27 +32,38 @@ function login(userId) {
         console.log(`❗ Login failed for: ${email}`);
         return null;
     }
+
     return res.json('accessToken');
 }
 
-function reserve(token) {
+function reserve(token, userId) {
     if (!token) return;
 
-    const res = http.post('http://springboot:8080/reservations', JSON.stringify({
-        eventId: 1,
-        seats: [ {
-            id: 1,
-            rowName: 'A',
-            seatNumber: 1,
-            seatSection: '1구역',
-            price: 150000,
-            status: 'AVAILABLE' } ],
-    }), {
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-        },
-    });
+    const idemKey = `USER-${userId}`;
+
+    const res = http.post(
+        'http://springboot:8080/reservations',
+        JSON.stringify({
+            eventId: 1,
+            seats: [
+                {
+                    id: 1,
+                    rowName: 'A',
+                    seatNumber: 1,
+                    seatSection: '1구역',
+                    price: 150000,
+                    status: 'AVAILABLE',
+                },
+            ],
+        }),
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+                'Idempotency-Key': idemKey,
+            },
+        }
+    );
 
     check(res, {
         'reservation successful': (r) => r.status === 200,
@@ -54,10 +71,10 @@ function reserve(token) {
 }
 
 export default function () {
-    const userId = __VU;
+    const userId = exec.vu.idInTest; // 1, 2, 3 ... 안전하게 사용
     const token = login(userId);
 
     if (token) {
-        reserve(token);
+        reserve(token, userId);
     }
 }
