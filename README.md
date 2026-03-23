@@ -41,7 +41,7 @@
 
 |BackEnd|BackEnd|BackEnd|
 |:-:|:-:|:-:|
-|<a href="https://github.com/nol-jo/nolzo-ticket-backend/commits/develop?author=Bogeun-Kim" title="Code">작업 내용 💻</a>|<a href="https://github.com/nol-jo/nolzo-ticket-backend/commits/develop?author=hwan2-99" title="Code">작업 내용 💻</a>|<a href="https://github.com/nol-jo/nolzo-ticket-backend/commits/develop?author=paka-jo" title="Code">작업 내용 💻</a>
+|<a href="https://github.com/nol-jo/nolzo-ticket-backend/commits/develop?author=Bogeun-Kim" title="Code">작업 내용 💻</a>|<a href="https://github.com/hwan2-99/nolzo-refactoring/commits/develop/?author=hwan2-99" title="Code">작업 내용 💻</a>|<a href="https://github.com/nol-jo/nolzo-ticket-backend/commits/develop?author=paka-jo" title="Code">작업 내용 💻</a>
 |[김보근](http://github.com/Bogeun-Kim)|[김태환](https://github.com/hwan2-99)|[조정원](https://github.com/paka-jo)|
 
 |BackEnd|BackEnd|FrontEnd|
