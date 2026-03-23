@@ -45,4 +45,4 @@ out/
 .log
 
 ### YML files ###
-*.yml
+src/main/resources/application.yml
