@@ -66,19 +66,16 @@ public class ReservationService {
         Member member = memberRepository.getOrThrow(memberId);
         int totalPrice = request.calculateTotalPrice();
 
-        Reservation reservation = new Reservation(
-                ReservationStatus.PENDING,
-                totalPrice,
-                createReservationNumber(),
-                member,
-                idemKey
-        );
+        Reservation reservation = new Reservation(ReservationStatus.PENDING, totalPrice, createReservationNumber(),
+                member, idemKey);
 
         try {
             reservationRepository.saveAndFlush(reservation);
 
             seatService.updateWithReservation(request.seats());
             createTicket(request.seats(), reservation);
+
+            queueService.markReserved(request.eventId(), memberId);
 
             return ReservationResponse.from(reservation);
 
@@ -88,8 +85,9 @@ public class ReservationService {
 
             return ReservationResponse.from(existing);
 
-        } finally {
+        } catch (Exception e) {
             queueService.leaveEntrance(request.eventId(), memberId);
+            throw e;
         }
     }
 
