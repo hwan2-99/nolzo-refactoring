@@ -3,8 +3,8 @@ import { check } from 'k6';
 import exec from 'k6/execution';
 
 export const options = {
-    vus: 1000,
-    iterations: 1000,
+    vus: 15000,
+    iterations: 15000,
     thresholds: {
         http_req_duration: ['p(95)<500'],
     },
