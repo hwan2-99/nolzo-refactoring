@@ -18,6 +18,7 @@ public class DatabaseCleaner {
     private static final String TRUNCATE_FORMAT = "TRUNCATE TABLE %s";
     private static final String ID_RESET_FORMAT = "ALTER TABLE %s AUTO_INCREMENT = 1"; // MySQL의 ID 리셋 형식
     private static final String REFERENTIAL_FORMAT = "SET FOREIGN_KEY_CHECKS = %s"; // MySQL에서는 외래 키 체크 비활성화
+    private static final String SHEDLOCK_TABLE = "SHEDLOCK";
 
     private final EntityManager entityManager;
     private final DataSource dataSource;
@@ -34,7 +35,9 @@ public class DatabaseCleaner {
         entityManager.createNativeQuery(String.format(REFERENTIAL_FORMAT, "0")).executeUpdate(); // FOREIGN_KEY_CHECKS = 0
         tableNames.forEach(tableName -> {
             entityManager.createNativeQuery(String.format(TRUNCATE_FORMAT, tableName)).executeUpdate();
-            entityManager.createNativeQuery(String.format(ID_RESET_FORMAT, tableName)).executeUpdate(); // AUTO_INCREMENT 리셋
+            if (!SHEDLOCK_TABLE.equalsIgnoreCase(tableName)) {
+                entityManager.createNativeQuery(String.format(ID_RESET_FORMAT, tableName)).executeUpdate(); // AUTO_INCREMENT 리셋
+            }
         });
         entityManager.createNativeQuery(String.format(REFERENTIAL_FORMAT, "1")).executeUpdate(); // FOREIGN_KEY_CHECKS = 1
     }
