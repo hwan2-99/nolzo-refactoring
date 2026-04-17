@@ -1,4 +1,4 @@
-package com.noljo.nolzo.reservation.entity;
+package com.noljo.nolzo.queue.domain;
 
 public enum QueueStatus {
     WAITING,

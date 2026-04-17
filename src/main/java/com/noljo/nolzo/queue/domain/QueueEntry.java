@@ -1,4 +1,4 @@
-package com.noljo.nolzo.reservation.entity;
+package com.noljo.nolzo.queue.domain;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
                 @Index(name = "idx_queue_active_until", columnList = "active_until")
         }
 )
-public class ReservationQueueEntry {
+public class QueueEntry {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,8 +50,8 @@ public class ReservationQueueEntry {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    public ReservationQueueEntry(Long eventId, Long memberId, QueueStatus status,
-                                 LocalDateTime queuedAt, LocalDateTime activeUntil) {
+    public QueueEntry(Long eventId, Long memberId, QueueStatus status,
+                      LocalDateTime queuedAt, LocalDateTime activeUntil) {
         this.eventId = eventId;
         this.memberId = memberId;
         this.status = status;
@@ -61,8 +61,8 @@ public class ReservationQueueEntry {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public static ReservationQueueEntry waiting(Long eventId, Long memberId) {
-        return new ReservationQueueEntry(
+    public static QueueEntry waiting(Long eventId, Long memberId) {
+        return new QueueEntry(
                 eventId,
                 memberId,
                 QueueStatus.WAITING,
@@ -98,6 +98,13 @@ public class ReservationQueueEntry {
         if (this.queuedAt == null) {
             this.queuedAt = LocalDateTime.now();
         }
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void reenterWaiting() {
+        this.status = QueueStatus.WAITING;
+        this.activeUntil = null;
+        this.queuedAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 }
