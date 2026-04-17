@@ -1,6 +1,6 @@
-package com.noljo.nolzo.reservation.initializer;
+package com.noljo.nolzo.queue.initializer;
 
-import com.noljo.nolzo.reservation.service.QueueService;
+import com.noljo.nolzo.queue.application.QueueRecoveryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -12,12 +12,12 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class QueueRecoveryInitializer {
 
-    private final QueueService queueService;
+    private final QueueRecoveryService queueRecoveryService;
 
     @EventListener(ApplicationReadyEvent.class)
     public void recover() {
         log.info("애플리케이션 기동 완료 - Redis 대기열 복구 시작");
-        queueService.rebuildRedisFromDb();
+        queueRecoveryService.rebuildRedisFromDb();
         log.info("Redis 대기열 복구 완료");
     }
 }

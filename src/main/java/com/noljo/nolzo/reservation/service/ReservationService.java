@@ -1,32 +1,34 @@
 package com.noljo.nolzo.reservation.service;
 
-import com.noljo.nolzo.global.aop.idempotent.Idempotent;
-import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.repository.EventRepository;
-import com.noljo.nolzo.payment.entity.Payment;
-import com.noljo.nolzo.payment.repository.PaymentRepository;
-import com.noljo.nolzo.reservation.dto.*;
+import com.noljo.nolzo.global.aop.idempotent.Idempotent;
 import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.repository.MemberRepository;
+import com.noljo.nolzo.payment.entity.Payment;
+import com.noljo.nolzo.payment.repository.PaymentRepository;
+import com.noljo.nolzo.queue.application.QueueService;
+import com.noljo.nolzo.reservation.dto.EventDateTimeResponse;
+import com.noljo.nolzo.reservation.dto.ReservationCancelResponse;
+import com.noljo.nolzo.reservation.dto.ReservationEventInfo;
+import com.noljo.nolzo.reservation.dto.ReservationRequest;
+import com.noljo.nolzo.reservation.dto.ReservationResponse;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import com.noljo.nolzo.reservation.entity.ReservationStatus;
 import com.noljo.nolzo.reservation.repository.ReservationRepository;
+import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.seat.entity.Seat;
 import com.noljo.nolzo.seat.service.SeatService;
+import com.noljo.nolzo.ticket.entity.Ticket;
 import com.noljo.nolzo.ticket.service.TicketService;
 import java.time.LocalDate;
-
-import com.noljo.nolzo.ticket.entity.Ticket;
+import java.time.LocalTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-
-import java.time.LocalTime;
-import java.util.List;
 
 @Slf4j
 @Service

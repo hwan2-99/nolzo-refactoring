@@ -1,9 +1,9 @@
 package com.noljo.nolzo.reservation.scheduler;
 
+import com.noljo.nolzo.queue.application.QueueService;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import com.noljo.nolzo.reservation.entity.ReservationStatus;
 import com.noljo.nolzo.reservation.repository.ReservationRepository;
-import com.noljo.nolzo.reservation.service.QueueService;
 import com.noljo.nolzo.seat.entity.SeatStatus;
 import com.noljo.nolzo.seat.service.SeatService;
 import java.time.LocalDateTime;
@@ -57,10 +57,9 @@ public class ReservationScheduler {
             lockAtLeastFor = "PT1S"
     )
     public void processReservationQueues() {
-        Set<Object> managedEventIds = queueService.getManagedEventIds();
+        Set<Long> managedEventIds = queueService.getManagedEventIds();
 
-        for (Object eventObj : managedEventIds) {
-            Long eventId = Long.valueOf(String.valueOf(eventObj));
+        for (Long eventId : managedEventIds) {
             queueService.processQueue(eventId);
 
             log.info("예매 대기열 처리 - eventId={}", eventId);
