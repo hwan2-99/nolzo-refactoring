@@ -1,6 +1,6 @@
 package com.noljo.nolzo.queue.adapter.out.persistence;
 
-import com.noljo.nolzo.queue.application.port.out.QueueEntryPort;
+import com.noljo.nolzo.queue.application.port.out.QueueEntryPersistencePort;
 import com.noljo.nolzo.queue.domain.QueueEntry;
 import com.noljo.nolzo.queue.domain.QueueStatus;
 import com.noljo.nolzo.queue.repository.QueueEntryRepository;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class QueueEntryPersistenceAdapter implements QueueEntryPort {
+public class QueueEntryPersistenceAdapter implements QueueEntryPersistencePort {
 
     private final QueueEntryRepository queueEntryRepository;
 

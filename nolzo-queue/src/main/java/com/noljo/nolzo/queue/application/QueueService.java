@@ -1,7 +1,7 @@
 package com.noljo.nolzo.queue.application;
 
-import com.noljo.nolzo.queue.application.port.out.MemberPort;
-import com.noljo.nolzo.queue.application.port.out.QueueEntryPort;
+import com.noljo.nolzo.queue.application.port.out.QueueMemberLookupPort;
+import com.noljo.nolzo.queue.application.port.out.QueueEntryPersistencePort;
 import com.noljo.nolzo.queue.application.port.out.QueueStorePort;
 import com.noljo.nolzo.queue.domain.QueueEntry;
 import com.noljo.nolzo.queue.domain.QueueStatus;
@@ -24,8 +24,8 @@ public class QueueService {
     private static final Duration ENTER_TTL = Duration.ofMinutes(5);
 
     private final QueueStorePort queueStorePort;
-    private final QueueEntryPort queueEntryPort;
-    private final MemberPort memberPort;
+    private final QueueEntryPersistencePort queueEntryPort;
+    private final QueueMemberLookupPort memberPort;
 
     @Transactional
     public void validateQueue(Long eventId, Long memberId) {

@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface QueueEntryPort {
+public interface QueueEntryPersistencePort {
 
     Optional<QueueEntry> findByEventIdAndMemberId(Long eventId, Long memberId);
 

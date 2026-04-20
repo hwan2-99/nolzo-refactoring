@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 import com.noljo.nolzo.member.entity.Member;
-import com.noljo.nolzo.member.repository.MemberRepository;
+import com.noljo.nolzo.member.application.port.out.MemberPersistencePort;
 import com.noljo.nolzo.queue.application.QueueService;
 import com.noljo.nolzo.queue.domain.QueueEntry;
 import com.noljo.nolzo.queue.domain.QueueStatus;
@@ -21,7 +21,7 @@ class QueueServiceTest {
     private QueueService queueService;
 
     @Autowired
-    private MemberRepository memberRepository;
+    private MemberPersistencePort memberRepository;
 
     @Autowired
     private QueueEntryRepository queueEntryRepository;

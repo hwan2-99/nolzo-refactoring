@@ -1,6 +1,6 @@
 package com.noljo.nolzo.queue.application;
 
-import com.noljo.nolzo.queue.application.port.out.QueueEntryPort;
+import com.noljo.nolzo.queue.application.port.out.QueueEntryPersistencePort;
 import com.noljo.nolzo.queue.application.port.out.QueueStorePort;
 import com.noljo.nolzo.queue.domain.QueueEntry;
 import com.noljo.nolzo.queue.domain.QueueStatus;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class QueueRecoveryService {
 
-    private final QueueEntryPort queueEntryPort;
+    private final QueueEntryPersistencePort queueEntryPort;
     private final QueueStorePort queueStorePort;
 
     @Transactional

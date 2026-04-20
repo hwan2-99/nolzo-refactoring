@@ -1,6 +1,6 @@
 package com.noljo.nolzo.queue.application.port.out;
 
-public interface MemberPort {
+public interface QueueMemberLookupPort {
 
     void ensureExists(Long memberId);
 }
