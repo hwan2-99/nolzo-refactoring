@@ -1,6 +1,6 @@
 package com.noljo.nolzo.queue.initializer;
 
-import com.noljo.nolzo.queue.application.QueueRecoveryService;
+import com.noljo.nolzo.queue.application.port.in.QueueRecoveryUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class QueueRecoveryInitializer {
 
-    private final QueueRecoveryService queueRecoveryService;
+    private final QueueRecoveryUseCase queueRecoveryService;
 
     @EventListener(ApplicationReadyEvent.class)
     public void recover() {

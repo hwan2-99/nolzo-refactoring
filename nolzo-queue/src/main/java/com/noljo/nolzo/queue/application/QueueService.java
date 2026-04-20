@@ -1,5 +1,6 @@
 package com.noljo.nolzo.queue.application;
 
+import com.noljo.nolzo.queue.application.port.in.QueueUseCase;
 import com.noljo.nolzo.queue.application.port.out.QueueMemberLookupPort;
 import com.noljo.nolzo.queue.application.port.out.QueueEntryPersistencePort;
 import com.noljo.nolzo.queue.application.port.out.QueueStorePort;
@@ -18,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class QueueService {
+public class QueueService implements QueueUseCase {
 
     private static final long MAX_ACTIVE_USERS = 50L;
     private static final Duration ENTER_TTL = Duration.ofMinutes(5);
