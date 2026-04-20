@@ -1,7 +1,7 @@
 package com.noljo.nolzo.ticket.controller;
 
 import com.noljo.nolzo.ticket.dto.TicketResponse;
-import com.noljo.nolzo.ticket.service.TicketService;
+import com.noljo.nolzo.ticket.application.port.in.TicketUseCase;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/tickets")
 @RequiredArgsConstructor
 public class TicketController {
-    private final TicketService ticketService;
+    private final TicketUseCase ticketService;
 
     //todo 회원정보 어떻게 넘겨주는지에 따라 파라미터 추후 수정
     @GetMapping

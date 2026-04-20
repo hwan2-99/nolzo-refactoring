@@ -6,6 +6,7 @@ import com.noljo.nolzo.reservation.entity.Reservation;
 import com.noljo.nolzo.reservation.application.port.out.ReservationPersistencePort;
 import com.noljo.nolzo.seat.entity.Seat;
 import com.noljo.nolzo.seat.application.port.out.SeatPersistencePort;
+import com.noljo.nolzo.ticket.application.port.in.TicketUseCase;
 import com.noljo.nolzo.ticket.dto.TicketResponse;
 import com.noljo.nolzo.ticket.entity.Ticket;
 import com.noljo.nolzo.ticket.entity.TicketStatus;
@@ -21,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Service
 @RequiredArgsConstructor
-public class TicketService {
+public class TicketService implements TicketUseCase {
     private final MemberPersistencePort memberRepository;
     private final ReservationPersistencePort reservationRepository;
     private final TicketPersistencePort ticketRepository;

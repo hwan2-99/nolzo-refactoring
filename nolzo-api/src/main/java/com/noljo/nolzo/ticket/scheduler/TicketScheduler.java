@@ -10,7 +10,7 @@ import java.time.LocalTime;
 
 @Component
 @RequiredArgsConstructor
-public class TickerScheduler {
+public class TicketScheduler {
 
     private final TicketUseCase ticketService;
 
