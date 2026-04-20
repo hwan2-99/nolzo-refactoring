@@ -1,5 +1,6 @@
 package com.noljo.nolzo.event.service;
 
+import com.noljo.nolzo.event.application.port.in.EventUseCase;
 import com.noljo.nolzo.event.application.port.out.EventImageUploadPort;
 import com.noljo.nolzo.event.dto.EventRequest;
 import com.noljo.nolzo.event.dto.EventResponse;
@@ -8,7 +9,7 @@ import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.entity.EventCategory;
 import com.noljo.nolzo.event.application.port.out.EventPersistencePort;
 import com.noljo.nolzo.schedule.entity.Schedule;
-import com.noljo.nolzo.seat.service.SeatService;
+import com.noljo.nolzo.seat.application.port.in.SeatUseCase;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,12 +28,12 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class EventService {
+public class EventService implements EventUseCase {
 
     private static final int SIZE = 12;
     private static final String SORT_BY_DATE = "createdAt";
     private final EventPersistencePort eventRepository;
-    private final SeatService seatService;
+    private final SeatUseCase seatService;
     private final EventImageUploadPort eventImageUploadPort;
     private final EntityManager em;
 

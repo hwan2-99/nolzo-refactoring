@@ -5,7 +5,7 @@ import com.noljo.nolzo.event.dto.EventRequest;
 import com.noljo.nolzo.event.dto.EventResponse;
 import com.noljo.nolzo.event.dto.EventUpdateRequest;
 import com.noljo.nolzo.event.entity.EventCategory;
-import com.noljo.nolzo.event.service.EventService;
+import com.noljo.nolzo.event.application.port.in.EventUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/event")
 public class EventController {
-    private final EventService eventService;
+    private final EventUseCase eventService;
 
     @GetMapping(params = "!category")
     public ResponseEntity<List<EventResponse>> getAllEvents() {
