@@ -1,15 +1,15 @@
 package com.noljo.nolzo.ticket.service;
 
 import com.noljo.nolzo.member.entity.Member;
-import com.noljo.nolzo.member.repository.MemberRepository;
+import com.noljo.nolzo.member.application.port.out.MemberPersistencePort;
 import com.noljo.nolzo.reservation.entity.Reservation;
-import com.noljo.nolzo.reservation.repository.ReservationRepository;
+import com.noljo.nolzo.reservation.application.port.out.ReservationPersistencePort;
 import com.noljo.nolzo.seat.entity.Seat;
-import com.noljo.nolzo.seat.repository.SeatRepository;
+import com.noljo.nolzo.seat.application.port.out.SeatPersistencePort;
 import com.noljo.nolzo.ticket.dto.TicketResponse;
 import com.noljo.nolzo.ticket.entity.Ticket;
 import com.noljo.nolzo.ticket.entity.TicketStatus;
-import com.noljo.nolzo.ticket.repository.TicketRepository;
+import com.noljo.nolzo.ticket.application.port.out.TicketPersistencePort;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -22,10 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class TicketService {
-    private final MemberRepository memberRepository;
-    private final ReservationRepository reservationRepository;
-    private final TicketRepository ticketRepository;
-    private final SeatRepository seatRepository;
+    private final MemberPersistencePort memberRepository;
+    private final ReservationPersistencePort reservationRepository;
+    private final TicketPersistencePort ticketRepository;
+    private final SeatPersistencePort seatRepository;
 
     public TicketResponse create(Reservation reservation, Long seatId) {
         Seat seat = seatRepository.getOrThrow(seatId);
