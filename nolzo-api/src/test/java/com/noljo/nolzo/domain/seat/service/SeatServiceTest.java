@@ -3,11 +3,11 @@ package com.noljo.nolzo.domain.seat.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.noljo.nolzo.event.entity.Event;
-import com.noljo.nolzo.event.repository.EventRepository;
+import com.noljo.nolzo.event.application.port.out.EventPersistencePort;
 import com.noljo.nolzo.schedule.entity.Schedule;
-import com.noljo.nolzo.schedule.repository.ScheduleRepository;
+import com.noljo.nolzo.schedule.application.port.out.SchedulePersistencePort;
 import com.noljo.nolzo.seat.entity.Seat;
-import com.noljo.nolzo.seat.repository.SeatRepository;
+import com.noljo.nolzo.seat.application.port.out.SeatPersistencePort;
 import com.noljo.nolzo.seat.service.SeatService;
 import com.noljo.nolzo.support.annotation.ServiceTest;
 import com.noljo.nolzo.support.fixture.EventFixture;
@@ -19,11 +19,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 @ServiceTest
 public class SeatServiceTest {
     @Autowired
-    private SeatRepository seatRepository;
+    private SeatPersistencePort seatRepository;
     @Autowired
-    private EventRepository eventRepository;
+    private EventPersistencePort eventRepository;
     @Autowired
-    private ScheduleRepository scheduleRepository;
+    private SchedulePersistencePort scheduleRepository;
     @Autowired
     private SeatService seatService;
 

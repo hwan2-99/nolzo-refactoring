@@ -3,12 +3,12 @@ package com.noljo.nolzo.seat.service;
 import com.noljo.nolzo.global.aop.lock.DistributedLock;
 import com.noljo.nolzo.global.error.exception.SeatException;
 import com.noljo.nolzo.schedule.entity.Schedule;
-import com.noljo.nolzo.schedule.repository.ScheduleRepository;
+import com.noljo.nolzo.schedule.application.port.out.SchedulePersistencePort;
 import com.noljo.nolzo.seat.dto.SeatResponse;
 import com.noljo.nolzo.seat.entity.Seat;
 import com.noljo.nolzo.seat.entity.SeatStatus;
 import com.noljo.nolzo.seat.entity.SectionPrice;
-import com.noljo.nolzo.seat.repository.SeatRepository;
+import com.noljo.nolzo.seat.application.port.out.SeatPersistencePort;
 import com.noljo.nolzo.ticket.entity.Ticket;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -30,8 +30,8 @@ public class SeatService {
     public static char ROW_START_NAME = 'A';
     public static char ROW_END_NAME = 'J';
 
-    private final SeatRepository seatRepository;
-    private final ScheduleRepository scheduleRepository;
+    private final SeatPersistencePort seatRepository;
+    private final SchedulePersistencePort scheduleRepository;
 
     /*todo 공연과 공연 스캐쥴 등록시 해당 스케쥴에 대한 좌석들을 한번에 자동으로 만드는 메서드입니다.
            추후 공연장마저 관리할거면 수정해야할 메서드 입니다.
