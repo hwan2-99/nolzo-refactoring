@@ -1,9 +1,9 @@
 package com.noljo.nolzo.payment.controller;
 
 import com.noljo.nolzo.auth.security.CustomUserDetails;
+import com.noljo.nolzo.payment.application.port.in.PaymentUseCase;
 import com.noljo.nolzo.payment.dto.PaymentRequest;
 import com.noljo.nolzo.payment.dto.PaymentResponse;
-import com.noljo.nolzo.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/payments")
 @RequiredArgsConstructor
 public class PaymentController {
-    private final PaymentService paymentService;
+    private final PaymentUseCase paymentService;
 
     @PostMapping
     public ResponseEntity<PaymentResponse> createPayment(@AuthenticationPrincipal CustomUserDetails user,
