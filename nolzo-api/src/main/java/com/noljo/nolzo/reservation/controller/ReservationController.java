@@ -3,9 +3,9 @@ package com.noljo.nolzo.reservation.controller;
 
 import com.noljo.nolzo.auth.security.CustomUserDetails;
 import com.noljo.nolzo.reservation.dto.*;
-import com.noljo.nolzo.reservation.service.ReservationService;
+import com.noljo.nolzo.reservation.application.port.in.ReservationUseCase;
 import com.noljo.nolzo.seat.dto.SeatResponse;
-import com.noljo.nolzo.seat.service.SeatService;
+import com.noljo.nolzo.seat.application.port.in.SeatUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +21,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReservationController {
 
-    private final ReservationService reservationService;
-    private final SeatService seatService;
+    private final ReservationUseCase reservationService;
+    private final SeatUseCase seatService;
 
     @PostMapping()
     public ResponseEntity<ReservationResponse> create(

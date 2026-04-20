@@ -7,6 +7,7 @@ import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.application.port.out.MemberPersistencePort;
 import com.noljo.nolzo.payment.entity.Payment;
 import com.noljo.nolzo.payment.application.port.out.PaymentPersistencePort;
+import com.noljo.nolzo.reservation.application.port.in.ReservationUseCase;
 import com.noljo.nolzo.reservation.application.port.out.ReservationQueuePort;
 import com.noljo.nolzo.reservation.dto.EventDateTimeResponse;
 import com.noljo.nolzo.reservation.dto.ReservationCancelResponse;
@@ -18,10 +19,12 @@ import com.noljo.nolzo.reservation.entity.ReservationStatus;
 import com.noljo.nolzo.reservation.application.port.out.ReservationPersistencePort;
 import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.seat.entity.Seat;
-import com.noljo.nolzo.seat.service.SeatService;
+import com.noljo.nolzo.seat.entity.SeatStatus;
+import com.noljo.nolzo.seat.application.port.in.SeatUseCase;
 import com.noljo.nolzo.ticket.entity.Ticket;
-import com.noljo.nolzo.ticket.service.TicketService;
+import com.noljo.nolzo.ticket.application.port.in.TicketUseCase;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ReservationService {
+public class ReservationService implements ReservationUseCase {
     private static final String RESERVATION_NUMBER_PREFIX = "NOLZO";
     private static final int YEAR_SUFFIX_LENGTH = 2;
     private static final int RESERVATION_NUMBER_COUNT = 1;
@@ -41,9 +44,9 @@ public class ReservationService {
     private final ReservationPersistencePort reservationRepository;
     private final MemberPersistencePort memberRepository;
     private final EventPersistencePort eventRepository;
-    private final SeatService seatService;
+    private final SeatUseCase seatService;
     private final PaymentPersistencePort paymentRepository;
-    private final TicketService ticketService;
+    private final TicketUseCase ticketService;
     private final ReservationQueuePort reservationQueuePort;
 
 //    @Transactional
@@ -190,5 +193,17 @@ public class ReservationService {
         reservation.cancelAllTickets();
 
         return ReservationCancelResponse.from(reservation);
+    }
+
+    @Transactional
+    public void cancelUnpaidReservations(LocalDateTime deadline) {
+        List<Reservation> overdueReservations =
+                reservationRepository.findByStatusAndCreatedAtBefore(ReservationStatus.PENDING, deadline);
+
+        for (Reservation reservation : overdueReservations) {
+            log.info("자동 취소 처리: reservationId = {}", reservation.getId());
+            seatService.updateWithPayment(reservation.getTickets(), SeatStatus.AVAILABLE);
+            reservationRepository.delete(reservation);
+        }
     }
 }
