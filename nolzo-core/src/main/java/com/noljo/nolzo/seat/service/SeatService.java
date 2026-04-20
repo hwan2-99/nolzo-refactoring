@@ -4,6 +4,7 @@ import com.noljo.nolzo.global.aop.lock.DistributedLock;
 import com.noljo.nolzo.global.error.exception.SeatException;
 import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.schedule.application.port.out.SchedulePersistencePort;
+import com.noljo.nolzo.seat.application.port.in.SeatUseCase;
 import com.noljo.nolzo.seat.dto.SeatResponse;
 import com.noljo.nolzo.seat.entity.Seat;
 import com.noljo.nolzo.seat.entity.SeatStatus;
@@ -22,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SeatService {
+public class SeatService implements SeatUseCase {
     public static int SECTION_START_NUMBER = 1;
     public static int SECTION_END_NUMBER = 5;
     public static int SEAT_START_NUMBER = 1;
