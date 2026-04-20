@@ -1,15 +1,15 @@
 package com.noljo.nolzo.domain.review.service;
 
 import com.noljo.nolzo.event.entity.Event;
-import com.noljo.nolzo.event.repository.EventRepository;
+import com.noljo.nolzo.event.application.port.out.EventPersistencePort;
 import com.noljo.nolzo.member.entity.Member;
-import com.noljo.nolzo.member.repository.MemberRepository;
+import com.noljo.nolzo.member.application.port.out.MemberPersistencePort;
 import com.noljo.nolzo.review.dto.request.ReviewUpdateRequest;
 import com.noljo.nolzo.review.dto.response.ReviewResponse;
 import com.noljo.nolzo.review.dto.response.ReviewUpdateResponse;
 import com.noljo.nolzo.review.dto.request.ReviewCreateRequest;
 import com.noljo.nolzo.review.entity.Review;
-import com.noljo.nolzo.review.repository.ReviewRepository;
+import com.noljo.nolzo.review.application.port.out.ReviewPersistencePort;
 import com.noljo.nolzo.review.service.ReviewService;
 import com.noljo.nolzo.support.annotation.ServiceTest;
 import com.noljo.nolzo.support.fixture.EventFixture;
@@ -26,11 +26,11 @@ public class ReviewServiceTest {
     @Autowired
     private ReviewService reviewService;
     @Autowired
-    private ReviewRepository reviewRepository;
+    private ReviewPersistencePort reviewRepository;
     @Autowired
-    private EventRepository eventRepository;
+    private EventPersistencePort eventRepository;
     @Autowired
-    private MemberRepository memberRepository;
+    private MemberPersistencePort memberRepository;
   
     @Test
     void 리뷰를_생성할_수_있다() {

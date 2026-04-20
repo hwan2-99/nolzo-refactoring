@@ -1,10 +1,10 @@
 package com.noljo.nolzo.review.service;
 
 import com.noljo.nolzo.event.entity.Event;
-import com.noljo.nolzo.event.repository.EventRepository;
+import com.noljo.nolzo.event.application.port.out.EventPersistencePort;
 import com.noljo.nolzo.member.entity.Member;
-import com.noljo.nolzo.member.repository.MemberRepository;
-import com.noljo.nolzo.reservation.repository.ReservationRepository;
+import com.noljo.nolzo.member.application.port.out.MemberPersistencePort;
+import com.noljo.nolzo.reservation.application.port.out.ReservationPersistencePort;
 import com.noljo.nolzo.review.dto.request.ReviewCreateRequest;
 import com.noljo.nolzo.review.dto.request.ReviewUpdateRequest;
 import com.noljo.nolzo.review.dto.response.EventReviewPageResponse;
@@ -12,7 +12,7 @@ import com.noljo.nolzo.review.dto.response.ReviewDetailResponse;
 import com.noljo.nolzo.review.dto.response.ReviewResponse;
 import com.noljo.nolzo.review.dto.response.ReviewUpdateResponse;
 import com.noljo.nolzo.review.entity.Review;
-import com.noljo.nolzo.review.repository.ReviewRepository;
+import com.noljo.nolzo.review.application.port.out.ReviewPersistencePort;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,10 +25,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RequiredArgsConstructor
 public class ReviewService {
-    private final ReviewRepository reviewRepository;
-    private final EventRepository eventRepository;
-    private final MemberRepository memberRepository;
-    private final ReservationRepository reservationRepository;
+    private final ReviewPersistencePort reviewRepository;
+    private final EventPersistencePort eventRepository;
+    private final MemberPersistencePort memberRepository;
+    private final ReservationPersistencePort reservationRepository;
 
     public ReviewResponse create(Long memberId, ReviewCreateRequest request) {
         Member member = memberRepository.getOrThrow(memberId);
