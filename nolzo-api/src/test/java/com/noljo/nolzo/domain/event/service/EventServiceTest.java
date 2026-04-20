@@ -5,7 +5,7 @@ import com.noljo.nolzo.event.dto.EventResponse;
 import com.noljo.nolzo.event.dto.EventUpdateRequest;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.entity.EventCategory;
-import com.noljo.nolzo.event.repository.EventRepository;
+import com.noljo.nolzo.event.application.port.out.EventPersistencePort;
 import com.noljo.nolzo.event.service.EventService;
 import com.noljo.nolzo.schedule.dto.ScheduleResponse;
 import com.noljo.nolzo.support.annotation.ServiceTest;
@@ -26,7 +26,7 @@ class EventServiceTest {
     EventService eventService;
 
     @Autowired
-    EventRepository eventRepository;
+    EventPersistencePort eventRepository;
 
     MultipartFile image = FileFixture.dummyImage();
 

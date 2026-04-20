@@ -6,7 +6,7 @@ import com.noljo.nolzo.event.dto.EventResponse;
 import com.noljo.nolzo.event.dto.EventUpdateRequest;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.entity.EventCategory;
-import com.noljo.nolzo.event.repository.EventRepository;
+import com.noljo.nolzo.event.application.port.out.EventPersistencePort;
 import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.seat.service.SeatService;
 import jakarta.persistence.EntityManager;
@@ -31,7 +31,7 @@ public class EventService {
 
     private static final int SIZE = 12;
     private static final String SORT_BY_DATE = "createdAt";
-    private final EventRepository eventRepository;
+    private final EventPersistencePort eventRepository;
     private final SeatService seatService;
     private final EventImageUploadPort eventImageUploadPort;
     private final EntityManager em;
