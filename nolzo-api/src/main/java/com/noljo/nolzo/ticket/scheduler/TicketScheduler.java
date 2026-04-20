@@ -1,6 +1,6 @@
 package com.noljo.nolzo.ticket.scheduler;
 
-import com.noljo.nolzo.ticket.service.TicketService;
+import com.noljo.nolzo.ticket.application.port.in.TicketUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -12,7 +12,7 @@ import java.time.LocalTime;
 @RequiredArgsConstructor
 public class TickerScheduler {
 
-    private final TicketService ticketService;
+    private final TicketUseCase ticketService;
 
     @Scheduled(fixedRate = 1800000)
     public void changeUsed() {

@@ -2,6 +2,7 @@ package com.noljo.nolzo.auth.service;
 
 import static javax.crypto.Cipher.SECRET_KEY;
 
+import com.noljo.nolzo.auth.application.port.in.AuthUseCase;
 import com.noljo.nolzo.auth.dto.AccessTokenResponse;
 import com.noljo.nolzo.auth.dto.LoginRequest;
 import com.noljo.nolzo.auth.dto.RegisterRequest;
@@ -32,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AuthService {
+public class AuthService implements AuthUseCase {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenService jwtTokenService;

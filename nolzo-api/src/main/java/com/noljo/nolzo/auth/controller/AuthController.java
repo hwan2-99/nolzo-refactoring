@@ -5,8 +5,7 @@ import com.noljo.nolzo.auth.dto.LoginRequest;
 import com.noljo.nolzo.auth.dto.RegisterRequest;
 import com.noljo.nolzo.auth.dto.RegisterResponse;
 import com.noljo.nolzo.auth.dto.TokensResponse;
-import com.noljo.nolzo.auth.service.AuthService;
-import com.noljo.nolzo.auth.service.JwtTokenService;
+import com.noljo.nolzo.auth.application.port.in.AuthUseCase;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -31,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private static final String REFRESH_TOKEN = "refreshToken";
-    private final AuthService authService;
+    private final AuthUseCase authService;
 
     @Value("${jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenValidityInSeconds;
