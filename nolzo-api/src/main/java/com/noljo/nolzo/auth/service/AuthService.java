@@ -11,7 +11,7 @@ import com.noljo.nolzo.auth.entity.RefreshToken;
 import com.noljo.nolzo.auth.jwt.JwtUtil;
 import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.entity.Role;
-import com.noljo.nolzo.member.repository.MemberRepository;
+import com.noljo.nolzo.member.application.port.out.MemberPersistencePort;
 import jakarta.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -36,7 +36,7 @@ public class AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenService jwtTokenService;
-    private final MemberRepository memberRepository;
+    private final MemberPersistencePort memberRepository;
     private final JwtUtil jwtUtil;
 
     @Transactional

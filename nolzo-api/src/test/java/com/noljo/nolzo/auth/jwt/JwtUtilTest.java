@@ -3,7 +3,7 @@ package com.noljo.nolzo.auth.jwt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.noljo.nolzo.member.entity.Member;
-import com.noljo.nolzo.member.repository.MemberRepository;
+import com.noljo.nolzo.member.application.port.out.MemberPersistencePort;
 import com.noljo.nolzo.support.annotation.ServiceTest;
 import com.noljo.nolzo.support.fixture.MemberFixture;
 import io.jsonwebtoken.Jwts;
@@ -22,7 +22,7 @@ class JwtUtilTest {
     private JwtUtil jwtUtil;
 
     @Autowired
-    private MemberRepository memberRepository;
+    private MemberPersistencePort memberRepository;
 
     @Value("${jwt.secret}")
     private String secret;

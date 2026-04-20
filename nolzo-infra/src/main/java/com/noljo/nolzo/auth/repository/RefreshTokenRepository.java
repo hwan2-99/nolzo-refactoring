@@ -12,7 +12,6 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
     @Query("SELECT r FROM RefreshToken r WHERE r.refreshToken = :token")
     RefreshToken findByToken(@Param("token") String token);
 
-
     Optional<RefreshToken> findByMemberId(Long memberId);
 
     void deleteByMemberId(Long memberId);

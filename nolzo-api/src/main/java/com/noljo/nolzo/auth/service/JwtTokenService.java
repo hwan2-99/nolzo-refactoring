@@ -3,7 +3,7 @@ package com.noljo.nolzo.auth.service;
 import com.noljo.nolzo.auth.dto.TokensResponse;
 import com.noljo.nolzo.auth.entity.RefreshToken;
 import com.noljo.nolzo.auth.jwt.JwtUtil;
-import com.noljo.nolzo.auth.repository.RefreshTokenRepository;
+import com.noljo.nolzo.auth.application.port.out.RefreshTokenPersistencePort;
 import com.noljo.nolzo.member.entity.Member;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class JwtTokenService {
 
     private final JwtUtil jwtUtil;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenPersistencePort refreshTokenRepository;
 
     @Value("${jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenValidityInSeconds;

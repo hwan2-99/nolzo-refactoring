@@ -9,9 +9,9 @@ import com.noljo.nolzo.auth.dto.RegisterRequest;
 import com.noljo.nolzo.auth.dto.RegisterResponse;
 import com.noljo.nolzo.auth.dto.TokensResponse;
 import com.noljo.nolzo.auth.jwt.JwtUtil;
-import com.noljo.nolzo.auth.repository.RefreshTokenRepository;
+import com.noljo.nolzo.auth.application.port.out.RefreshTokenPersistencePort;
 import com.noljo.nolzo.member.entity.Member;
-import com.noljo.nolzo.member.repository.MemberRepository;
+import com.noljo.nolzo.member.application.port.out.MemberPersistencePort;
 import com.noljo.nolzo.support.annotation.ServiceTest;
 import com.noljo.nolzo.support.fixture.MemberFixture;
 import io.jsonwebtoken.security.SignatureException;
@@ -29,10 +29,10 @@ class AuthServiceTest {
     private AuthService authService;
 
     @Autowired
-    private MemberRepository memberRepository;
+    private MemberPersistencePort memberRepository;
 
     @Autowired
-    private RefreshTokenRepository refreshTokenRepository;
+    private RefreshTokenPersistencePort refreshTokenRepository;
 
 
     @Autowired

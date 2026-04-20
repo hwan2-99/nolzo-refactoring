@@ -5,11 +5,11 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import com.noljo.nolzo.auth.dto.TokensResponse;
 import com.noljo.nolzo.auth.entity.RefreshToken;
-import com.noljo.nolzo.auth.repository.RefreshTokenRepository;
+import com.noljo.nolzo.auth.application.port.out.RefreshTokenPersistencePort;
 import com.noljo.nolzo.auth.scheduler.RefreshTokenCleanupScheduler;
 import com.noljo.nolzo.auth.service.JwtTokenService;
 import com.noljo.nolzo.member.entity.Member;
-import com.noljo.nolzo.member.repository.MemberRepository;
+import com.noljo.nolzo.member.application.port.out.MemberPersistencePort;
 import com.noljo.nolzo.support.annotation.ServiceTest;
 import com.noljo.nolzo.support.fixture.MemberFixture;
 import io.jsonwebtoken.Jwts;
@@ -33,10 +33,10 @@ class JwtTokenServiceTest {
     private JwtUtil jwtUtil;
 
     @Autowired
-    private RefreshTokenRepository refreshTokenRepository;
+    private RefreshTokenPersistencePort refreshTokenRepository;
 
     @Autowired
-    private MemberRepository memberRepository;
+    private MemberPersistencePort memberRepository;
 
     @Autowired
     private RefreshTokenCleanupScheduler refreshTokenCleanupScheduler;
