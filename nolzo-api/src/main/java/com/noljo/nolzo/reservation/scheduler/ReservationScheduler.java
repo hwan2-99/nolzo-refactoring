@@ -3,7 +3,7 @@ package com.noljo.nolzo.reservation.scheduler;
 import com.noljo.nolzo.queue.application.QueueService;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import com.noljo.nolzo.reservation.entity.ReservationStatus;
-import com.noljo.nolzo.reservation.repository.ReservationRepository;
+import com.noljo.nolzo.reservation.application.port.out.ReservationPersistencePort;
 import com.noljo.nolzo.seat.entity.SeatStatus;
 import com.noljo.nolzo.seat.service.SeatService;
 import java.time.LocalDateTime;
@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ReservationScheduler {
 
-    private final ReservationRepository reservationRepository;
+    private final ReservationPersistencePort reservationRepository;
     private final SeatService seatService;
     private final QueueService queueService;
 

@@ -1,13 +1,13 @@
 package com.noljo.nolzo.reservation.service;
 
 import com.noljo.nolzo.event.entity.Event;
-import com.noljo.nolzo.event.repository.EventRepository;
+import com.noljo.nolzo.event.application.port.out.EventPersistencePort;
 import com.noljo.nolzo.global.aop.idempotent.Idempotent;
 import com.noljo.nolzo.member.entity.Member;
-import com.noljo.nolzo.member.repository.MemberRepository;
+import com.noljo.nolzo.member.application.port.out.MemberPersistencePort;
 import com.noljo.nolzo.payment.entity.Payment;
-import com.noljo.nolzo.payment.repository.PaymentRepository;
-import com.noljo.nolzo.queue.application.QueueService;
+import com.noljo.nolzo.payment.application.port.out.PaymentPersistencePort;
+import com.noljo.nolzo.reservation.application.port.out.ReservationQueuePort;
 import com.noljo.nolzo.reservation.dto.EventDateTimeResponse;
 import com.noljo.nolzo.reservation.dto.ReservationCancelResponse;
 import com.noljo.nolzo.reservation.dto.ReservationEventInfo;
@@ -15,7 +15,7 @@ import com.noljo.nolzo.reservation.dto.ReservationRequest;
 import com.noljo.nolzo.reservation.dto.ReservationResponse;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import com.noljo.nolzo.reservation.entity.ReservationStatus;
-import com.noljo.nolzo.reservation.repository.ReservationRepository;
+import com.noljo.nolzo.reservation.application.port.out.ReservationPersistencePort;
 import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.seat.entity.Seat;
 import com.noljo.nolzo.seat.service.SeatService;
@@ -38,13 +38,13 @@ public class ReservationService {
     private static final int YEAR_SUFFIX_LENGTH = 2;
     private static final int RESERVATION_NUMBER_COUNT = 1;
 
-    private final ReservationRepository reservationRepository;
-    private final MemberRepository memberRepository;
-    private final EventRepository eventRepository;
+    private final ReservationPersistencePort reservationRepository;
+    private final MemberPersistencePort memberRepository;
+    private final EventPersistencePort eventRepository;
     private final SeatService seatService;
-    private final PaymentRepository paymentRepository;
+    private final PaymentPersistencePort paymentRepository;
     private final TicketService ticketService;
-    private final QueueService queueService;
+    private final ReservationQueuePort reservationQueuePort;
 
 //    @Transactional
 //    @Idempotent(prefix = "reservation:succeed:", key = "#memberId")
@@ -63,7 +63,7 @@ public class ReservationService {
     @Transactional
     @Idempotent(prefix = "reservation:", key = "#idemKey")
     public ReservationResponse create(Long memberId, ReservationRequest request, String idemKey) {
-        queueService.validateQueue(request.eventId(), memberId);
+        reservationQueuePort.validateQueue(request.eventId(), memberId);
 
         Member member = memberRepository.getOrThrow(memberId);
         int totalPrice = request.calculateTotalPrice();
@@ -77,7 +77,7 @@ public class ReservationService {
             seatService.updateWithReservation(request.seats());
             createTicket(request.seats(), reservation);
 
-            queueService.markReserved(request.eventId(), memberId);
+            reservationQueuePort.markReserved(request.eventId(), memberId);
 
             return ReservationResponse.from(reservation);
 
@@ -88,7 +88,7 @@ public class ReservationService {
             return ReservationResponse.from(existing);
 
         } catch (Exception e) {
-            queueService.leaveEntrance(request.eventId(), memberId);
+            reservationQueuePort.leaveEntrance(request.eventId(), memberId);
             throw e;
         }
     }

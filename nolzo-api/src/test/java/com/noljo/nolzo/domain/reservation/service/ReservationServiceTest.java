@@ -6,25 +6,25 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.noljo.nolzo.event.entity.Event;
-import com.noljo.nolzo.event.repository.EventRepository;
+import com.noljo.nolzo.event.application.port.out.EventPersistencePort;
 import com.noljo.nolzo.global.error.exception.SeatException;
 import com.noljo.nolzo.member.entity.Member;
-import com.noljo.nolzo.member.repository.MemberRepository;
+import com.noljo.nolzo.member.application.port.out.MemberPersistencePort;
 import com.noljo.nolzo.reservation.dto.EventDateTimeResponse;
 import com.noljo.nolzo.reservation.dto.ReservationEventInfo;
 import com.noljo.nolzo.reservation.dto.ReservationRequest;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import com.noljo.nolzo.reservation.entity.ReservationStatus;
-import com.noljo.nolzo.reservation.repository.ReservationRepository;
+import com.noljo.nolzo.reservation.application.port.out.ReservationPersistencePort;
 import com.noljo.nolzo.reservation.service.ReservationService;
 import com.noljo.nolzo.schedule.entity.Schedule;
-import com.noljo.nolzo.schedule.repository.ScheduleRepository;
+import com.noljo.nolzo.schedule.application.port.out.SchedulePersistencePort;
 import com.noljo.nolzo.seat.entity.Seat;
-import com.noljo.nolzo.seat.repository.SeatRepository;
+import com.noljo.nolzo.seat.application.port.out.SeatPersistencePort;
 import com.noljo.nolzo.support.annotation.ServiceTest;
 import com.noljo.nolzo.support.fixture.*;
 import com.noljo.nolzo.ticket.entity.TicketStatus;
-import com.noljo.nolzo.ticket.repository.TicketRepository;
+import com.noljo.nolzo.ticket.application.port.out.TicketPersistencePort;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -42,17 +42,17 @@ public class ReservationServiceTest {
     @Autowired
     private ReservationService reservationService;
     @Autowired
-    private EventRepository eventRepository;
+    private EventPersistencePort eventRepository;
     @Autowired
-    private MemberRepository memberRepository;
+    private MemberPersistencePort memberRepository;
     @Autowired
-    private SeatRepository seatRepository;
+    private SeatPersistencePort seatRepository;
     @Autowired
-    private ScheduleRepository scheduleRepository;
+    private SchedulePersistencePort scheduleRepository;
     @Autowired
-    private ReservationRepository reservationRepository;
+    private ReservationPersistencePort reservationRepository;
     @Autowired
-    private TicketRepository ticketRepository;
+    private TicketPersistencePort ticketRepository;
 
     @Test
     void 같은_좌석은_동시에_접근이_불가능하다() throws InterruptedException {
