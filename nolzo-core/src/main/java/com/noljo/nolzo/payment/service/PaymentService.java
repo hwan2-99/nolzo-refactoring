@@ -1,14 +1,14 @@
 package com.noljo.nolzo.payment.service;
 
 import com.noljo.nolzo.member.entity.Member;
-import com.noljo.nolzo.member.repository.MemberRepository;
+import com.noljo.nolzo.member.application.port.out.MemberPersistencePort;
 import com.noljo.nolzo.payment.dto.PaymentRequest;
 import com.noljo.nolzo.payment.dto.PaymentResponse;
 import com.noljo.nolzo.payment.entity.Payment;
-import com.noljo.nolzo.payment.repository.PaymentRepository;
+import com.noljo.nolzo.payment.application.port.out.PaymentPersistencePort;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import com.noljo.nolzo.reservation.entity.ReservationStatus;
-import com.noljo.nolzo.reservation.repository.ReservationRepository;
+import com.noljo.nolzo.reservation.application.port.out.ReservationPersistencePort;
 import com.noljo.nolzo.reservation.service.ReservationService;
 import com.noljo.nolzo.seat.entity.SeatStatus;
 import com.noljo.nolzo.seat.service.SeatService;
@@ -20,9 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
-    private final PaymentRepository paymentRepository;
-    private final MemberRepository memberRepository;
-    private final ReservationRepository reservationRepository;
+    private final PaymentPersistencePort paymentRepository;
+    private final MemberPersistencePort memberRepository;
+    private final ReservationPersistencePort reservationRepository;
     private final ReservationService reservationService;
     private final SeatService seatService;
 

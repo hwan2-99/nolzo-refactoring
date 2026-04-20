@@ -3,21 +3,21 @@ package com.noljo.nolzo.domain.payment.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.noljo.nolzo.event.entity.Event;
-import com.noljo.nolzo.event.repository.EventRepository;
+import com.noljo.nolzo.event.application.port.out.EventPersistencePort;
 import com.noljo.nolzo.member.entity.Member;
-import com.noljo.nolzo.member.repository.MemberRepository;
+import com.noljo.nolzo.member.application.port.out.MemberPersistencePort;
 import com.noljo.nolzo.payment.dto.PaymentRequest;
 import com.noljo.nolzo.payment.entity.Payment;
 import com.noljo.nolzo.payment.entity.PaymentMethod;
-import com.noljo.nolzo.payment.repository.PaymentRepository;
+import com.noljo.nolzo.payment.application.port.out.PaymentPersistencePort;
 import com.noljo.nolzo.payment.service.PaymentService;
 import com.noljo.nolzo.reservation.entity.Reservation;
-import com.noljo.nolzo.reservation.repository.ReservationRepository;
+import com.noljo.nolzo.reservation.application.port.out.ReservationPersistencePort;
 import com.noljo.nolzo.schedule.entity.Schedule;
-import com.noljo.nolzo.schedule.repository.ScheduleRepository;
+import com.noljo.nolzo.schedule.application.port.out.SchedulePersistencePort;
 import com.noljo.nolzo.seat.entity.Seat;
 import com.noljo.nolzo.seat.entity.SeatStatus;
-import com.noljo.nolzo.seat.repository.SeatRepository;
+import com.noljo.nolzo.seat.application.port.out.SeatPersistencePort;
 import com.noljo.nolzo.support.annotation.ServiceTest;
 import com.noljo.nolzo.support.fixture.EventFixture;
 import com.noljo.nolzo.support.fixture.MemberFixture;
@@ -27,26 +27,26 @@ import com.noljo.nolzo.support.fixture.ScheduleFixture;
 import com.noljo.nolzo.support.fixture.SeatFixture;
 import com.noljo.nolzo.support.fixture.TicketFixture;
 import com.noljo.nolzo.ticket.entity.Ticket;
-import com.noljo.nolzo.ticket.repository.TicketRepository;
+import com.noljo.nolzo.ticket.application.port.out.TicketPersistencePort;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @ServiceTest
 public class PaymentServiceTest {
     @Autowired
-    private MemberRepository memberRepository;
+    private MemberPersistencePort memberRepository;
     @Autowired
-    private TicketRepository ticketRepository;
+    private TicketPersistencePort ticketRepository;
     @Autowired
-    private ReservationRepository reservationRepository;
+    private ReservationPersistencePort reservationRepository;
     @Autowired
-    private SeatRepository seatRepository;
+    private SeatPersistencePort seatRepository;
     @Autowired
-    private EventRepository eventRepository;
+    private EventPersistencePort eventRepository;
     @Autowired
-    private ScheduleRepository scheduleRepository;
+    private SchedulePersistencePort scheduleRepository;
     @Autowired
-    private PaymentRepository paymentRepository;
+    private PaymentPersistencePort paymentRepository;
     @Autowired
     private PaymentService paymentService;
 
