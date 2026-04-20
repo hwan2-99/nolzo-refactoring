@@ -1,6 +1,6 @@
 package com.noljo.nolzo.member.controller;
 
-import com.noljo.nolzo.member.service.MemberService;
+import com.noljo.nolzo.member.application.port.in.MemberUseCase;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/member")
 public class MemberController {
 
-    private final MemberService memberService;
+    private final MemberUseCase memberService;
 
     @GetMapping("/readAll")
     public ResponseEntity<List<MemberDto>> getAllMembers() {
@@ -48,5 +48,4 @@ public class MemberController {
         return ResponseEntity.ok(memberService.readMember(memberId));
     }
 }
-
 

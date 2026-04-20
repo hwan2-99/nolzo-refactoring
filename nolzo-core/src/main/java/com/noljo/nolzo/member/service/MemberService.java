@@ -1,5 +1,6 @@
 package com.noljo.nolzo.member.service;
 
+import com.noljo.nolzo.member.application.port.in.MemberUseCase;
 import com.noljo.nolzo.member.dto.PasswordChangeRequest;
 import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.application.port.out.MemberPersistencePort;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class MemberService {
+public class MemberService implements MemberUseCase {
     private final MemberPersistencePort memberRepository;
 
     @Transactional
