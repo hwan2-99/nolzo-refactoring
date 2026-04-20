@@ -1,6 +1,5 @@
 package com.noljo.nolzo.global.aop.idempotent;
 
-import com.noljo.nolzo.global.aop.utils.AspectUtils;
 import com.noljo.nolzo.global.error.exception.SeatException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

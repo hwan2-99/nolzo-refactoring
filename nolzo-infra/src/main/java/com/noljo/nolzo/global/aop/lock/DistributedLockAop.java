@@ -1,6 +1,7 @@
 package com.noljo.nolzo.global.aop.lock;
 
 import java.lang.reflect.Method;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Slf4j
 public class DistributedLockAop {
+
     private static final String REDISSON_LOCK_PREFIX = "LOCK:";
 
     private final RedissonClient redissonClient;
@@ -29,21 +31,21 @@ public class DistributedLockAop {
 
         String key = REDISSON_LOCK_PREFIX + CustomSpringELParser.getDynamicValue(signature.getParameterNames(),
                 joinPoint.getArgs(), distributedLock.key());
-        RLock rLock = redissonClient.getLock(key);  // (1)
+        RLock rLock = redissonClient.getLock(key);
 
         try {
             boolean available = rLock.tryLock(distributedLock.waitTime(), distributedLock.leaseTime(),
-                    distributedLock.timeUnit());  // (2)
+                    distributedLock.timeUnit());
             if (!available) {
                 return false;
             }
 
-            return aopForTransaction.proceed(joinPoint);  // (3)
+            return aopForTransaction.proceed(joinPoint);
         } catch (InterruptedException e) {
             throw new InterruptedException();
         } finally {
             try {
-                rLock.unlock();   // (4)
+                rLock.unlock();
             } catch (IllegalMonitorStateException e) {
                 log.info("Redisson Lock Already UnLock");
             }

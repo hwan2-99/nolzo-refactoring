@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +32,6 @@ public class SeatService {
 
     private final SeatRepository seatRepository;
     private final ScheduleRepository scheduleRepository;
-    private final RedissonClient redissonClient;
 
     /*todo 공연과 공연 스캐쥴 등록시 해당 스케쥴에 대한 좌석들을 한번에 자동으로 만드는 메서드입니다.
            추후 공연장마저 관리할거면 수정해야할 메서드 입니다.

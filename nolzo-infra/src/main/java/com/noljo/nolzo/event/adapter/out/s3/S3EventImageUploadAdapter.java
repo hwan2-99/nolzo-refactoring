@@ -1,4 +1,13 @@
-package com.noljo.nolzo.global.upload;
+package com.noljo.nolzo.event.adapter.out.s3;
+
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.noljo.nolzo.event.application.port.out.EventImageUploadPort;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -6,27 +15,17 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 @Slf4j
 @RequiredArgsConstructor
-@Service
-public class S3Uploader {
+@Component
+public class S3EventImageUploadAdapter implements EventImageUploadPort {
 
     private final AmazonS3Client amazonS3Client;
 
     @Value("${cloud.aws.s3.bucketName}")
     private String bucket;
 
+    @Override
     public String upload(MultipartFile multipartFile, String dirName) throws IOException {
         File uploadFile = convert(multipartFile)
                 .orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File 전환 실패"));
@@ -42,9 +41,7 @@ public class S3Uploader {
     }
 
     private String putS3(File uploadFile, String fileName) {
-        amazonS3Client.putObject(
-                new PutObjectRequest(bucket, fileName, uploadFile)
-        );
+        amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile));
         return amazonS3Client.getUrl(bucket, fileName).toString();
     }
 
@@ -57,7 +54,6 @@ public class S3Uploader {
     }
 
     private Optional<File> convert(MultipartFile file) throws IOException {
-
         File tempFile = File.createTempFile("upload-", file.getOriginalFilename());
 
         try (FileOutputStream fos = new FileOutputStream(tempFile)) {
@@ -71,5 +67,4 @@ public class S3Uploader {
         String random = UUID.randomUUID().toString();
         return random + originName;
     }
-
 }

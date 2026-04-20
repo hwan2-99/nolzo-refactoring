@@ -1,13 +1,12 @@
 package com.noljo.nolzo.event.service;
 
+import com.noljo.nolzo.event.application.port.out.EventImageUploadPort;
 import com.noljo.nolzo.event.dto.EventRequest;
 import com.noljo.nolzo.event.dto.EventResponse;
 import com.noljo.nolzo.event.dto.EventUpdateRequest;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.entity.EventCategory;
 import com.noljo.nolzo.event.repository.EventRepository;
-import com.noljo.nolzo.global.upload.S3Uploader;
-import com.noljo.nolzo.member.repository.MemberRepository;
 import com.noljo.nolzo.schedule.entity.Schedule;
 import com.noljo.nolzo.seat.service.SeatService;
 import jakarta.persistence.EntityManager;
@@ -17,7 +16,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,14 +31,10 @@ public class EventService {
 
     private static final int SIZE = 12;
     private static final String SORT_BY_DATE = "createdAt";
-    private final RedisTemplate<String, Object> redisTemplate;
-    private static final long FIRST_ELEMENT = 0;
-    private static final long LAST_ELEMENT = 50;
     private final EventRepository eventRepository;
     private final SeatService seatService;
-    private final S3Uploader s3Uploader;
+    private final EventImageUploadPort eventImageUploadPort;
     private final EntityManager em;
-    private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
     public Event getEvent(Long id) {
@@ -81,7 +75,7 @@ public class EventService {
 
         if (image != null && !image.isEmpty()) {
             try {
-                imageUrl = s3Uploader.upload(image, "event-images");
+                imageUrl = eventImageUploadPort.upload(image, "event-images");
             } catch (IOException e) {
                 throw new RuntimeException("S3 이미지 업로드 실패: " + e.getMessage(), e);
             }
@@ -150,4 +144,3 @@ public class EventService {
                 .toList();
     }
 }
-
