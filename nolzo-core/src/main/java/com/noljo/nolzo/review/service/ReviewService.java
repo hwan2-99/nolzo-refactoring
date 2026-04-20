@@ -11,6 +11,8 @@ import com.noljo.nolzo.review.dto.response.EventReviewPageResponse;
 import com.noljo.nolzo.review.dto.response.ReviewDetailResponse;
 import com.noljo.nolzo.review.dto.response.ReviewResponse;
 import com.noljo.nolzo.review.dto.response.ReviewUpdateResponse;
+import com.noljo.nolzo.review.application.port.in.ReviewRatingUpdateUseCase;
+import com.noljo.nolzo.review.application.port.in.ReviewUseCase;
 import com.noljo.nolzo.review.entity.Review;
 import com.noljo.nolzo.review.application.port.out.ReviewPersistencePort;
 import java.util.List;
@@ -24,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ReviewService {
+public class ReviewService implements ReviewUseCase, ReviewRatingUpdateUseCase {
     private final ReviewPersistencePort reviewRepository;
     private final EventPersistencePort eventRepository;
     private final MemberPersistencePort memberRepository;
@@ -78,6 +80,15 @@ public class ReviewService {
         Review review = reviewRepository.getOrThrow(reviewId);
         validateReviewOwner(review, memberId);
         reviewRepository.delete(review);
+    }
+
+    @Transactional
+    public void updateEventAverageRate() {
+        List<Event> events = eventRepository.findAll();
+        events.forEach(event -> {
+            double averageRating = reviewRepository.getAverageByEventId(event.getId());
+            event.updateAverageRating(averageRating);
+        });
     }
 
     private void validateReviewOwner(Review review, Long memberId) {

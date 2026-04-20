@@ -1,9 +1,6 @@
 package com.noljo.nolzo.review.scheduler;
 
-import com.noljo.nolzo.event.entity.Event;
-import com.noljo.nolzo.event.application.port.out.EventPersistencePort;
-import com.noljo.nolzo.review.application.port.out.ReviewPersistencePort;
-import java.util.List;
+import com.noljo.nolzo.review.application.port.in.ReviewRatingUpdateUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -17,8 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReviewAverageRatingScheduler {
 
     private static final long THIRTY_MINUTES = 10 * 60 * 1000L;
-    private final EventPersistencePort eventRepository;
-    private final ReviewPersistencePort reviewRepository;
+    private final ReviewRatingUpdateUseCase reviewRatingUpdateUseCase;
 
     @EventListener(ApplicationReadyEvent.class)
     public void initializeEventAverageRatings() {
@@ -27,10 +23,6 @@ public class ReviewAverageRatingScheduler {
 
     @Scheduled(fixedRate = THIRTY_MINUTES)
     public void updateEventAverageRate() {
-        List<Event> events = eventRepository.findAll();
-        events.forEach(event -> {
-            double averageRating = reviewRepository.getAverageByEventId(event.getId());
-            event.updateAverageRating(averageRating);
-        });
+        reviewRatingUpdateUseCase.updateEventAverageRate();
     }
 }

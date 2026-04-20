@@ -6,7 +6,7 @@ import com.noljo.nolzo.review.dto.request.ReviewUpdateRequest;
 import com.noljo.nolzo.review.dto.response.EventReviewPageResponse;
 import com.noljo.nolzo.review.dto.response.ReviewResponse;
 import com.noljo.nolzo.review.dto.response.ReviewUpdateResponse;
-import com.noljo.nolzo.review.service.ReviewService;
+import com.noljo.nolzo.review.application.port.in.ReviewUseCase;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/reviews")
 public class ReviewController {
-    private final ReviewService reviewService;
+    private final ReviewUseCase reviewService;
 
     @Transactional(readOnly = true)
     @GetMapping("/{reviewId}")
