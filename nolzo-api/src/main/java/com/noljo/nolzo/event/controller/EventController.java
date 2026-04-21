@@ -21,17 +21,17 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/event")
 public class EventController {
-    private final EventUseCase eventService;
+    private final EventUseCase eventUseCase;
 
     @GetMapping(params = "!category")
     public ResponseEntity<List<EventResponse>> getAllEvents() {
-        return ResponseEntity.ok(eventService.findAll());
+        return ResponseEntity.ok(eventUseCase.findAll());
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<EventResponse> createEvent(@RequestPart("dto") @Valid EventRequest dto,
                                                      @RequestPart(value = "eventImage", required = false) MultipartFile eventImage) {
-        return ResponseEntity.ok(eventService.save(dto, eventImage));
+        return ResponseEntity.ok(eventUseCase.save(dto, eventImage));
     }
 
     @GetMapping
@@ -41,28 +41,28 @@ public class EventController {
             @RequestParam(defaultValue = "viewCount", required = false) String condition,
             @RequestParam(required = false) Integer age
     ) {
-        return eventService.getEventByCategory(category, condition, page, age);
+        return eventUseCase.getEventByCategory(category, condition, page, age);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<EventResponse> getEventDetail(@PathVariable Long id) {
 
-        return ResponseEntity.ok(eventService.findById(id));
+        return ResponseEntity.ok(eventUseCase.findById(id));
     }
 
     @GetMapping("/search")
     public ResponseEntity<List<EventResponse>> getSearchEventList(@RequestParam(name = "search") String search) {
-        return ResponseEntity.ok(eventService.searchEventList(search));
+        return ResponseEntity.ok(eventUseCase.searchEventList(search));
     }
 
     @GetMapping("/rankings")
     public ResponseEntity<List<EventResponse>> getRankingsByCategory(@RequestParam EventCategory category) {
-        return ResponseEntity.ok(eventService.getTop10ByCategory(category));
+        return ResponseEntity.ok(eventUseCase.getTop10ByCategory(category));
     }
 
     @GetMapping("/popular")
     public ResponseEntity<List<EventResponse>> getTop6PopularEvents() {
-        return ResponseEntity.ok(eventService.getTop6PopularEvents());
+        return ResponseEntity.ok(eventUseCase.getTop6PopularEvents());
     }
 
     @PatchMapping(value = "/{id}",
@@ -72,7 +72,7 @@ public class EventController {
             @RequestPart("dto") @Valid EventUpdateRequest dto,
             @RequestPart(value = "eventImage", required = false) MultipartFile image
     ) {
-        return ResponseEntity.ok(eventService.update(id, dto));
+        return ResponseEntity.ok(eventUseCase.update(id, dto));
     }
 
     @PatchMapping("/{id}")
@@ -80,12 +80,12 @@ public class EventController {
             @PathVariable Long id,
             @RequestBody @Valid EventUpdateRequest dto
     ) {
-        return ResponseEntity.ok(eventService.update(id, dto));
+        return ResponseEntity.ok(eventUseCase.update(id, dto));
     }
 
     @PostMapping("/delete/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
-        eventService.delete(id);
+        eventUseCase.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

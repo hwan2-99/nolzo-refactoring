@@ -21,8 +21,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReservationController {
 
-    private final ReservationUseCase reservationService;
-    private final SeatUseCase seatService;
+    private final ReservationUseCase reservationUseCase;
+    private final SeatUseCase seatUseCase;
 
     @PostMapping()
     public ResponseEntity<ReservationResponse> create(
@@ -30,14 +30,14 @@ public class ReservationController {
             @AuthenticationPrincipal CustomUserDetails user,
             @RequestBody ReservationRequest request
     ) {
-        return ResponseEntity.ok(reservationService.create(user.getMemberId(), request, idemKey));
+        return ResponseEntity.ok(reservationUseCase.create(user.getMemberId(), request, idemKey));
     }
 
     @PostMapping("/{eventId}")
     public ResponseEntity<EventDateTimeResponse> chooseEventDateTime(@PathVariable Long eventId,
                                                                      @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate selectDate,
                                                                      @RequestParam @DateTimeFormat(pattern = "HH:mm:ss") LocalTime selectTime) {
-        EventDateTimeResponse event = reservationService.readSelectedEventDateTime(eventId, selectDate, selectTime);
+        EventDateTimeResponse event = reservationUseCase.readSelectedEventDateTime(eventId, selectDate, selectTime);
         return ResponseEntity.ok(event);
     }
 
@@ -45,7 +45,7 @@ public class ReservationController {
     public ResponseEntity<List<ReservationEventInfo>> getReservations(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long memberId = userDetails.getMemberId();
-        List<ReservationEventInfo> reservationEventInfo = reservationService.findReservations(memberId);
+        List<ReservationEventInfo> reservationEventInfo = reservationUseCase.findReservations(memberId);
         return ResponseEntity.ok(reservationEventInfo);
     }
 
@@ -53,7 +53,7 @@ public class ReservationController {
     public ResponseEntity<List<ReservationEventInfo>> getReservationConfirmed(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long memberId = userDetails.getMemberId();
-        List<ReservationEventInfo> reservationEventInfo = reservationService.findReservationsConfirmed(memberId);
+        List<ReservationEventInfo> reservationEventInfo = reservationUseCase.findReservationsConfirmed(memberId);
         return ResponseEntity.ok(reservationEventInfo);
     }
 
@@ -61,7 +61,7 @@ public class ReservationController {
     public ResponseEntity<List<ReservationEventInfo>> getTicketsUsed(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long memberId = userDetails.getMemberId();
-        List<ReservationEventInfo> reservationEventInfo = reservationService.findTicketsUsed(memberId);
+        List<ReservationEventInfo> reservationEventInfo = reservationUseCase.findTicketsUsed(memberId);
         return ResponseEntity.ok(reservationEventInfo);
     }
 
@@ -69,7 +69,7 @@ public class ReservationController {
     public ResponseEntity<List<ReservationEventInfo>> getCancelReservations(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long memberId = userDetails.getMemberId();
-        List<ReservationEventInfo> reservationEventInfo = reservationService.findCancelReservations(memberId);
+        List<ReservationEventInfo> reservationEventInfo = reservationUseCase.findCancelReservations(memberId);
         return ResponseEntity.ok(reservationEventInfo);
     }
 
@@ -77,7 +77,7 @@ public class ReservationController {
     public ResponseEntity<ReservationEventInfo> getReservationDetails(
             @AuthenticationPrincipal(expression = "memberId") Long memberId,
             @PathVariable Long reservationId) {
-        ReservationEventInfo reservationDetails = reservationService.findReservationDetails(memberId, reservationId);
+        ReservationEventInfo reservationDetails = reservationUseCase.findReservationDetails(memberId, reservationId);
         return ResponseEntity.ok(reservationDetails);
 
     }
@@ -87,13 +87,13 @@ public class ReservationController {
             @PathVariable(name = "eventId") Long eventId,
             @RequestParam(name = "date") String date,
             @RequestParam(name = "time") String time) {
-        return ResponseEntity.ok(seatService.findSeats(eventId, date, time));
+        return ResponseEntity.ok(seatUseCase.findSeats(eventId, date, time));
     }
 
     @DeleteMapping("/reservation/{reservationId}")
     public ResponseEntity<ReservationCancelResponse> cancelReservation(
             @AuthenticationPrincipal(expression = "memberId") Long memberId,
             @PathVariable Long reservationId) {
-        return ResponseEntity.ok(reservationService.cancelReservationById(memberId, reservationId));
+        return ResponseEntity.ok(reservationUseCase.cancelReservationById(memberId, reservationId));
     }
 }

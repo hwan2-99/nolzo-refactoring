@@ -12,12 +12,12 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class QueueRecoveryInitializer {
 
-    private final QueueRecoveryUseCase queueRecoveryService;
+    private final QueueRecoveryUseCase queueRecoveryUseCase;
 
     @EventListener(ApplicationReadyEvent.class)
     public void recover() {
         log.info("애플리케이션 기동 완료 - Redis 대기열 복구 시작");
-        queueRecoveryService.rebuildRedisFromDb();
+        queueRecoveryUseCase.rebuildRedisFromDb();
         log.info("Redis 대기열 복구 완료");
     }
 }

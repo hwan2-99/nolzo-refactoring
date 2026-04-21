@@ -30,14 +30,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private static final String REFRESH_TOKEN = "refreshToken";
-    private final AuthUseCase authService;
+    private final AuthUseCase authUseCase;
 
     @Value("${jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenValidityInSeconds;
 
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
-        RegisterResponse response = authService.register(request);
+        RegisterResponse response = authUseCase.register(request);
         return ResponseEntity.ok(response);
     }
 
@@ -45,9 +45,9 @@ public class AuthController {
     public ResponseEntity<TokensResponse> login(@Valid @RequestBody LoginRequest request,
                                                 HttpServletResponse response,
                                                 HttpServletRequest httpRequest) {
-        String clientIp = authService.getClientIp(httpRequest);
+        String clientIp = authUseCase.getClientIp(httpRequest);
 
-        TokensResponse tokenResponse = authService.login(request, clientIp);
+        TokensResponse tokenResponse = authUseCase.login(request, clientIp);
         addRefreshTokenCookie(response, tokenResponse.refreshToken(),
                 Duration.ofSeconds(refreshTokenValidityInSeconds));
 
@@ -60,7 +60,7 @@ public class AuthController {
             HttpServletResponse response
     ) {
         if (refreshToken != null) {
-            authService.logout(refreshToken);
+            authUseCase.logout(refreshToken);
         }
         clearRefreshTokenCookie(response);
         return ResponseEntity.noContent().build();
@@ -71,7 +71,7 @@ public class AuthController {
             @CookieValue(REFRESH_TOKEN) String refreshToken,
             HttpServletResponse response
     ) {
-        String accessToken = authService.reissueAccessToken(refreshToken).accessToken();
+        String accessToken = authUseCase.reissueAccessToken(refreshToken).accessToken();
         AccessTokenResponse accessTokenResponse = new AccessTokenResponse(accessToken);
         return ResponseEntity.ok(accessTokenResponse);
     }

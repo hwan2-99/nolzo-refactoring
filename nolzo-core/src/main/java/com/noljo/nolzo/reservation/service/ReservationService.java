@@ -44,9 +44,9 @@ public class ReservationService implements ReservationUseCase {
     private final ReservationPersistencePort reservationRepository;
     private final MemberPersistencePort memberRepository;
     private final EventPersistencePort eventRepository;
-    private final SeatUseCase seatService;
+    private final SeatUseCase seatUseCase;
     private final PaymentPersistencePort paymentRepository;
-    private final TicketUseCase ticketService;
+    private final TicketUseCase ticketUseCase;
     private final ReservationQueuePort reservationQueuePort;
 
 //    @Transactional
@@ -57,7 +57,7 @@ public class ReservationService implements ReservationUseCase {
 //        Reservation reservation = new Reservation(ReservationStatus.PENDING, totalPrice,
 //                createReservationNumber(), member);
 //
-//        seatService.updateWithReservation(request.seats());
+//        seatUseCase.updateWithReservation(request.seats());
 //        createTicket(request.seats(), reservation);
 //
 //        return ReservationResponse.from(reservationRepository.save(reservation));
@@ -77,7 +77,7 @@ public class ReservationService implements ReservationUseCase {
         try {
             reservationRepository.saveAndFlush(reservation);
 
-            seatService.updateWithReservation(request.seats());
+            seatUseCase.updateWithReservation(request.seats());
             createTicket(request.seats(), reservation);
 
             reservationQueuePort.markReserved(request.eventId(), memberId);
@@ -175,7 +175,7 @@ public class ReservationService implements ReservationUseCase {
 
     private void createTicket(List<Seat> seats, Reservation reservation) {
         for (Seat seat : seats) {
-            ticketService.create(reservation, seat.getId());
+            ticketUseCase.create(reservation, seat.getId());
         }
     }
 
@@ -202,7 +202,7 @@ public class ReservationService implements ReservationUseCase {
 
         for (Reservation reservation : overdueReservations) {
             log.info("자동 취소 처리: reservationId = {}", reservation.getId());
-            seatService.updateWithPayment(reservation.getTickets(), SeatStatus.AVAILABLE);
+            seatUseCase.updateWithPayment(reservation.getTickets(), SeatStatus.AVAILABLE);
             reservationRepository.delete(reservation);
         }
     }

@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ReservationScheduler {
 
-    private final ReservationUseCase reservationService;
-    private final QueueUseCase queueService;
+    private final ReservationUseCase reservationUseCase;
+    private final QueueUseCase queueUseCase;
 
     /**
      * 매 1분마다 실행 → 5분이 지난 PENDING 예약은 자동 취소
@@ -29,7 +29,7 @@ public class ReservationScheduler {
     )
     public void cancelUnpaidReservations() {
         LocalDateTime deadline = LocalDateTime.now().minusMinutes(1);
-        reservationService.cancelUnpaidReservations(deadline);
+        reservationUseCase.cancelUnpaidReservations(deadline);
     }
 
     /**
@@ -42,10 +42,10 @@ public class ReservationScheduler {
             lockAtLeastFor = "PT1S"
     )
     public void processReservationQueues() {
-        Set<Long> managedEventIds = queueService.getManagedEventIds();
+        Set<Long> managedEventIds = queueUseCase.getManagedEventIds();
 
         for (Long eventId : managedEventIds) {
-            queueService.processQueue(eventId);
+            queueUseCase.processQueue(eventId);
 
             log.info("예매 대기열 처리 - eventId={}", eventId);
         }

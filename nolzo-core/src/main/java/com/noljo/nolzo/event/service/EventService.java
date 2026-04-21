@@ -33,7 +33,7 @@ public class EventService implements EventUseCase {
     private static final int SIZE = 12;
     private static final String SORT_BY_DATE = "createdAt";
     private final EventPersistencePort eventRepository;
-    private final SeatUseCase seatService;
+    private final SeatUseCase seatUseCase;
     private final EventImageUploadPort eventImageUploadPort;
     private final EntityManager em;
 
@@ -85,7 +85,7 @@ public class EventService implements EventUseCase {
         Event event = dto.toEntity(imageUrl);
         Event saved = eventRepository.save(event);
 
-        saved.getSchedules().forEach(schedule -> seatService.createSeats(schedule.getId()));
+        saved.getSchedules().forEach(schedule -> seatUseCase.createSeats(schedule.getId()));
 
         return EventResponse.from(saved);
     }
@@ -124,7 +124,7 @@ public class EventService implements EventUseCase {
 
         original.getSchedules().stream()
                 .filter(schedule -> !originalSchedules.contains(schedule.getId()))
-                .forEach(schedule -> seatService.createSeats(schedule.getId()));
+                .forEach(schedule -> seatUseCase.createSeats(schedule.getId()));
 
         return EventResponse.from(original);
     }

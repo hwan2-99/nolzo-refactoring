@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/payments")
 @RequiredArgsConstructor
 public class PaymentController {
-    private final PaymentUseCase paymentService;
+    private final PaymentUseCase paymentUseCase;
 
     @PostMapping
     public ResponseEntity<PaymentResponse> createPayment(@AuthenticationPrincipal CustomUserDetails user,
                                                          @RequestBody PaymentRequest request) {
-        PaymentResponse response = paymentService.create(user.getMemberId(), request);
+        PaymentResponse response = paymentUseCase.create(user.getMemberId(), request);
         return ResponseEntity.ok(response);
     }
 }

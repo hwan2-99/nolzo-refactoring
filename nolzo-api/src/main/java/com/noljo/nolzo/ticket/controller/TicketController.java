@@ -14,18 +14,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/tickets")
 @RequiredArgsConstructor
 public class TicketController {
-    private final TicketUseCase ticketService;
+    private final TicketUseCase ticketUseCase;
 
     //todo 회원정보 어떻게 넘겨주는지에 따라 파라미터 추후 수정
     @GetMapping
     public ResponseEntity<List<TicketResponse>> findTickets(Long memberId) {
-        List<TicketResponse> response = ticketService.findTickets(memberId);
+        List<TicketResponse> response = ticketUseCase.findTickets(memberId);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{ticketId}")
     public ResponseEntity<TicketResponse> findTicket(@PathVariable Long ticketId) {
-        TicketResponse response = ticketService.findTicket(ticketId);
+        TicketResponse response = ticketUseCase.findTicket(ticketId);
         return ResponseEntity.ok(response);
     }
 }

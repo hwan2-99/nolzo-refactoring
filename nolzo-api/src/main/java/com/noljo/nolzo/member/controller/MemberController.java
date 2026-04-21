@@ -20,17 +20,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/member")
 public class MemberController {
 
-    private final MemberUseCase memberService;
+    private final MemberUseCase memberUseCase;
 
     @GetMapping("/readAll")
     public ResponseEntity<List<MemberDto>> getAllMembers() {
-        return ResponseEntity.ok(memberService.readAll());
+        return ResponseEntity.ok(memberUseCase.readAll());
     }
 
     @DeleteMapping
     public ResponseEntity<?> changePassword(
             @AuthenticationPrincipal(expression = "memberId") Long memberId) {
-        memberService.deleteMember(memberId);
+        memberUseCase.deleteMember(memberId);
         return ResponseEntity.ok("delete successful.");
     }
 
@@ -38,14 +38,13 @@ public class MemberController {
     public ResponseEntity<?> changePassword(
             @AuthenticationPrincipal(expression = "memberId") Long memberId,
             @RequestBody @Valid PasswordChangeRequest request) {
-        memberService.changeMemberPassword(memberId, request);
+        memberUseCase.changeMemberPassword(memberId, request);
 
         return ResponseEntity.ok("password change successful.");
     }
 
     @GetMapping
     public ResponseEntity<MemberDto> getMember(@AuthenticationPrincipal(expression = "memberId") Long memberId) {
-        return ResponseEntity.ok(memberService.readMember(memberId));
+        return ResponseEntity.ok(memberUseCase.readMember(memberId));
     }
 }
-

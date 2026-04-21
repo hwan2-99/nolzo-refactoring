@@ -19,19 +19,19 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/reviews")
 public class ReviewController {
-    private final ReviewUseCase reviewService;
+    private final ReviewUseCase reviewUseCase;
 
     @Transactional(readOnly = true)
     @GetMapping("/{reviewId}")
     public ResponseEntity<ReviewResponse> getReview(@PathVariable Long reviewId) {
-        ReviewResponse response = reviewService.getReview(reviewId);
+        ReviewResponse response = reviewUseCase.getReview(reviewId);
         return ResponseEntity.ok(response);
     }
 
     @Transactional(readOnly = true)
     @GetMapping("/my")
     public ResponseEntity<List<ReviewResponse>> getMemberReview(@AuthenticationPrincipal(expression = "memberId") Long memberId) {
-        List<ReviewResponse> response = reviewService.getReviewsByMemberId(memberId);
+        List<ReviewResponse> response = reviewUseCase.getReviewsByMemberId(memberId);
         return ResponseEntity.ok(response);
     }
 
@@ -41,7 +41,7 @@ public class ReviewController {
             @AuthenticationPrincipal(expression = "memberId") Long memberId, 
             @PathVariable Long eventId
     ) {
-        ReviewResponse response = reviewService.getReviewByMemberIdAndEventId(memberId, eventId);
+        ReviewResponse response = reviewUseCase.getReviewByMemberIdAndEventId(memberId, eventId);
         return ResponseEntity.ok(response);
     }
 
@@ -52,7 +52,7 @@ public class ReviewController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
     ) {
-        EventReviewPageResponse response = reviewService.getPagingReviewsByEventId(eventId, page, size);
+        EventReviewPageResponse response = reviewUseCase.getPagingReviewsByEventId(eventId, page, size);
         return ResponseEntity.ok(response);
     }
 
@@ -61,7 +61,7 @@ public class ReviewController {
             @AuthenticationPrincipal CustomUserDetails user,
             @Valid @RequestBody ReviewCreateRequest request
     ) {
-        ReviewResponse response = reviewService.create(user.getMemberId(), request);
+        ReviewResponse response = reviewUseCase.create(user.getMemberId(), request);
         return ResponseEntity.ok(response);
     }
 
@@ -71,7 +71,7 @@ public class ReviewController {
             @PathVariable Long reviewId,
             @Valid @RequestBody ReviewUpdateRequest request
     ) {
-        ReviewUpdateResponse response = reviewService.update(user.getMemberId(), reviewId, request);
+        ReviewUpdateResponse response = reviewUseCase.update(user.getMemberId(), reviewId, request);
         return ResponseEntity.ok(response);
     }
 
@@ -80,7 +80,7 @@ public class ReviewController {
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long reviewId
     ) {
-        reviewService.delete(user.getMemberId(), reviewId);
+        reviewUseCase.delete(user.getMemberId(), reviewId);
         return ResponseEntity.noContent().build();
     }
 }
