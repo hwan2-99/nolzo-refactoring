@@ -12,12 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 @ServiceTest
 public class MemberServiceTest {
     @Autowired
-    private MemberPersistencePort memberRepository;
+    private MemberPersistencePort memberPersistencePort;
 
     @Test
     void 회원은_저장_가능하다() {
         Member member = MemberFixture.회원();
-        memberRepository.save(member);
-        assertThat(memberRepository.findAll()).hasSize(1);
+        memberPersistencePort.save(member);
+        assertThat(memberPersistencePort.findAll()).hasSize(1);
     }
 }

@@ -33,10 +33,10 @@ class JwtTokenServiceTest {
     private JwtUtil jwtUtil;
 
     @Autowired
-    private RefreshTokenPersistencePort refreshTokenRepository;
+    private RefreshTokenPersistencePort refreshTokenPersistencePort;
 
     @Autowired
-    private MemberPersistencePort memberRepository;
+    private MemberPersistencePort memberPersistencePort;
 
     @Autowired
     private RefreshTokenCleanupScheduler refreshTokenCleanupScheduler;
@@ -47,17 +47,17 @@ class JwtTokenServiceTest {
     @Test
     void 토큰을_발행하면_refreshToken이_저장된다() {
         Member member = MemberFixture.회원();
-        memberRepository.save(member);
+        memberPersistencePort.save(member);
 
         TokensResponse tokensResponse = jwtTokenService.issueToken(member, "test");
-        assertThat(refreshTokenRepository.findByMemberId(member.getId()).get().getRefreshToken()).isEqualTo(
+        assertThat(refreshTokenPersistencePort.findByMemberId(member.getId()).get().getRefreshToken()).isEqualTo(
                 tokensResponse.refreshToken());
     }
 
     @Test
     void accessToken은_재발급이_가능하다() {
         Member member = MemberFixture.회원();
-        memberRepository.save(member);
+        memberPersistencePort.save(member);
         TokensResponse tokens = jwtTokenService.issueToken(member, "test");
 
         String newAccessToken = jwtTokenService.reissueAccessToken(member, tokens.refreshToken());
@@ -69,7 +69,7 @@ class JwtTokenServiceTest {
     @Test
     void 만료된_refreshToken_으로_재발급_실패() {
         Member member = MemberFixture.회원();
-        memberRepository.save(member);
+        memberPersistencePort.save(member);
 
         String expiredRefreshToken = Jwts.builder()
                 .subject(member.getId().toString())
@@ -83,7 +83,7 @@ class JwtTokenServiceTest {
                 ))
                 .compact();
 
-        refreshTokenRepository.save(
+        refreshTokenPersistencePort.save(
                 new RefreshToken(member.getId(), expiredRefreshToken, LocalDateTime.now().minusSeconds(1)));
 
         assertThatThrownBy(() -> jwtTokenService.reissueAccessToken(member, expiredRefreshToken))
@@ -93,7 +93,7 @@ class JwtTokenServiceTest {
     @Test
     void 일치하지_않는_refreshToken_으로_재발급_실패() {
         Member member = MemberFixture.회원();
-        memberRepository.save(member);
+        memberPersistencePort.save(member);
 
         TokensResponse tokens = jwtTokenService.issueToken(member, "test");
 
@@ -106,21 +106,21 @@ class JwtTokenServiceTest {
     @Test
     void refreshToken으로_토큰_삭제_성공() {
         Member member = MemberFixture.회원();
-        memberRepository.save(member);
+        memberPersistencePort.save(member);
         TokensResponse tokens = jwtTokenService.issueToken(member, "test");
         String refreshToken = tokens.refreshToken();
 
         jwtTokenService.removeRefreshTokenByToken(refreshToken);
 
-        assertThat(refreshTokenRepository.findByMemberId(member.getId())).isEmpty();
+        assertThat(refreshTokenPersistencePort.findByMemberId(member.getId())).isEmpty();
     }
 
     @Test
     void 만료된_refreshToken들이_제거된다() {
         Member member1 = MemberFixture.회원();
         Member member2 = MemberFixture.회투();
-        memberRepository.save(member1);
-        memberRepository.save(member2);
+        memberPersistencePort.save(member1);
+        memberPersistencePort.save(member2);
 
         LocalDateTime expiredDate = LocalDateTime.now().minusDays(1);
         RefreshToken expiredToken1 = new RefreshToken(member1.getId(), "expired-token-1", expiredDate);
@@ -129,11 +129,11 @@ class JwtTokenServiceTest {
         LocalDateTime validDate = LocalDateTime.now().plusDays(1);
         RefreshToken validToken = new RefreshToken(member1.getId(), "valid-token", validDate);
 
-        refreshTokenRepository.saveAll(List.of(expiredToken1, expiredToken2, validToken));
+        refreshTokenPersistencePort.saveAll(List.of(expiredToken1, expiredToken2, validToken));
 
         refreshTokenCleanupScheduler.cleanupExpiredRefreshTokens();
 
-        List<RefreshToken> remainingTokens = refreshTokenRepository.findAll();
+        List<RefreshToken> remainingTokens = refreshTokenPersistencePort.findAll();
         assertThat(remainingTokens).hasSize(1);
         assertThat(remainingTokens.get(0).getRefreshToken()).isEqualTo("valid-token");
     }

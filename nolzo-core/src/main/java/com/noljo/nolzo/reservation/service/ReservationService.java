@@ -41,18 +41,18 @@ public class ReservationService implements ReservationUseCase {
     private static final int YEAR_SUFFIX_LENGTH = 2;
     private static final int RESERVATION_NUMBER_COUNT = 1;
 
-    private final ReservationPersistencePort reservationRepository;
-    private final MemberPersistencePort memberRepository;
-    private final EventPersistencePort eventRepository;
+    private final ReservationPersistencePort reservationPersistencePort;
+    private final MemberPersistencePort memberPersistencePort;
+    private final EventPersistencePort eventPersistencePort;
     private final SeatUseCase seatUseCase;
-    private final PaymentPersistencePort paymentRepository;
+    private final PaymentPersistencePort paymentPersistencePort;
     private final TicketUseCase ticketUseCase;
     private final ReservationQueuePort reservationQueuePort;
 
 //    @Transactional
 //    @Idempotent(prefix = "reservation:succeed:", key = "#memberId")
 //    public ReservationResponse create(Long memberId, ReservationRequest request) {
-//        Member member = memberRepository.getOrThrow(memberId);
+//        Member member = memberPersistencePort.getOrThrow(memberId);
 //        int totalPrice = request.calculateTotalPrice();
 //        Reservation reservation = new Reservation(ReservationStatus.PENDING, totalPrice,
 //                createReservationNumber(), member);
@@ -60,7 +60,7 @@ public class ReservationService implements ReservationUseCase {
 //        seatUseCase.updateWithReservation(request.seats());
 //        createTicket(request.seats(), reservation);
 //
-//        return ReservationResponse.from(reservationRepository.save(reservation));
+//        return ReservationResponse.from(reservationPersistencePort.save(reservation));
 //    }
 
     @Transactional
@@ -68,14 +68,14 @@ public class ReservationService implements ReservationUseCase {
     public ReservationResponse create(Long memberId, ReservationRequest request, String idemKey) {
         reservationQueuePort.validateQueue(request.eventId(), memberId);
 
-        Member member = memberRepository.getOrThrow(memberId);
+        Member member = memberPersistencePort.getOrThrow(memberId);
         int totalPrice = request.calculateTotalPrice();
 
         Reservation reservation = new Reservation(ReservationStatus.PENDING, totalPrice, createReservationNumber(),
                 member, idemKey);
 
         try {
-            reservationRepository.saveAndFlush(reservation);
+            reservationPersistencePort.saveAndFlush(reservation);
 
             seatUseCase.updateWithReservation(request.seats());
             createTicket(request.seats(), reservation);
@@ -85,7 +85,7 @@ public class ReservationService implements ReservationUseCase {
             return ReservationResponse.from(reservation);
 
         } catch (DataIntegrityViolationException e) {
-            Reservation existing = reservationRepository.findByIdempotencyKey(idemKey)
+            Reservation existing = reservationPersistencePort.findByIdempotencyKey(idemKey)
                     .orElseThrow(() -> e);
 
             return ReservationResponse.from(existing);
@@ -98,7 +98,7 @@ public class ReservationService implements ReservationUseCase {
 
     private String createReservationNumber() {
         String yearSuffix = String.valueOf(LocalDate.now().getYear()).substring(YEAR_SUFFIX_LENGTH);
-        int reservationNumber = (int) reservationRepository.count() + RESERVATION_NUMBER_COUNT;
+        int reservationNumber = (int) reservationPersistencePort.count() + RESERVATION_NUMBER_COUNT;
         String reservationId = String.format("%05d", reservationNumber);
 
         return RESERVATION_NUMBER_PREFIX + yearSuffix + reservationId;
@@ -107,7 +107,7 @@ public class ReservationService implements ReservationUseCase {
     @Transactional(readOnly = true)
     public EventDateTimeResponse readSelectedEventDateTime(Long eventId, LocalDate selectDate, LocalTime selectTime) {
 
-        Event event = eventRepository.findById(eventId)
+        Event event = eventPersistencePort.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이벤트가 존재하지 않습니다."));
 
         Schedule schedule = event.getSchedules().stream()
@@ -121,7 +121,7 @@ public class ReservationService implements ReservationUseCase {
 
     @Transactional(readOnly = true)
     public List<ReservationEventInfo> findReservations(Long memberId) {
-        return reservationRepository.findReservationsByMemberId(memberId).stream()
+        return reservationPersistencePort.findReservationsByMemberId(memberId).stream()
                 .map(r -> ReservationEventInfo.of(
                         r.getTickets().get(0).getSeat().getSchedule().getEvent(),
                         r))
@@ -130,7 +130,7 @@ public class ReservationService implements ReservationUseCase {
 
     @Transactional(readOnly = true)
     public List<ReservationEventInfo> findReservationsConfirmed(Long memberId) {
-        return reservationRepository.findReservationsStatusConfirmedByMemberId(memberId).stream()
+        return reservationPersistencePort.findReservationsStatusConfirmedByMemberId(memberId).stream()
                 .map(r -> ReservationEventInfo.of(
                         r.getTickets().get(0).getSeat().getSchedule().getEvent(),
                         r))
@@ -139,7 +139,7 @@ public class ReservationService implements ReservationUseCase {
 
     @Transactional(readOnly = true)
     public List<ReservationEventInfo> findTicketsUsed(Long memberId) {
-        return reservationRepository.findTicketStatusUsedByMemberId(memberId).stream()
+        return reservationPersistencePort.findTicketStatusUsedByMemberId(memberId).stream()
                 .map(r -> ReservationEventInfo.of(
                         r.getTickets().get(0).getSeat().getSchedule().getEvent(),
                         r))
@@ -148,7 +148,7 @@ public class ReservationService implements ReservationUseCase {
 
     @Transactional(readOnly = true)
     public List<ReservationEventInfo> findCancelReservations(Long memberId) {
-        List<Reservation> reservations = reservationRepository.findCanceledReservationsFetchAll(memberId);
+        List<Reservation> reservations = reservationPersistencePort.findCanceledReservationsFetchAll(memberId);
 
         return reservations.stream()
                 .map(reservation -> {
@@ -162,8 +162,8 @@ public class ReservationService implements ReservationUseCase {
 
     @Transactional(readOnly = true)
     public ReservationEventInfo findReservationDetails(Long memberId, Long reservationId) {
-        Reservation reservation = reservationRepository.findReservationDetailsByMemberId(memberId, reservationId);
-        Payment payment = paymentRepository.findPaymentByMemberIdAndReservationId(memberId, reservation.getId());
+        Reservation reservation = reservationPersistencePort.findReservationDetailsByMemberId(memberId, reservationId);
+        Payment payment = paymentPersistencePort.findPaymentByMemberIdAndReservationId(memberId, reservation.getId());
 
         Event event = reservation.getTickets().stream()
                 .findFirst()
@@ -181,7 +181,7 @@ public class ReservationService implements ReservationUseCase {
 
     @Transactional
     public ReservationCancelResponse cancelReservationById(Long memberId, Long reservationId) {
-        Reservation reservation = reservationRepository.findById(reservationId)
+        Reservation reservation = reservationPersistencePort.findById(reservationId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 예약 정보가 없습니다"));
 
         if (!reservation.getMember().getId().equals(memberId)) {
@@ -198,12 +198,12 @@ public class ReservationService implements ReservationUseCase {
     @Transactional
     public void cancelUnpaidReservations(LocalDateTime deadline) {
         List<Reservation> overdueReservations =
-                reservationRepository.findByStatusAndCreatedAtBefore(ReservationStatus.PENDING, deadline);
+                reservationPersistencePort.findByStatusAndCreatedAtBefore(ReservationStatus.PENDING, deadline);
 
         for (Reservation reservation : overdueReservations) {
             log.info("자동 취소 처리: reservationId = {}", reservation.getId());
             seatUseCase.updateWithPayment(reservation.getTickets(), SeatStatus.AVAILABLE);
-            reservationRepository.delete(reservation);
+            reservationPersistencePort.delete(reservation);
         }
     }
 }

@@ -21,14 +21,14 @@ class QueueServiceTest {
     private QueueService queueService;
 
     @Autowired
-    private MemberPersistencePort memberRepository;
+    private MemberPersistencePort memberPersistencePort;
 
     @Autowired
     private QueueEntryRepository queueEntryRepository;
 
     @Test
     void 예약_성공_후에도_같은_이벤트에_다시_대기열_진입이_가능하다() {
-        Member member = memberRepository.save(MemberFixture.회원());
+        Member member = memberPersistencePort.save(MemberFixture.회원());
         Long eventId = 1L;
 
         queueService.validateQueue(eventId, member.getId());

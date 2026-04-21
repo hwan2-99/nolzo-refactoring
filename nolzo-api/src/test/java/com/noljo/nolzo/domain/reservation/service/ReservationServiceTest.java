@@ -42,26 +42,26 @@ public class ReservationServiceTest {
     @Autowired
     private ReservationService reservationService;
     @Autowired
-    private EventPersistencePort eventRepository;
+    private EventPersistencePort eventPersistencePort;
     @Autowired
-    private MemberPersistencePort memberRepository;
+    private MemberPersistencePort memberPersistencePort;
     @Autowired
-    private SeatPersistencePort seatRepository;
+    private SeatPersistencePort seatPersistencePort;
     @Autowired
-    private SchedulePersistencePort scheduleRepository;
+    private SchedulePersistencePort schedulePersistencePort;
     @Autowired
-    private ReservationPersistencePort reservationRepository;
+    private ReservationPersistencePort reservationPersistencePort;
     @Autowired
-    private TicketPersistencePort ticketRepository;
+    private TicketPersistencePort ticketPersistencePort;
 
     @Test
     void 같은_좌석은_동시에_접근이_불가능하다() throws InterruptedException {
-        Member member = memberRepository.save(MemberFixture.회원());
-        Member anotherMember = memberRepository.save(MemberFixture.회투());
-        Event event = eventRepository.save(EventFixture.캣츠());
-        Schedule schedule = scheduleRepository.save(ScheduleFixture.공연_스케쥴(event));
+        Member member = memberPersistencePort.save(MemberFixture.회원());
+        Member anotherMember = memberPersistencePort.save(MemberFixture.회투());
+        Event event = eventPersistencePort.save(EventFixture.캣츠());
+        Schedule schedule = schedulePersistencePort.save(ScheduleFixture.공연_스케쥴(event));
 
-        Seat seat1 = seatRepository.save(SeatFixture.일반좌석(schedule));
+        Seat seat1 = seatPersistencePort.save(SeatFixture.일반좌석(schedule));
 
         List<Seat> seats = List.of(seat1);
         ReservationRequest request = new ReservationRequest(event.getId(), seats);
@@ -101,8 +101,8 @@ public class ReservationServiceTest {
 
     @Test
     void 공연에_대한_날짜와_시간을_선택할_수_있다() {
-        Event event = eventRepository.save(EventFixture.캣츠());
-        Schedule schedule = scheduleRepository.save(ScheduleFixture.공연_스케쥴(event));
+        Event event = eventPersistencePort.save(EventFixture.캣츠());
+        Schedule schedule = schedulePersistencePort.save(ScheduleFixture.공연_스케쥴(event));
         event.addSchedule(schedule);
 
         EventDateTimeResponse response = reservationService.readSelectedEventDateTime(event.getId(),
@@ -117,8 +117,8 @@ public class ReservationServiceTest {
 
     @Test
     void 공연에_대한_선택한_날짜가_없을_시_예외() {
-        Event event = eventRepository.save(EventFixture.캣츠());
-        Schedule schedule = scheduleRepository.save(ScheduleFixture.공연_스케쥴(event));
+        Event event = eventPersistencePort.save(EventFixture.캣츠());
+        Schedule schedule = schedulePersistencePort.save(ScheduleFixture.공연_스케쥴(event));
         event.addSchedule(schedule);
 
         LocalDate wrongDate = schedule.getShowDate().plusDays(1);
@@ -130,8 +130,8 @@ public class ReservationServiceTest {
 
     @Test
     void 공연에_대한_선택한_시간이_없을_시_예외() {
-        Event event = eventRepository.save(EventFixture.캣츠());
-        Schedule schedule = scheduleRepository.save(ScheduleFixture.공연_스케쥴(event));
+        Event event = eventPersistencePort.save(EventFixture.캣츠());
+        Schedule schedule = schedulePersistencePort.save(ScheduleFixture.공연_스케쥴(event));
         event.addSchedule(schedule);
 
         LocalDate correctDate = schedule.getShowDate();
@@ -144,14 +144,14 @@ public class ReservationServiceTest {
     @Test
     void 예매한_공연에_대해서_취소() {
         //given
-        Member member = memberRepository.save(MemberFixture.회원());
-        Reservation reservation = reservationRepository.save(ReservationFixture.예약(member));
-        Reservation reservation2 = reservationRepository.save(ReservationFixture.예약2(member));
+        Member member = memberPersistencePort.save(MemberFixture.회원());
+        Reservation reservation = reservationPersistencePort.save(ReservationFixture.예약(member));
+        Reservation reservation2 = reservationPersistencePort.save(ReservationFixture.예약2(member));
 
         //when
         reservationService.cancelReservationById(member.getId(), reservation.getId());
         //then
-        Reservation cancelledReservation = reservationRepository.findById(reservation.getId())
+        Reservation cancelledReservation = reservationPersistencePort.findById(reservation.getId())
                 .orElseThrow(() -> new AssertionError("취소된 예약을 찾을 수 없습니다."));
 
         assertEquals(ReservationStatus.CANCELLED, cancelledReservation.getStatus());

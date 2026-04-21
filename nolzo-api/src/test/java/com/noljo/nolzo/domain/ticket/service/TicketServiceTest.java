@@ -36,53 +36,53 @@ class TicketServiceTest {
     @Autowired
     private TicketService ticketService;
     @Autowired
-    private MemberPersistencePort memberRepository;
+    private MemberPersistencePort memberPersistencePort;
     @Autowired
-    private TicketPersistencePort ticketRepository;
+    private TicketPersistencePort ticketPersistencePort;
     @Autowired
-    private ReservationPersistencePort reservationRepository;
+    private ReservationPersistencePort reservationPersistencePort;
     @Autowired
-    private SeatPersistencePort seatRepository;
+    private SeatPersistencePort seatPersistencePort;
     @Autowired
-    private EventPersistencePort eventRepository;
+    private EventPersistencePort eventPersistencePort;
     @Autowired
-    private SchedulePersistencePort scheduleRepository;
+    private SchedulePersistencePort schedulePersistencePort;
 
     @Test
     void 티켓을_생성할_수_있다() {
         Member member = MemberFixture.회원();
-        memberRepository.save(member);
+        memberPersistencePort.save(member);
 
         Event event = EventFixture.캣츠();
-        eventRepository.save(event);
+        eventPersistencePort.save(event);
 
         Schedule schedule = ScheduleFixture.공연_스케쥴(event);
-        scheduleRepository.save(schedule);
+        schedulePersistencePort.save(schedule);
 
         Seat seat = SeatFixture.일반좌석(schedule);
-        seatRepository.save(seat);
+        seatPersistencePort.save(seat);
 
         Reservation reservation = ReservationFixture.예약(member);
-        reservationRepository.save(reservation);
+        reservationPersistencePort.save(reservation);
 
         Ticket ticket = TicketFixture.미사용티켓(reservation, seat);
-        ticketRepository.save(ticket);
+        ticketPersistencePort.save(ticket);
 
-        assertThat(ticketRepository.findAll()).hasSize(1);
+        assertThat(ticketPersistencePort.findAll()).hasSize(1);
     }
 
     @Test
     void 공연시간_30분이_지나면_티켓상태_관람완료_변경() {
         // given
-        Event event = eventRepository.save(EventFixture.햄릿());
-        Schedule schedule = scheduleRepository.save(ScheduleFixture.공연_스케쥴(event));
-        Seat seat = seatRepository.save(SeatFixture.일반좌석(schedule));
+        Event event = eventPersistencePort.save(EventFixture.햄릿());
+        Schedule schedule = schedulePersistencePort.save(ScheduleFixture.공연_스케쥴(event));
+        Seat seat = seatPersistencePort.save(SeatFixture.일반좌석(schedule));
 
-        Member member = memberRepository.save(MemberFixture.회원());
-        Reservation reservation = reservationRepository.save(ReservationFixture.예약(member));
+        Member member = memberPersistencePort.save(MemberFixture.회원());
+        Reservation reservation = reservationPersistencePort.save(ReservationFixture.예약(member));
 
         Ticket ticket = TicketFixture.미사용티켓(reservation, seat);
-        ticketRepository.save(ticket);
+        ticketPersistencePort.save(ticket);
 
         // 공연 시작 시간 + 31분을 기준 시간으로 설정
         LocalDate baseDate = schedule.getShowDate();
@@ -92,7 +92,7 @@ class TicketServiceTest {
         ticketService.updateTicketStatusUsed(baseDate,baseTime);
 
         // then
-        Ticket updated = ticketRepository.findById(ticket.getId()).orElseThrow();
+        Ticket updated = ticketPersistencePort.findById(ticket.getId()).orElseThrow();
         assertEquals(TicketStatus.USED, updated.getStatus());
     }
 }

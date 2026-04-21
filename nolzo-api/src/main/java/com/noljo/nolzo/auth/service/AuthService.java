@@ -37,7 +37,7 @@ public class AuthService implements AuthUseCase {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenService jwtTokenService;
-    private final MemberPersistencePort memberRepository;
+    private final MemberPersistencePort memberPersistencePort;
     private final JwtUtil jwtUtil;
 
     @Transactional
@@ -52,7 +52,7 @@ public class AuthService implements AuthUseCase {
                 Role.USER
         );
 
-        Member savedMember = memberRepository.save(member);
+        Member savedMember = memberPersistencePort.save(member);
         return RegisterResponse.from(savedMember);
     }
 
@@ -75,18 +75,18 @@ public class AuthService implements AuthUseCase {
     @Transactional
     public AccessTokenResponse reissueAccessToken(String refreshToken) {
         Long memberId = jwtUtil.getMemberId(refreshToken);
-        Member member = memberRepository.getOrThrow(memberId);
+        Member member = memberPersistencePort.getOrThrow(memberId);
         String reissuedAccessToken = jwtTokenService.reissueAccessToken(member, refreshToken);
         return new AccessTokenResponse(reissuedAccessToken);
     }
 
     private Member findMemberByEmail(String email, String password) {
-        return memberRepository.findByEmailAndPassword(email, password)
+        return memberPersistencePort.findByEmailAndPassword(email, password)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원 입니다."));
     }
 
     private void validateDuplicateEmail(String email) {
-        if (memberRepository.findByEmail(email).isPresent()) {
+        if (memberPersistencePort.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 회원입니다.");
         }
     }

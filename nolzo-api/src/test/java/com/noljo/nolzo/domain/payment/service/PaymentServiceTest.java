@@ -34,101 +34,101 @@ import org.springframework.beans.factory.annotation.Autowired;
 @ServiceTest
 public class PaymentServiceTest {
     @Autowired
-    private MemberPersistencePort memberRepository;
+    private MemberPersistencePort memberPersistencePort;
     @Autowired
-    private TicketPersistencePort ticketRepository;
+    private TicketPersistencePort ticketPersistencePort;
     @Autowired
-    private ReservationPersistencePort reservationRepository;
+    private ReservationPersistencePort reservationPersistencePort;
     @Autowired
-    private SeatPersistencePort seatRepository;
+    private SeatPersistencePort seatPersistencePort;
     @Autowired
-    private EventPersistencePort eventRepository;
+    private EventPersistencePort eventPersistencePort;
     @Autowired
-    private SchedulePersistencePort scheduleRepository;
+    private SchedulePersistencePort schedulePersistencePort;
     @Autowired
-    private PaymentPersistencePort paymentRepository;
+    private PaymentPersistencePort paymentPersistencePort;
     @Autowired
     private PaymentService paymentService;
 
     @Test
     void 예약과_유저를_통해_결제를_할_수_있다() {
         Member member = MemberFixture.회원();
-        memberRepository.save(member);
+        memberPersistencePort.save(member);
 
         Reservation reservation = ReservationFixture.예약(member);
-        reservationRepository.save(reservation);
+        reservationPersistencePort.save(reservation);
 
-        paymentRepository.save(PaymentFixture.신용카드(member, reservation));
-        assertThat(paymentRepository.findAll()).hasSize(1);
+        paymentPersistencePort.save(PaymentFixture.신용카드(member, reservation));
+        assertThat(paymentPersistencePort.findAll()).hasSize(1);
     }
 
     @Test
     void 결제_취소_시_객체는_생성되지_않는다() {
         Member member = MemberFixture.회원();
-        memberRepository.save(member);
+        memberPersistencePort.save(member);
 
         Reservation reservation = ReservationFixture.예약(member);
-        reservationRepository.save(reservation);
+        reservationPersistencePort.save(reservation);
         PaymentRequest request = new PaymentRequest(reservation.getId(), PaymentMethod.CASH,
                 "CANCELED");
         paymentService.create(member.getId(), request);
 
-        assertThat(paymentRepository.findAll()).hasSize(0);
-        assertThat(reservationRepository.findAll()).hasSize(0);
+        assertThat(paymentPersistencePort.findAll()).hasSize(0);
+        assertThat(reservationPersistencePort.findAll()).hasSize(0);
     }
 
     @Test
     void 결제_취소_시_예약과_티켓은_생성되지_않는다() {
         Member member = MemberFixture.회원();
-        memberRepository.save(member);
+        memberPersistencePort.save(member);
 
         Event event = EventFixture.캣츠();
-        eventRepository.save(event);
+        eventPersistencePort.save(event);
 
         Schedule schedule = ScheduleFixture.공연_스케쥴(event);
-        scheduleRepository.save(schedule);
+        schedulePersistencePort.save(schedule);
 
         Seat seat = SeatFixture.일반좌석(schedule);
-        seatRepository.save(seat);
+        seatPersistencePort.save(seat);
 
         Reservation reservation = ReservationFixture.예약(member);
-        reservationRepository.save(reservation);
+        reservationPersistencePort.save(reservation);
 
         Ticket ticket = TicketFixture.미사용티켓(reservation, seat);
-        ticketRepository.save(ticket);
+        ticketPersistencePort.save(ticket);
 
         PaymentRequest request = new PaymentRequest(reservation.getId(), PaymentMethod.CASH,
                 "CANCELED");
         paymentService.create(member.getId(), request);
 
-        assertThat(reservationRepository.findAll()).hasSize(0);
-        assertThat(ticketRepository.findAll()).hasSize(0);
+        assertThat(reservationPersistencePort.findAll()).hasSize(0);
+        assertThat(ticketPersistencePort.findAll()).hasSize(0);
     }
 
     @Test
     void 결제_성공_시_좌석의_상태는_예약됨으로_변경된다() {
         Member member = MemberFixture.회원();
-        memberRepository.save(member);
+        memberPersistencePort.save(member);
 
         Event event = EventFixture.캣츠();
-        eventRepository.save(event);
+        eventPersistencePort.save(event);
 
         Schedule schedule = ScheduleFixture.공연_스케쥴(event);
-        scheduleRepository.save(schedule);
+        schedulePersistencePort.save(schedule);
 
         Seat seat = SeatFixture.일반좌석(schedule);
-        seatRepository.save(seat);
+        seatPersistencePort.save(seat);
 
         Reservation reservation = ReservationFixture.예약(member);
-        reservationRepository.save(reservation);
+        reservationPersistencePort.save(reservation);
 
         Ticket ticket = TicketFixture.미사용티켓(reservation, seat);
-        ticketRepository.save(ticket);
+        ticketPersistencePort.save(ticket);
 
         PaymentRequest request = new PaymentRequest(reservation.getId(), PaymentMethod.CASH,
                 "SUCCESS");
         paymentService.create(member.getId(), request);
 
-        assertThat(seatRepository.findAll().get(0).getStatus()).isEqualTo(SeatStatus.RESERVED);
+        assertThat(seatPersistencePort.findAll().get(0).getStatus()).isEqualTo(SeatStatus.RESERVED);
     }
 }

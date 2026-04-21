@@ -20,21 +20,21 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class PaymentService implements PaymentUseCase {
-    private final PaymentPersistencePort paymentRepository;
-    private final MemberPersistencePort memberRepository;
-    private final ReservationPersistencePort reservationRepository;
+    private final PaymentPersistencePort paymentPersistencePort;
+    private final MemberPersistencePort memberPersistencePort;
+    private final ReservationPersistencePort reservationPersistencePort;
     private final SeatUseCase seatUseCase;
 
     //Todo 추루 트랜잭션 분리예정
     public PaymentResponse create(Long userId, PaymentRequest request) {
-        Member member = memberRepository.getOrThrow(userId);
-        Reservation reservation = reservationRepository.getOrThrow(request.reservationId());
+        Member member = memberPersistencePort.getOrThrow(userId);
+        Reservation reservation = reservationPersistencePort.getOrThrow(request.reservationId());
         if (isCanceled(request)) {
             seatUseCase.updateWithPayment(reservation.getTickets(), SeatStatus.AVAILABLE);
-            reservationRepository.delete(reservation);
+            reservationPersistencePort.delete(reservation);
             return null;
         }
-        Payment payment = paymentRepository.save(new Payment(request.paymentMethod(), member, reservation));
+        Payment payment = paymentPersistencePort.save(new Payment(request.paymentMethod(), member, reservation));
         reservation.updateStatus(ReservationStatus.CONFIRMED);
         seatUseCase.updateWithPayment(reservation.getTickets(), SeatStatus.RESERVED);
         return PaymentResponse.from(payment);

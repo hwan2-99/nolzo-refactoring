@@ -12,11 +12,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final MemberPersistencePort memberRepository;
+    private final MemberPersistencePort memberPersistencePort;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Member member = memberRepository.findByEmail(email)
+        Member member = memberPersistencePort.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("회원을 찾을 수 없습니다."));
 
         return new CustomUserDetails(

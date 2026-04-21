@@ -26,7 +26,7 @@ class EventServiceTest {
     EventService eventService;
 
     @Autowired
-    EventPersistencePort eventRepository;
+    EventPersistencePort eventPersistencePort;
 
     MultipartFile image = FileFixture.dummyImage();
 
@@ -57,8 +57,8 @@ class EventServiceTest {
 
     @Test
     void 제목에_검색어가_포함된_이벤트만_조회된다() {
-        Event event1 = eventRepository.save(EventFixture.셜록_블러디());
-        Event event2 = eventRepository.save(EventFixture.셜록_앤더슨());
+        Event event1 = eventPersistencePort.save(EventFixture.셜록_블러디());
+        Event event2 = eventPersistencePort.save(EventFixture.셜록_앤더슨());
 
         List<EventResponse> result = eventService.searchEventList("셜록");
 
@@ -146,18 +146,18 @@ class EventServiceTest {
                 .ageLimit(12)
                 .build();
 
-        event = eventRepository.save(event);
+        event = eventPersistencePort.save(event);
 
         eventService.findById(event.getId());
-        Event updatedEvent = eventRepository.findById(event.getId()).orElseThrow();
+        Event updatedEvent = eventPersistencePort.findById(event.getId()).orElseThrow();
 
         Assertions.assertThat(updatedEvent.getViewCount()).isEqualTo(1);
     }
 
     @Test
     void 카테고리별로_상위_10개의_이벤트를_조회할_수_있다() {
-        Event cats = eventRepository.save(EventFixture.캣츠());
-        Event hamlet = eventRepository.save(EventFixture.햄릿());
+        Event cats = eventPersistencePort.save(EventFixture.캣츠());
+        Event hamlet = eventPersistencePort.save(EventFixture.햄릿());
 
         for (int i = 0; i < 5; i++) {
             cats.addViewCount();
@@ -166,8 +166,8 @@ class EventServiceTest {
             hamlet.addViewCount();
         }
 
-        eventRepository.save(cats);
-        eventRepository.save(hamlet);
+        eventPersistencePort.save(cats);
+        eventPersistencePort.save(hamlet);
 
         List<EventResponse> result = eventService.getTop10ByCategory(EventCategory.CONCERT);
 

@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class JwtTokenService {
 
     private final JwtUtil jwtUtil;
-    private final RefreshTokenPersistencePort refreshTokenRepository;
+    private final RefreshTokenPersistencePort refreshTokenPersistencePort;
 
     @Value("${jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenValidityInSeconds;
@@ -37,20 +37,20 @@ public class JwtTokenService {
     }
 
     public void removeRefreshTokenByToken(String refreshToken) {
-        RefreshToken findToken = refreshTokenRepository.findByToken(refreshToken);
+        RefreshToken findToken = refreshTokenPersistencePort.findByToken(refreshToken);
         if (findToken != null) {
-            refreshTokenRepository.deleteByMemberId(findToken.getMemberId());
+            refreshTokenPersistencePort.deleteByMemberId(findToken.getMemberId());
         }
     }
 
     public RefreshToken findRefreshTokenByMember(Long memberId) {
-        return refreshTokenRepository.findByMemberId(memberId)
+        return refreshTokenPersistencePort.findByMemberId(memberId)
                 .orElse(null);
     }
 
     private RefreshToken saveRefreshToken(Member member, String refreshToken, LocalDateTime expiryDate,
                                           String clientIp) {
-        return refreshTokenRepository.save(new RefreshToken(member.getId(), refreshToken, expiryDate, clientIp));
+        return refreshTokenPersistencePort.save(new RefreshToken(member.getId(), refreshToken, expiryDate, clientIp));
     }
 
     private LocalDateTime calculateExpiryDate() {
@@ -64,13 +64,13 @@ public class JwtTokenService {
     }
 
     private RefreshToken getRefreshToken(Long memberId) {
-        return refreshTokenRepository.findByMemberId(memberId)
+        return refreshTokenPersistencePort.findByMemberId(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("RefreshToken을 찾을 수 없습니다."));
     }
 
     private void validateRefreshTokenNotExpired(RefreshToken refreshToken) {
         if (refreshToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            refreshTokenRepository.delete(refreshToken);
+            refreshTokenPersistencePort.delete(refreshToken);
             throw new IllegalStateException("RefreshToken이 만료되었습니다.");
         }
     }

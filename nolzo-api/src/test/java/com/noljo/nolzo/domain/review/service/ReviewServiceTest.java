@@ -26,33 +26,33 @@ public class ReviewServiceTest {
     @Autowired
     private ReviewService reviewService;
     @Autowired
-    private ReviewPersistencePort reviewRepository;
+    private ReviewPersistencePort reviewPersistencePort;
     @Autowired
-    private EventPersistencePort eventRepository;
+    private EventPersistencePort eventPersistencePort;
     @Autowired
-    private MemberPersistencePort memberRepository;
+    private MemberPersistencePort memberPersistencePort;
   
     @Test
     void 리뷰를_생성할_수_있다() {
         Member member = MemberFixture.회원();
-        memberRepository.save(member);
+        memberPersistencePort.save(member);
 
         Event event = EventFixture.캣츠();
-        eventRepository.save(event);
+        eventPersistencePort.save(event);
 
         Review review = ReviewFixture.연극리뷰(event, member);
-        reviewRepository.save(review);
+        reviewPersistencePort.save(review);
 
-        assertThat(reviewRepository.findAll()).hasSize(1);
+        assertThat(reviewPersistencePort.findAll()).hasSize(1);
     }
 
     @Test
     void 리뷰_작성_클릭_시_관람_완료되지_않은_이벤트라면_예외가_발생한다() {
         Member member = MemberFixture.회원();
-        memberRepository.save(member);
+        memberPersistencePort.save(member);
 
         Event event = EventFixture.캣츠();
-        eventRepository.save(event);
+        eventPersistencePort.save(event);
 
         ReviewCreateRequest request = new ReviewCreateRequest("좋은 공연이었습니다!", 5, event.getId());
 
@@ -64,13 +64,13 @@ public class ReviewServiceTest {
     @Test
     void 리뷰를_수정할_수_있다() {
         Member member = MemberFixture.회원();
-        memberRepository.save(member);
+        memberPersistencePort.save(member);
 
         Event event = EventFixture.캣츠();
-        eventRepository.save(event);
+        eventPersistencePort.save(event);
 
         Review review = ReviewFixture.연극리뷰(event, member);
-        reviewRepository.save(review);
+        reviewPersistencePort.save(review);
 
         ReviewUpdateRequest request = new ReviewUpdateRequest("수정된 리뷰", 5);
         ReviewUpdateResponse response = reviewService.update(member.getId(), review.getId(), request);
@@ -82,13 +82,13 @@ public class ReviewServiceTest {
     @Test
     void 이벤트_ID와_회원_ID로_관련_리뷰를_조회할_수_있다() {
         Member member = MemberFixture.회원();
-        memberRepository.save(member);
+        memberPersistencePort.save(member);
 
         Event event = EventFixture.캣츠();
-        eventRepository.save(event);
+        eventPersistencePort.save(event);
 
         Review review = ReviewFixture.연극리뷰(event, member);
-        reviewRepository.save(review);
+        reviewPersistencePort.save(review);
 
         ReviewResponse result = reviewService.getReviewByMemberIdAndEventId(member.getId(), event.getId());
         assertThat(result.content()).isEqualTo(review.getContent());
@@ -98,15 +98,15 @@ public class ReviewServiceTest {
     @Test
     void 리뷰를_삭제할_수_있다() {
         Member member = MemberFixture.회원();
-        memberRepository.save(member);
+        memberPersistencePort.save(member);
 
         Event event = EventFixture.캣츠();
-        eventRepository.save(event);
+        eventPersistencePort.save(event);
 
         Review review = ReviewFixture.연극리뷰(event, member);
-        reviewRepository.save(review);
+        reviewPersistencePort.save(review);
 
         reviewService.delete(member.getId(), review.getId());
-        assertThat(reviewRepository.findById(review.getId())).isEmpty();
+        assertThat(reviewPersistencePort.findById(review.getId())).isEmpty();
     }
 }

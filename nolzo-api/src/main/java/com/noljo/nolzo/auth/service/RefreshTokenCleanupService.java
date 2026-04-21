@@ -11,11 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class RefreshTokenCleanupService implements RefreshTokenCleanupUseCase {
 
-    private final RefreshTokenPersistencePort refreshTokenRepository;
+    private final RefreshTokenPersistencePort refreshTokenPersistencePort;
 
     @Override
     @Transactional
     public void cleanupExpiredRefreshTokens(LocalDateTime now) {
-        refreshTokenRepository.deleteAllByExpiryDateBefore(now);
+        refreshTokenPersistencePort.deleteAllByExpiryDateBefore(now);
     }
 }

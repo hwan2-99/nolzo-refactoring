@@ -23,24 +23,24 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class TicketService implements TicketUseCase {
-    private final MemberPersistencePort memberRepository;
-    private final ReservationPersistencePort reservationRepository;
-    private final TicketPersistencePort ticketRepository;
-    private final SeatPersistencePort seatRepository;
+    private final MemberPersistencePort memberPersistencePort;
+    private final ReservationPersistencePort reservationPersistencePort;
+    private final TicketPersistencePort ticketPersistencePort;
+    private final SeatPersistencePort seatPersistencePort;
 
     public TicketResponse create(Reservation reservation, Long seatId) {
-        Seat seat = seatRepository.getOrThrow(seatId);
+        Seat seat = seatPersistencePort.getOrThrow(seatId);
         Ticket ticket = new Ticket(TicketStatus.NOT_USED, reservation, seat);
-        ticketRepository.save(ticket);
+        ticketPersistencePort.save(ticket);
         return TicketResponse.from(ticket);
     }
 
     @Transactional(readOnly = true)
     public List<TicketResponse> findTickets(Long memberId) {
-        Member member = memberRepository.getOrThrow(memberId);
+        Member member = memberPersistencePort.getOrThrow(memberId);
         List<Long> reservationIdList = findReservationIdListByMemberId(member);
 
-        List<Ticket> tickets = ticketRepository.findByReservationIdIn(reservationIdList);
+        List<Ticket> tickets = ticketPersistencePort.findByReservationIdIn(reservationIdList);
 
         return tickets.stream()
                 .map(TicketResponse::from)
@@ -54,18 +54,18 @@ public class TicketService implements TicketUseCase {
     }
 
     public void updateTicketStatusUsed(LocalDate targetDate, LocalTime targetTime) {
-        ticketRepository.updateExpiredTickets(targetDate, targetTime);
+        ticketPersistencePort.updateExpiredTickets(targetDate, targetTime);
     }
 
     private List<Long> findReservationIdListByMemberId(Member member) {
-        return reservationRepository.findByMemberId(member.getId())
+        return reservationPersistencePort.findByMemberId(member.getId())
                 .stream()
                 .map(Reservation::getId)
                 .toList();
     }
 
     private Ticket findTicketById(Long ticketId) {
-        return ticketRepository.findById(ticketId)
+        return ticketPersistencePort.findById(ticketId)
                 .orElseThrow(() -> new IllegalArgumentException("Ticket Not Found"));
     }
 

@@ -32,20 +32,20 @@ public class EventService implements EventUseCase {
 
     private static final int SIZE = 12;
     private static final String SORT_BY_DATE = "createdAt";
-    private final EventPersistencePort eventRepository;
+    private final EventPersistencePort eventPersistencePort;
     private final SeatUseCase seatUseCase;
     private final EventImageUploadPort eventImageUploadPort;
     private final EntityManager em;
 
     @Transactional(readOnly = true)
     public Event getEvent(Long id) {
-        return eventRepository.findById(id)
+        return eventPersistencePort.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이벤트가 존재하지 않습니다 id : " + id));
     }
 
     @Transactional(readOnly = true)
     public List<EventResponse> findAll() {
-        return eventRepository.findAll().stream()
+        return eventPersistencePort.findAll().stream()
                 .map(EventResponse::from)
                 .toList();
     }
@@ -54,10 +54,10 @@ public class EventService implements EventUseCase {
     public Slice<EventResponse> getEventByCategory(EventCategory eventCategory, String condition, int page, Integer age) {
         Pageable pageable = PageRequest.of(page, SIZE, getCondition(condition));
         if (age != null) {
-            return eventRepository.findByEventCategoryAndAgeLimitLessThanEqual(eventCategory, age, pageable)
+            return eventPersistencePort.findByEventCategoryAndAgeLimitLessThanEqual(eventCategory, age, pageable)
                     .map(EventResponse::from);
         }
-        return eventRepository.findAllByEventCategory(eventCategory, pageable)
+        return eventPersistencePort.findAllByEventCategory(eventCategory, pageable)
                 .map(EventResponse::from);
     }
 
@@ -83,7 +83,7 @@ public class EventService implements EventUseCase {
         }
 
         Event event = dto.toEntity(imageUrl);
-        Event saved = eventRepository.save(event);
+        Event saved = eventPersistencePort.save(event);
 
         saved.getSchedules().forEach(schedule -> seatUseCase.createSeats(schedule.getId()));
 
@@ -100,12 +100,12 @@ public class EventService implements EventUseCase {
     @Transactional
     public void delete(Long id) {
         getEvent(id);
-        eventRepository.deleteById(id);
+        eventPersistencePort.deleteById(id);
     }
 
     @Transactional(readOnly = true)
     public List<EventResponse> searchEventList(String search) {
-        List<Event> events = eventRepository.findByTitleContaining(search);
+        List<Event> events = eventPersistencePort.findByTitleContaining(search);
         return events.stream()
                 .map(EventResponse::from)
                 .toList();
@@ -131,7 +131,7 @@ public class EventService implements EventUseCase {
 
     @Transactional(readOnly = true)
     public List<EventResponse> getTop10ByCategory(EventCategory category) {
-        List<Event> eventList = eventRepository.findTop10ByEventCategoryOrderByViewCountDesc(category);
+        List<Event> eventList = eventPersistencePort.findTop10ByEventCategoryOrderByViewCountDesc(category);
         return eventList.stream()
                 .map(EventResponse::from)
                 .toList();
@@ -139,7 +139,7 @@ public class EventService implements EventUseCase {
 
     @Transactional(readOnly = true)
     public List<EventResponse> getTop6PopularEvents() {
-        List<Event> popularEvents = eventRepository.findTop6ByOrderByViewCountDesc();
+        List<Event> popularEvents = eventPersistencePort.findTop6ByOrderByViewCountDesc();
         return popularEvents.stream()
                 .map(EventResponse::from)
                 .toList();

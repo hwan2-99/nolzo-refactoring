@@ -19,33 +19,33 @@ import org.springframework.beans.factory.annotation.Autowired;
 @ServiceTest
 public class SeatServiceTest {
     @Autowired
-    private SeatPersistencePort seatRepository;
+    private SeatPersistencePort seatPersistencePort;
     @Autowired
-    private EventPersistencePort eventRepository;
+    private EventPersistencePort eventPersistencePort;
     @Autowired
-    private SchedulePersistencePort scheduleRepository;
+    private SchedulePersistencePort schedulePersistencePort;
     @Autowired
     private SeatService seatService;
 
     @Test
     void 좌석은_저장_가능하다() {
         Event event = EventFixture.캣츠();
-        eventRepository.save(event);
+        eventPersistencePort.save(event);
         Schedule schedule = ScheduleFixture.공연_스케쥴(event);
-        scheduleRepository.save(schedule);
+        schedulePersistencePort.save(schedule);
         Seat seat = SeatFixture.일반좌석(schedule);
-        seatRepository.save(seat);
-        assertThat(seatRepository.findAll()).hasSize(1);
+        seatPersistencePort.save(seat);
+        assertThat(seatPersistencePort.findAll()).hasSize(1);
     }
 
     @Test
     void 좌석_한번에_생성_가능하다() {
         Event event = EventFixture.캣츠();
-        eventRepository.save(event);
+        eventPersistencePort.save(event);
         Schedule schedule = ScheduleFixture.공연_스케쥴(event);
-        scheduleRepository.save(schedule);
+        schedulePersistencePort.save(schedule);
 
         seatService.createSeats(schedule.getId());
-        assertThat(seatRepository.findAll()).hasSize(1000);
+        assertThat(seatPersistencePort.findAll()).hasSize(1000);
     }
 }

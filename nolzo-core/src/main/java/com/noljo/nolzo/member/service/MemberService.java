@@ -15,31 +15,31 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class MemberService implements MemberUseCase {
-    private final MemberPersistencePort memberRepository;
+    private final MemberPersistencePort memberPersistencePort;
 
     @Transactional
     public void deleteMember(Long memberId) {
-        Member member = memberRepository.findById(memberId)
+        Member member = memberPersistencePort.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("member not found."));
         member.softDelete();
     }
 
     @Transactional
     public void changeMemberPassword(Long memberId, PasswordChangeRequest request) {
-        Member member = memberRepository.findById(memberId)
+        Member member = memberPersistencePort.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("member not found"));
 
         member.changePassword(request.getPassword());
     }
 
     public MemberDto readMember(Long memberId) {
-        Member member = memberRepository.findById(memberId)
+        Member member = memberPersistencePort.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("member not found"));
         return MemberDto.from(member);
     }
 
     public List<MemberDto> readAll() {
-        List<Member> members = memberRepository.findAll();
+        List<Member> members = memberPersistencePort.findAll();
         return members.stream().map(MemberDto::from).toList();
     }
 }

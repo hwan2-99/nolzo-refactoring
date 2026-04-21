@@ -27,66 +27,66 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RequiredArgsConstructor
 public class ReviewService implements ReviewUseCase, ReviewRatingUpdateUseCase {
-    private final ReviewPersistencePort reviewRepository;
-    private final EventPersistencePort eventRepository;
-    private final MemberPersistencePort memberRepository;
-    private final ReservationPersistencePort reservationRepository;
+    private final ReviewPersistencePort reviewPersistencePort;
+    private final EventPersistencePort eventPersistencePort;
+    private final MemberPersistencePort memberPersistencePort;
+    private final ReservationPersistencePort reservationPersistencePort;
 
     public ReviewResponse create(Long memberId, ReviewCreateRequest request) {
-        Member member = memberRepository.getOrThrow(memberId);
-        Event event = eventRepository.getOrThrow(request.eventId());
+        Member member = memberPersistencePort.getOrThrow(memberId);
+        Event event = eventPersistencePort.getOrThrow(request.eventId());
 
         validateEventParticipation(memberId, request.eventId());
         validateAlreadyReviewed(memberId, request.eventId());
 
         Review review = new Review(request.content(), request.rating(), event, member);
-        return ReviewResponse.from(reviewRepository.save(review));
+        return ReviewResponse.from(reviewPersistencePort.save(review));
     }
 
     public ReviewUpdateResponse update(Long memberId, Long reviewId, ReviewUpdateRequest request) {
-        Review review = reviewRepository.getOrThrow(reviewId);
+        Review review = reviewPersistencePort.getOrThrow(reviewId);
         validateReviewOwner(review, memberId);
         review.update(request.content(), request.rating());
         return ReviewUpdateResponse.from(review);
     }
 
     public ReviewResponse getReview(Long reviewId) {
-        Review review = reviewRepository.getOrThrow(reviewId);
+        Review review = reviewPersistencePort.getOrThrow(reviewId);
         return ReviewResponse.from(review);
     }
 
     public List<ReviewResponse> getReviewsByMemberId(Long memberId) {
-        List<Review> reviews = reviewRepository.findByMemberId(memberId);
+        List<Review> reviews = reviewPersistencePort.findByMemberId(memberId);
         return reviews.stream()
                 .map(ReviewResponse::from)
                 .toList();
     }
 
     public ReviewResponse getReviewByMemberIdAndEventId(Long memberId, Long eventId) {
-        Review review = reviewRepository.findByMemberIdAndEventId(memberId, eventId)
+        Review review = reviewPersistencePort.findByMemberIdAndEventId(memberId, eventId)
                 .orElseThrow(() -> new IllegalArgumentException("리뷰를 조회할 수 없습니다"));
         return ReviewResponse.from(review);
     }
 
     public EventReviewPageResponse getPagingReviewsByEventId(Long eventId, int page, int size) {
         PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<Review> reviewPage = reviewRepository.findPageByEventId(eventId, pageable);
+        Page<Review> reviewPage = reviewPersistencePort.findPageByEventId(eventId, pageable);
         List<ReviewDetailResponse> reviewResponses = getReviewDetailResponsesFromReviewPage(reviewPage);
-        Event event = eventRepository.getOrThrow(eventId);
+        Event event = eventPersistencePort.getOrThrow(eventId);
         return EventReviewPageResponse.of(reviewPage, reviewResponses, event.getAverageRating(), page, size);
     }
 
     public void delete(Long memberId, Long reviewId) {
-        Review review = reviewRepository.getOrThrow(reviewId);
+        Review review = reviewPersistencePort.getOrThrow(reviewId);
         validateReviewOwner(review, memberId);
-        reviewRepository.delete(review);
+        reviewPersistencePort.delete(review);
     }
 
     @Transactional
     public void updateEventAverageRate() {
-        List<Event> events = eventRepository.findAll();
+        List<Event> events = eventPersistencePort.findAll();
         events.forEach(event -> {
-            double averageRating = reviewRepository.getAverageByEventId(event.getId());
+            double averageRating = reviewPersistencePort.getAverageByEventId(event.getId());
             event.updateAverageRating(averageRating);
         });
     }
@@ -98,7 +98,7 @@ public class ReviewService implements ReviewUseCase, ReviewRatingUpdateUseCase {
     }
 
     private void validateEventParticipation(Long memberId, Long eventId) {
-        boolean isUsed = reservationRepository.findTicketStatusUsedByMemberId(memberId).stream()
+        boolean isUsed = reservationPersistencePort.findTicketStatusUsedByMemberId(memberId).stream()
                 .anyMatch(reservation -> reservation.getTickets().stream()
                         .anyMatch(ticket -> ticket.getSeat().getSchedule().getEvent().getId().equals(eventId)));
         if (!isUsed) {
@@ -107,7 +107,7 @@ public class ReviewService implements ReviewUseCase, ReviewRatingUpdateUseCase {
     }
 
     private void validateAlreadyReviewed(Long memberId, Long eventId) {
-        boolean isAlreadyReviewed = reviewRepository.findByMemberIdAndEventId(memberId, eventId).isPresent();
+        boolean isAlreadyReviewed = reviewPersistencePort.findByMemberIdAndEventId(memberId, eventId).isPresent();
         if (isAlreadyReviewed) {
             throw new IllegalStateException("이미 해당 이벤트에 대한 리뷰를 작성하였습니다.");
         }

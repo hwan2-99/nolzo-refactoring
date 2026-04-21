@@ -31,8 +31,8 @@ public class SeatService implements SeatUseCase {
     public static char ROW_START_NAME = 'A';
     public static char ROW_END_NAME = 'J';
 
-    private final SeatPersistencePort seatRepository;
-    private final SchedulePersistencePort scheduleRepository;
+    private final SeatPersistencePort seatPersistencePort;
+    private final SchedulePersistencePort schedulePersistencePort;
 
     /*todo 공연과 공연 스캐쥴 등록시 해당 스케쥴에 대한 좌석들을 한번에 자동으로 만드는 메서드입니다.
            추후 공연장마저 관리할거면 수정해야할 메서드 입니다.
@@ -54,7 +54,7 @@ public class SeatService implements SeatUseCase {
             }
         }
 
-        seatRepository.saveAll(seats);
+        seatPersistencePort.saveAll(seats);
 
         return seats.stream()
                 .map(SeatResponse::from)
@@ -79,7 +79,7 @@ public class SeatService implements SeatUseCase {
     }
 
     private Seat findSeatByIdWithPessimisticLock(Long id) {
-        return seatRepository.findByIdWithPessimisticLock(id)
+        return seatPersistencePort.findByIdWithPessimisticLock(id)
                 .orElseThrow(() -> new IllegalArgumentException("Seat with id " + id + " not found"));
     }
 
@@ -92,7 +92,7 @@ public class SeatService implements SeatUseCase {
     @DistributedLock(key = "'seat:' + #seatId")
     public void updateWithRedisson(List<Long> seatIds) {
         for (Long seatId : seatIds) {
-            Seat seat = seatRepository.getOrThrow(seatId);
+            Seat seat = seatPersistencePort.getOrThrow(seatId);
             validateIsAvailable(seat);
 
             seat.updateStatus(SeatStatus.WAITING);
@@ -102,7 +102,7 @@ public class SeatService implements SeatUseCase {
 
     @Transactional(readOnly = true)
     public int calculateTotalPrice(List<Long> seatIds) {
-        List<Seat> seats = seatRepository.findAllById(seatIds);
+        List<Seat> seats = seatPersistencePort.findAllById(seatIds);
 
         return seats.stream()
                 .mapToInt(Seat::getPrice)
@@ -111,18 +111,18 @@ public class SeatService implements SeatUseCase {
 
     @Transactional(readOnly = true)
     public List<SeatResponse> findSeats(Long eventId, String date, String time) {
-        return scheduleRepository.findSeatResponsesBySchedule(
+        return schedulePersistencePort.findSeatResponsesBySchedule(
                 eventId, LocalDate.parse(date), LocalTime.parse(time));
     }
 
     private Schedule findScheduleByEventIdWithDate(Long eventId, String date, String time) {
-        return scheduleRepository
+        return schedulePersistencePort
                 .findByEventIdAndShowDateAndShowTime(eventId, LocalDate.parse(date), LocalTime.parse(time))
                 .orElseThrow(() -> new IllegalArgumentException("No schedule found for the given date and time"));
     }
 
     private Schedule findScheduleById(Long scheduleId) {
-        return scheduleRepository.findById(scheduleId)
+        return schedulePersistencePort.findById(scheduleId)
                 .orElseThrow(() -> new IllegalArgumentException("No schedule found for the given id"));
     }
 }

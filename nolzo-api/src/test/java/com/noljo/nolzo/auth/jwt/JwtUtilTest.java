@@ -22,7 +22,7 @@ class JwtUtilTest {
     private JwtUtil jwtUtil;
 
     @Autowired
-    private MemberPersistencePort memberRepository;
+    private MemberPersistencePort memberPersistencePort;
 
     @Value("${jwt.secret}")
     private String secret;
@@ -30,7 +30,7 @@ class JwtUtilTest {
     @Test
     void JWT_토큰_발행() {
         Member member = MemberFixture.회원();
-        memberRepository.save(member);
+        memberPersistencePort.save(member);
 
         String token = jwtUtil.createAccessToken(member);
         assertThat(jwtUtil.isExpired(token)).isFalse();
@@ -42,7 +42,7 @@ class JwtUtilTest {
     @Test
     void JWT_토큰_만료시_검증이_실패한다() {
         Member member = MemberFixture.회원();
-        memberRepository.save(member);
+        memberPersistencePort.save(member);
 
         SecretKeySpec secretKey = new SecretKeySpec(
                 secret.getBytes(StandardCharsets.UTF_8),
@@ -65,7 +65,7 @@ class JwtUtilTest {
     @Test
     void JWT_토큰의_서명이_일치하지_않으면_검증이_실패한다() {
         Member member = MemberFixture.회원();
-        memberRepository.save(member);
+        memberPersistencePort.save(member);
 
         SecretKeySpec wrongKey = new SecretKeySpec(
                 "some-wrong-secret-key-some-wrong-secret-key-some-wrong-secret-key".getBytes(StandardCharsets.UTF_8),

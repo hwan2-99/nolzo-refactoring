@@ -29,10 +29,10 @@ class AuthServiceTest {
     private AuthService authService;
 
     @Autowired
-    private MemberPersistencePort memberRepository;
+    private MemberPersistencePort memberPersistencePort;
 
     @Autowired
-    private RefreshTokenPersistencePort refreshTokenRepository;
+    private RefreshTokenPersistencePort refreshTokenPersistencePort;
 
 
     @Autowired
@@ -58,7 +58,7 @@ class AuthServiceTest {
 
         assertThat(jwtUtil.isTokenValid(tokens.accessToken())).isTrue();
         assertThat(jwtUtil.isTokenValid(tokens.refreshToken())).isTrue();
-        assertThat(refreshTokenRepository.findAll()).hasSize(1);
+        assertThat(refreshTokenPersistencePort.findAll()).hasSize(1);
     }
 
     @Test
@@ -85,7 +85,7 @@ class AuthServiceTest {
         TokensResponse tokens = registerAndLogin(member);
 
         authService.logout(tokens.refreshToken());
-        assertThat(refreshTokenRepository.findByToken(tokens.refreshToken())).isNull();
+        assertThat(refreshTokenPersistencePort.findByToken(tokens.refreshToken())).isNull();
     }
 
     @Test
