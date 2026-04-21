@@ -46,3 +46,4 @@ out/
 
 ### YML files ###
 src/main/resources/application.yml
+nolzo-api/src/main/resources/application.yml
