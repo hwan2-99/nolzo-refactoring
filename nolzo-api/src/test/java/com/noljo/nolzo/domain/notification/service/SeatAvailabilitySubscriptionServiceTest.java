@@ -53,7 +53,7 @@ class SeatAvailabilitySubscriptionServiceTest {
                 member.getId(),
                 request(event.getId(), schedule.getId(), SectionPrice.SECTION_1)
         );
-        
+
         assertThat(response.getMemberId()).isEqualTo(member.getId());
         assertThat(response.getEventId()).isEqualTo(event.getId());
         assertThat(response.getEventScheduleId()).isEqualTo(schedule.getId());
