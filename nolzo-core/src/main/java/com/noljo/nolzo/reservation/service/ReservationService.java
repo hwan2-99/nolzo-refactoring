@@ -5,6 +5,8 @@ import com.noljo.nolzo.event.application.port.out.EventPersistencePort;
 import com.noljo.nolzo.global.aop.idempotent.Idempotent;
 import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.application.port.out.MemberPersistencePort;
+import com.noljo.nolzo.notification.application.port.out.PublishSeatAvailableEventPort;
+import com.noljo.nolzo.notification.domain.event.SeatAvailableEvent;
 import com.noljo.nolzo.payment.entity.Payment;
 import com.noljo.nolzo.payment.application.port.out.PaymentPersistencePort;
 import com.noljo.nolzo.reservation.application.port.in.ReservationUseCase;
@@ -26,6 +28,7 @@ import com.noljo.nolzo.ticket.application.port.in.TicketUseCase;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +51,7 @@ public class ReservationService implements ReservationUseCase {
     private final PaymentPersistencePort paymentPersistencePort;
     private final TicketUseCase ticketUseCase;
     private final ReservationQueuePort reservationQueuePort;
+    private final PublishSeatAvailableEventPort publishSeatAvailableEventPort;
 
 //    @Transactional
 //    @Idempotent(prefix = "reservation:succeed:", key = "#memberId")
@@ -191,6 +195,7 @@ public class ReservationService implements ReservationUseCase {
         reservation.softDelete();
         reservation.updateStatus(ReservationStatus.CANCELLED);
         reservation.cancelAllTickets();
+        publishSeatAvailableEvents(reservation.getTickets());
 
         return ReservationCancelResponse.from(reservation);
     }
@@ -203,7 +208,25 @@ public class ReservationService implements ReservationUseCase {
         for (Reservation reservation : overdueReservations) {
             log.info("자동 취소 처리: reservationId = {}", reservation.getId());
             seatUseCase.updateWithPayment(reservation.getTickets(), SeatStatus.AVAILABLE);
+            publishSeatAvailableEvents(reservation.getTickets());
             reservationPersistencePort.delete(reservation);
         }
+    }
+
+    private void publishSeatAvailableEvents(List<Ticket> tickets) {
+        List<SeatAvailableEvent> events = new ArrayList<>();
+
+        for (Ticket ticket : tickets) {
+            Seat seat = ticket.getSeat();
+            events.add(new SeatAvailableEvent(
+                    seat.getSchedule().getEvent().getId(),
+                    seat.getSchedule().getId(),
+                    seat.getId(),
+                    seat.getSeatSection(),
+                    LocalDateTime.now()
+            ));
+        }
+
+        events.forEach(publishSeatAvailableEventPort::publish);
     }
 }
