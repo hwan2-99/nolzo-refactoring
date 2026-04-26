@@ -41,5 +41,23 @@ public interface SeatAvailabilitySubscriptionRepository extends JpaRepository<Se
             @Param("status") SubscriptionStatus status
     );
 
+    @Query("""
+            select s
+            from SeatAvailabilitySubscription s
+            where s.eventId = :eventId
+              and s.eventScheduleId = :eventScheduleId
+              and s.seatGrade = :seatGrade
+              and s.status = :status
+              and s.channel = :channel
+            order by s.createdAt asc
+            """)
+    List<SeatAvailabilitySubscription> findAllByEventScheduleSeatGradeAndStatusAndChannel(
+            @Param("eventId") Long eventId,
+            @Param("eventScheduleId") Long eventScheduleId,
+            @Param("seatGrade") SectionPrice seatGrade,
+            @Param("status") SubscriptionStatus status,
+            @Param("channel") NotificationChannel channel
+    );
+
     Optional<SeatAvailabilitySubscription> findByIdAndMemberId(Long id, Long memberId);
 }
