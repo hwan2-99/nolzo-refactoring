@@ -3,7 +3,6 @@ package com.noljo.nolzo.notification.repository;
 import com.noljo.nolzo.notification.domain.NotificationChannel;
 import com.noljo.nolzo.notification.domain.SeatAvailabilitySubscription;
 import com.noljo.nolzo.notification.domain.SubscriptionStatus;
-import com.noljo.nolzo.seat.entity.SectionPrice;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,14 +17,12 @@ public interface SeatAvailabilitySubscriptionRepository extends JpaRepository<Se
             where s.memberId = :memberId
               and s.eventId = :eventId
               and s.eventScheduleId = :eventScheduleId
-              and s.seatGrade = :seatGrade
               and s.channel = :channel
             """)
     Optional<SeatAvailabilitySubscription> findExistingSubscription(
             @Param("memberId") Long memberId,
             @Param("eventId") Long eventId,
             @Param("eventScheduleId") Long eventScheduleId,
-            @Param("seatGrade") SectionPrice seatGrade,
             @Param("channel") NotificationChannel channel
     );
 
@@ -36,7 +33,7 @@ public interface SeatAvailabilitySubscriptionRepository extends JpaRepository<Se
               and s.status = :status
             order by s.createdAt desc
             """)
-    List<SeatAvailabilitySubscription> findAllByMemberIdAndStatus(
+    List<SeatAvailabilitySubscription> findMemberSubscriptions(
             @Param("memberId") Long memberId,
             @Param("status") SubscriptionStatus status
     );
@@ -46,15 +43,13 @@ public interface SeatAvailabilitySubscriptionRepository extends JpaRepository<Se
             from SeatAvailabilitySubscription s
             where s.eventId = :eventId
               and s.eventScheduleId = :eventScheduleId
-              and s.seatGrade = :seatGrade
               and s.status = :status
               and s.channel = :channel
             order by s.createdAt asc
             """)
-    List<SeatAvailabilitySubscription> findAllByEventScheduleSeatGradeAndStatusAndChannel(
+    List<SeatAvailabilitySubscription> findTargetSubscriptions(
             @Param("eventId") Long eventId,
             @Param("eventScheduleId") Long eventScheduleId,
-            @Param("seatGrade") SectionPrice seatGrade,
             @Param("status") SubscriptionStatus status,
             @Param("channel") NotificationChannel channel
     );

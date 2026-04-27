@@ -44,7 +44,6 @@ public class SeatAvailabilitySubscriptionService implements
                         memberId,
                         request.eventId(),
                         request.eventScheduleId(),
-                        request.seatGrade(),
                         request.channel()
                 )
                 .orElse(null);
@@ -64,7 +63,6 @@ public class SeatAvailabilitySubscriptionService implements
                 memberId,
                 request.eventId(),
                 request.eventScheduleId(),
-                request.seatGrade(),
                 request.channel(),
                 SubscriptionStatus.ACTIVE
         );
@@ -91,7 +89,7 @@ public class SeatAvailabilitySubscriptionService implements
 
     @Override
     public List<SeatAvailabilitySubscriptionResponse> readAllByMemberId(Long memberId) {
-        return loadSeatAvailabilitySubscriptionPort.findAllByMemberIdAndStatus(
+        return loadSeatAvailabilitySubscriptionPort.findMemberSubscriptions(
                         memberId,
                         SubscriptionStatus.ACTIVE
                 ).stream()

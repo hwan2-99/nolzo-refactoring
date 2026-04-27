@@ -6,7 +6,6 @@ import com.noljo.nolzo.notification.domain.NotificationChannel;
 import com.noljo.nolzo.notification.domain.SeatAvailabilitySubscription;
 import com.noljo.nolzo.notification.domain.SubscriptionStatus;
 import com.noljo.nolzo.notification.repository.SeatAvailabilitySubscriptionRepository;
-import com.noljo.nolzo.seat.entity.SectionPrice;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -30,41 +29,37 @@ public class SeatAvailabilitySubscriptionPersistenceAdapter implements
             Long memberId,
             Long eventId,
             Long eventScheduleId,
-            SectionPrice seatGrade,
             NotificationChannel channel
     ) {
         return seatAvailabilitySubscriptionRepository.findExistingSubscription(
                 memberId,
                 eventId,
                 eventScheduleId,
-                seatGrade,
                 channel
         );
     }
 
     @Override
-    public List<SeatAvailabilitySubscription> findAllByMemberIdAndStatus(
+    public List<SeatAvailabilitySubscription> findMemberSubscriptions(
             Long memberId,
             SubscriptionStatus status
     ) {
-        return seatAvailabilitySubscriptionRepository.findAllByMemberIdAndStatus(
+        return seatAvailabilitySubscriptionRepository.findMemberSubscriptions(
                 memberId,
                 status
         );
     }
 
     @Override
-    public List<SeatAvailabilitySubscription> findAllByEventScheduleSeatGradeAndStatusAndChannel(
+    public List<SeatAvailabilitySubscription> findTargetSubscriptions(
             Long eventId,
             Long eventScheduleId,
-            SectionPrice seatGrade,
             SubscriptionStatus status,
             NotificationChannel channel
     ) {
-        return seatAvailabilitySubscriptionRepository.findAllByEventScheduleSeatGradeAndStatusAndChannel(
+        return seatAvailabilitySubscriptionRepository.findTargetSubscriptions(
                 eventId,
                 eventScheduleId,
-                seatGrade,
                 status,
                 channel
         );

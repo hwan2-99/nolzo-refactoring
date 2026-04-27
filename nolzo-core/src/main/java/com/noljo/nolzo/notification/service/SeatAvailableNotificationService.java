@@ -10,11 +10,9 @@ import com.noljo.nolzo.notification.application.port.out.SaveNotificationDeliver
 import com.noljo.nolzo.notification.application.port.out.SendEmailNotificationPort;
 import com.noljo.nolzo.notification.domain.NotificationChannel;
 import com.noljo.nolzo.notification.domain.NotificationDelivery;
-import com.noljo.nolzo.notification.domain.NotificationDeliveryStatus;
 import com.noljo.nolzo.notification.domain.SeatAvailabilitySubscription;
 import com.noljo.nolzo.notification.domain.SubscriptionStatus;
 import com.noljo.nolzo.notification.domain.event.SeatAvailableEvent;
-import com.noljo.nolzo.seat.entity.SectionPrice;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -33,16 +31,12 @@ public class SeatAvailableNotificationService implements HandleSeatAvailableUseC
     @Override
     @Transactional
     public void handle(SeatAvailableEvent event) {
-        SectionPrice seatGrade = resolveSeatGrade(event.seatGrade());
-
-        List<SeatAvailabilitySubscription> subscriptions =
-                loadSeatAvailabilitySubscriptionPort.findAllByEventScheduleSeatGradeAndStatusAndChannel(
-                        event.eventId(),
-                        event.eventScheduleId(),
-                        seatGrade,
-                        SubscriptionStatus.ACTIVE,
-                        NotificationChannel.EMAIL
-                );
+        List<SeatAvailabilitySubscription> subscriptions = loadSeatAvailabilitySubscriptionPort.findTargetSubscriptions(
+                event.eventId(),
+                event.eventScheduleId(),
+                SubscriptionStatus.ACTIVE,
+                NotificationChannel.EMAIL
+        );
 
         if (subscriptions.isEmpty()) {
             return;
@@ -60,41 +54,58 @@ public class SeatAvailableNotificationService implements HandleSeatAvailableUseC
             Event targetEvent,
             SeatAvailabilitySubscription subscription
     ) {
-        Member member = memberPersistencePort.getOrThrow(subscription.getMemberId());
-        String recipient = member.getEmail();
-
+        String recipient = getRecipient(subscription);
         try {
             sendEmailNotificationPort.send(
                     recipient,
                     createSubject(targetEvent),
                     createBody(targetEvent, event)
             );
-
-            subscription.updateLastNotifiedAt(event.availableAt());
-            NotificationDelivery delivery = new NotificationDelivery(
-                    subscription.getId(),
-                    subscription.getMemberId(),
-                    event.eventId(),
-                    event.eventScheduleId(),
-                    event.seatGrade(),
-                    subscription.getChannel(),
-                    recipient,
-                    event.availableAt()
-            );
-            saveNotificationDeliveryPort.save(delivery);
+            saveSuccess(event, subscription, recipient);
         } catch (Exception e) {
-            NotificationDelivery delivery = new NotificationDelivery(
-                    subscription.getId(),
-                    subscription.getMemberId(),
-                    event.eventId(),
-                    event.eventScheduleId(),
-                    event.seatGrade(),
-                    subscription.getChannel(),
-                    recipient,
-                    e.getMessage()
-            );
-            saveNotificationDeliveryPort.save(delivery);
+            saveFailure(event, subscription, recipient, e.getMessage());
         }
+    }
+
+    private String getRecipient(SeatAvailabilitySubscription subscription) {
+        Member member = memberPersistencePort.getOrThrow(subscription.getMemberId());
+        return member.getEmail();
+    }
+
+    private void saveSuccess(
+            SeatAvailableEvent event,
+            SeatAvailabilitySubscription subscription,
+            String recipient
+    ) {
+        subscription.updateLastNotifiedAt(event.availableAt());
+        saveNotificationDeliveryPort.save(new NotificationDelivery(
+                subscription.getId(),
+                subscription.getMemberId(),
+                event.eventId(),
+                event.eventScheduleId(),
+                event.seatGrade(),
+                subscription.getChannel(),
+                recipient,
+                event.availableAt()
+        ));
+    }
+
+    private void saveFailure(
+            SeatAvailableEvent event,
+            SeatAvailabilitySubscription subscription,
+            String recipient,
+            String failureReason
+    ) {
+        saveNotificationDeliveryPort.save(new NotificationDelivery(
+                subscription.getId(),
+                subscription.getMemberId(),
+                event.eventId(),
+                event.eventScheduleId(),
+                event.seatGrade(),
+                subscription.getChannel(),
+                recipient,
+                failureReason
+        ));
     }
 
     private String createSubject(Event event) {
@@ -112,16 +123,5 @@ public class SeatAvailableNotificationService implements HandleSeatAvailableUseC
                 seatAvailableEvent.eventScheduleId(),
                 seatAvailableEvent.seatGrade()
         );
-    }
-
-    private SectionPrice resolveSeatGrade(String seatGrade) {
-        return switch (seatGrade) {
-            case "1구역" -> SectionPrice.SECTION_1;
-            case "2구역" -> SectionPrice.SECTION_2;
-            case "3구역" -> SectionPrice.SECTION_3;
-            case "4구역" -> SectionPrice.SECTION_4;
-            case "5구역" -> SectionPrice.SECTION_5;
-            default -> throw new IllegalArgumentException("알 수 없는 좌석 등급입니다: " + seatGrade);
-        };
     }
 }
