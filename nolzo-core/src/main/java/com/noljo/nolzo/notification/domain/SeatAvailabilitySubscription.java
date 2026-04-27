@@ -1,7 +1,6 @@
 package com.noljo.nolzo.notification.domain;
 
 import com.noljo.nolzo.global.BaseEntity;
-import com.noljo.nolzo.seat.entity.SectionPrice;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -23,8 +22,8 @@ import lombok.NoArgsConstructor;
         name = "seat_availability_subscription",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "uk_subscription_member_event_schedule_grade_channel",
-                        columnNames = {"member_id", "event_id", "event_schedule_id", "seat_grade", "channel"}
+                        name = "uk_subscription_member_event_schedule_channel",
+                        columnNames = {"member_id", "event_id", "event_schedule_id", "channel"}
                 )
         }
 )
@@ -45,10 +44,6 @@ public class SeatAvailabilitySubscription extends BaseEntity {
     private Long eventScheduleId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "seat_grade", nullable = false)
-    private SectionPrice seatGrade;
-
-    @Enumerated(EnumType.STRING)
     @Column(name = "channel", nullable = false)
     private NotificationChannel channel;
 
@@ -63,14 +58,12 @@ public class SeatAvailabilitySubscription extends BaseEntity {
             Long memberId,
             Long eventId,
             Long eventScheduleId,
-            SectionPrice seatGrade,
             NotificationChannel channel,
             SubscriptionStatus status
     ) {
         this.memberId = memberId;
         this.eventId = eventId;
         this.eventScheduleId = eventScheduleId;
-        this.seatGrade = seatGrade;
         this.channel = channel;
         this.status = status;
     }

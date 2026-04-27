@@ -19,7 +19,6 @@ import com.noljo.nolzo.notification.repository.SeatAvailabilitySubscriptionRepos
 import com.noljo.nolzo.notification.service.SeatAvailableNotificationService;
 import com.noljo.nolzo.schedule.application.port.out.SchedulePersistencePort;
 import com.noljo.nolzo.schedule.entity.Schedule;
-import com.noljo.nolzo.seat.entity.SectionPrice;
 import com.noljo.nolzo.support.annotation.ServiceTest;
 import com.noljo.nolzo.support.fixture.EventFixture;
 import com.noljo.nolzo.support.fixture.MemberFixture;
@@ -64,7 +63,6 @@ class SeatAvailableNotificationServiceTest {
                 member.getId(),
                 event.getId(),
                 schedule.getId(),
-                SectionPrice.SECTION_1,
                 NotificationChannel.EMAIL,
                 SubscriptionStatus.ACTIVE
         ));
