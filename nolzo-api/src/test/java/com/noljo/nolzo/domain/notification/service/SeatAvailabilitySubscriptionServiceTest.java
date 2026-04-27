@@ -16,7 +16,6 @@ import com.noljo.nolzo.notification.repository.SeatAvailabilitySubscriptionRepos
 import com.noljo.nolzo.notification.service.SeatAvailabilitySubscriptionService;
 import com.noljo.nolzo.schedule.application.port.out.SchedulePersistencePort;
 import com.noljo.nolzo.schedule.entity.Schedule;
-import com.noljo.nolzo.seat.entity.SectionPrice;
 import com.noljo.nolzo.support.annotation.ServiceTest;
 import com.noljo.nolzo.support.fixture.EventFixture;
 import com.noljo.nolzo.support.fixture.MemberFixture;
@@ -51,13 +50,12 @@ class SeatAvailabilitySubscriptionServiceTest {
 
         SeatAvailabilitySubscriptionResponse response = seatAvailabilitySubscriptionService.create(
                 member.getId(),
-                request(event.getId(), schedule.getId(), SectionPrice.SECTION_1)
+                request(event.getId(), schedule.getId())
         );
 
         assertThat(response.getMemberId()).isEqualTo(member.getId());
         assertThat(response.getEventId()).isEqualTo(event.getId());
         assertThat(response.getEventScheduleId()).isEqualTo(schedule.getId());
-        assertThat(response.getSeatGrade()).isEqualTo(SectionPrice.SECTION_1);
         assertThat(response.getChannel()).isEqualTo(NotificationChannel.EMAIL);
         assertThat(response.getStatus()).isEqualTo(SubscriptionStatus.ACTIVE);
     }
@@ -68,7 +66,7 @@ class SeatAvailabilitySubscriptionServiceTest {
         Event event = eventPersistencePort.save(EventFixture.캣츠());
         Schedule schedule = schedulePersistencePort.save(ScheduleFixture.공연_스케쥴(event));
         CreateSeatAvailabilitySubscriptionRequest request =
-                request(event.getId(), schedule.getId(), SectionPrice.SECTION_1);
+                request(event.getId(), schedule.getId());
 
         seatAvailabilitySubscriptionService.create(member.getId(), request);
 
@@ -85,7 +83,7 @@ class SeatAvailabilitySubscriptionServiceTest {
 
         SeatAvailabilitySubscriptionResponse response = seatAvailabilitySubscriptionService.create(
                 member.getId(),
-                request(event.getId(), schedule.getId(), SectionPrice.SECTION_1)
+                request(event.getId(), schedule.getId())
         );
 
         seatAvailabilitySubscriptionService.cancel(member.getId(), response.getId());
@@ -101,7 +99,7 @@ class SeatAvailabilitySubscriptionServiceTest {
         Event event = eventPersistencePort.save(EventFixture.캣츠());
         Schedule schedule = schedulePersistencePort.save(ScheduleFixture.공연_스케쥴(event));
         CreateSeatAvailabilitySubscriptionRequest request =
-                request(event.getId(), schedule.getId(), SectionPrice.SECTION_1);
+                request(event.getId(), schedule.getId());
 
         SeatAvailabilitySubscriptionResponse created = seatAvailabilitySubscriptionService.create(member.getId(), request);
         seatAvailabilitySubscriptionService.cancel(member.getId(), created.getId());
@@ -114,15 +112,10 @@ class SeatAvailabilitySubscriptionServiceTest {
         assertThat(subscriptions.get(0).getStatus()).isEqualTo(SubscriptionStatus.ACTIVE);
     }
 
-    private CreateSeatAvailabilitySubscriptionRequest request(
-            Long eventId,
-            Long scheduleId,
-            SectionPrice seatGrade
-    ) {
+    private CreateSeatAvailabilitySubscriptionRequest request(Long eventId, Long scheduleId) {
         return new CreateSeatAvailabilitySubscriptionRequest(
                 eventId,
                 scheduleId,
-                seatGrade,
                 NotificationChannel.EMAIL
         );
     }
