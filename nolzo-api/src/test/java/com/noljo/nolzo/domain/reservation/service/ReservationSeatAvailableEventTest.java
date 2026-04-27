@@ -30,7 +30,7 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 @ServiceTest
 class ReservationSeatAvailableEventTest {
@@ -56,7 +56,7 @@ class ReservationSeatAvailableEventTest {
     @Autowired
     private TicketPersistencePort ticketPersistencePort;
 
-    @SpyBean
+    @MockBean
     private PublishSeatAvailableEventPort publishSeatAvailableEventPort;
 
     @Test

@@ -1,5 +1,21 @@
 spring:
   config.activate.on-profile: "test"
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+    consumer:
+      group-id: test-seat-available-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.noljo.nolzo.notification.adapter.out.event
+    listener:
+      auto-startup: false
   data:
     redis:
       host: localhost
@@ -26,3 +42,11 @@ security:
   jwt:
     secret-key: "alfknmeanfgaeownfewalf.afklneaflneaiofnaeoifnewanfea.afofineaoifnanfeakngalneg"
     expire-length: 36000
+
+app:
+  kafka:
+    consumer:
+      enabled: false
+      group-id: test-seat-available-group
+    topics:
+      seat-available: seat-available-events

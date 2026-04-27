@@ -54,6 +54,23 @@ public class SeatAvailabilitySubscriptionPersistenceAdapter implements
     }
 
     @Override
+    public List<SeatAvailabilitySubscription> findAllByEventScheduleSeatGradeAndStatusAndChannel(
+            Long eventId,
+            Long eventScheduleId,
+            SectionPrice seatGrade,
+            SubscriptionStatus status,
+            NotificationChannel channel
+    ) {
+        return seatAvailabilitySubscriptionRepository.findAllByEventScheduleSeatGradeAndStatusAndChannel(
+                eventId,
+                eventScheduleId,
+                seatGrade,
+                status,
+                channel
+        );
+    }
+
+    @Override
     public Optional<SeatAvailabilitySubscription> findByIdAndMemberId(Long id, Long memberId) {
         return seatAvailabilitySubscriptionRepository.findByIdAndMemberId(id, memberId);
     }

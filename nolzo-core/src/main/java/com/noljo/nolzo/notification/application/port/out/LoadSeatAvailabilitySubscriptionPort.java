@@ -22,5 +22,13 @@ public interface LoadSeatAvailabilitySubscriptionPort {
             SubscriptionStatus status
     );
 
+    List<SeatAvailabilitySubscription> findAllByEventScheduleSeatGradeAndStatusAndChannel(
+            Long eventId,
+            Long eventScheduleId,
+            SectionPrice seatGrade,
+            SubscriptionStatus status,
+            NotificationChannel channel
+    );
+
     Optional<SeatAvailabilitySubscription> findByIdAndMemberId(Long id, Long memberId);
 }
