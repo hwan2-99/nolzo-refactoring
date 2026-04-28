@@ -1,5 +1,6 @@
-package com.noljo.nolzo.notification.adapter.kafka;
+package com.noljo.nolzo.notification.adapter.consumer;
 
+import com.noljo.nolzo.notification.adapter.message.SeatAvailableEventMessage;
 import com.noljo.nolzo.notification.application.port.in.HandleSeatAvailableUseCase;
 import com.noljo.nolzo.notification.domain.event.SeatAvailableEvent;
 import lombok.RequiredArgsConstructor;

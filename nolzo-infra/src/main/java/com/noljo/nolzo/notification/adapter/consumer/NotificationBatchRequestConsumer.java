@@ -1,5 +1,6 @@
-package com.noljo.nolzo.notification.adapter.kafka;
+package com.noljo.nolzo.notification.adapter.consumer;
 
+import com.noljo.nolzo.notification.adapter.message.NotificationBatchRequestMessage;
 import com.noljo.nolzo.notification.application.port.in.HandleNotificationBatchUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

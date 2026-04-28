@@ -1,5 +1,6 @@
-package com.noljo.nolzo.notification.adapter.kafka;
+package com.noljo.nolzo.notification.adapter.producer;
 
+import com.noljo.nolzo.notification.adapter.message.NotificationBatchRequestMessage;
 import com.noljo.nolzo.notification.application.port.out.PublishNotificationBatchRequestPort;
 import com.noljo.nolzo.notification.domain.event.NotificationBatchRequest;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,8 @@
-package com.noljo.nolzo.notification.adapter.kafka;
+package com.noljo.nolzo.notification.adapter.producer;
 
 import static org.mockito.Mockito.verify;
 
+import com.noljo.nolzo.notification.adapter.message.NotificationBatchRequestMessage;
 import com.noljo.nolzo.notification.domain.event.NotificationBatchRequest;
 import java.time.LocalDateTime;
 import java.util.List;
