@@ -9,6 +9,7 @@ import com.noljo.nolzo.notification.repository.SeatAvailabilitySubscriptionRepos
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -55,13 +56,16 @@ public class SeatAvailabilitySubscriptionPersistenceAdapter implements
             Long eventId,
             Long eventScheduleId,
             SubscriptionStatus status,
-            NotificationChannel channel
+            NotificationChannel channel,
+            int page,
+            int size
     ) {
         return seatAvailabilitySubscriptionRepository.findTargetSubscriptions(
                 eventId,
                 eventScheduleId,
                 status,
-                channel
+                channel,
+                PageRequest.of(page, size)
         );
     }
 

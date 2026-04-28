@@ -24,7 +24,9 @@ public interface LoadSeatAvailabilitySubscriptionPort {
             Long eventId,
             Long eventScheduleId,
             SubscriptionStatus status,
-            NotificationChannel channel
+            NotificationChannel channel,
+            int page,
+            int size
     );
 
     Optional<SeatAvailabilitySubscription> findByIdAndMemberId(Long id, Long memberId);
