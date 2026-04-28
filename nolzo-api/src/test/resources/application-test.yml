@@ -50,6 +50,7 @@ app:
       group-id: test-seat-available-group
     topics:
       seat-available: seat-available-events
+      notification-batch-request: notification-batch-requests
   notification:
     batch-size: 2
     cooldown-minutes: 10
