@@ -56,5 +56,15 @@ public interface SeatAvailabilitySubscriptionRepository extends JpaRepository<Se
             Pageable pageable
     );
 
+    @Query("""
+            select s
+            from SeatAvailabilitySubscription s
+            where s.id in :subscriptionIds
+            order by s.createdAt asc
+            """)
+    List<SeatAvailabilitySubscription> findSubscriptionsByIds(
+            @Param("subscriptionIds") List<Long> subscriptionIds
+    );
+
     Optional<SeatAvailabilitySubscription> findByIdAndMemberId(Long id, Long memberId);
 }
