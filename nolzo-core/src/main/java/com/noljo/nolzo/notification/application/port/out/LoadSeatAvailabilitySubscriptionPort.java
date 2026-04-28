@@ -29,5 +29,7 @@ public interface LoadSeatAvailabilitySubscriptionPort {
             int size
     );
 
+    List<SeatAvailabilitySubscription> findSubscriptionsByIds(List<Long> subscriptionIds);
+
     Optional<SeatAvailabilitySubscription> findByIdAndMemberId(Long id, Long memberId);
 }
