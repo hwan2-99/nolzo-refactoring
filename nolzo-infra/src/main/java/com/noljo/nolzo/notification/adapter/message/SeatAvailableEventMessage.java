@@ -1,4 +1,4 @@
-package com.noljo.nolzo.notification.adapter.out.event;
+package com.noljo.nolzo.notification.adapter.message;
 
 import com.noljo.nolzo.notification.domain.event.SeatAvailableEvent;
 import java.time.LocalDateTime;

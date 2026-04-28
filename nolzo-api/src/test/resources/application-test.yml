@@ -13,7 +13,7 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: com.noljo.nolzo.notification.adapter.out.event
+        spring.json.trusted.packages: com.noljo.nolzo.notification.adapter.message
     listener:
       auto-startup: false
   data:
@@ -50,6 +50,7 @@ app:
       group-id: test-seat-available-group
     topics:
       seat-available: seat-available-events
+      notification-batch-request: notification-batch-requests
   notification:
     batch-size: 2
     cooldown-minutes: 10

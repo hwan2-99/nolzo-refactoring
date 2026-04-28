@@ -1,5 +1,6 @@
-package com.noljo.nolzo.notification.adapter.out.event;
+package com.noljo.nolzo.notification.adapter.producer;
 
+import com.noljo.nolzo.notification.adapter.message.SeatAvailableEventMessage;
 import com.noljo.nolzo.notification.application.port.out.PublishSeatAvailableEventPort;
 import com.noljo.nolzo.notification.domain.event.SeatAvailableEvent;
 import lombok.RequiredArgsConstructor;

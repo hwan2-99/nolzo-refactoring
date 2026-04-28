@@ -70,6 +70,11 @@ public class SeatAvailabilitySubscriptionPersistenceAdapter implements
     }
 
     @Override
+    public List<SeatAvailabilitySubscription> findSubscriptionsByIds(List<Long> subscriptionIds) {
+        return seatAvailabilitySubscriptionRepository.findSubscriptionsByIds(subscriptionIds);
+    }
+
+    @Override
     public Optional<SeatAvailabilitySubscription> findByIdAndMemberId(Long id, Long memberId) {
         return seatAvailabilitySubscriptionRepository.findByIdAndMemberId(id, memberId);
     }
