@@ -1,4 +1,4 @@
-package com.noljo.nolzo.notification.adapter.out.event;
+package com.noljo.nolzo.notification.adapter.kafka;
 
 import static org.mockito.Mockito.verify;
 

@@ -1,4 +1,4 @@
-package com.noljo.nolzo.notification.adapter.out.event;
+package com.noljo.nolzo.notification.adapter.kafka;
 
 import com.noljo.nolzo.notification.application.port.out.PublishNotificationBatchRequestPort;
 import com.noljo.nolzo.notification.domain.event.NotificationBatchRequest;
