@@ -5,6 +5,7 @@ import com.noljo.nolzo.notification.domain.SeatAvailabilitySubscription;
 import com.noljo.nolzo.notification.domain.SubscriptionStatus;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -51,7 +52,8 @@ public interface SeatAvailabilitySubscriptionRepository extends JpaRepository<Se
             @Param("eventId") Long eventId,
             @Param("eventScheduleId") Long eventScheduleId,
             @Param("status") SubscriptionStatus status,
-            @Param("channel") NotificationChannel channel
+            @Param("channel") NotificationChannel channel,
+            Pageable pageable
     );
 
     Optional<SeatAvailabilitySubscription> findByIdAndMemberId(Long id, Long memberId);
