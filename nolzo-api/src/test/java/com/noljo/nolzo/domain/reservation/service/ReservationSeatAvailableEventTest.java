@@ -1,15 +1,15 @@
 package com.noljo.nolzo.domain.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.verify;
 
 import com.noljo.nolzo.event.application.port.out.EventPersistencePort;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.member.application.port.out.MemberPersistencePort;
 import com.noljo.nolzo.member.entity.Member;
-import com.noljo.nolzo.notification.application.port.out.PublishSeatAvailableEventPort;
-import com.noljo.nolzo.notification.domain.event.SeatAvailableEvent;
+import com.noljo.nolzo.outbox.domain.OutboxEvent;
+import com.noljo.nolzo.outbox.domain.OutboxEventStatus;
+import com.noljo.nolzo.outbox.domain.OutboxEventType;
+import com.noljo.nolzo.outbox.repository.OutboxEventRepository;
 import com.noljo.nolzo.reservation.entity.Reservation;
 import com.noljo.nolzo.reservation.entity.ReservationStatus;
 import com.noljo.nolzo.reservation.service.ReservationService;
@@ -27,10 +27,9 @@ import com.noljo.nolzo.ticket.application.port.out.TicketPersistencePort;
 import com.noljo.nolzo.ticket.entity.Ticket;
 import com.noljo.nolzo.ticket.entity.TicketStatus;
 import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 @ServiceTest
 class ReservationSeatAvailableEventTest {
@@ -56,35 +55,28 @@ class ReservationSeatAvailableEventTest {
     @Autowired
     private TicketPersistencePort ticketPersistencePort;
 
-    @MockBean
-    private PublishSeatAvailableEventPort publishSeatAvailableEventPort;
+    @Autowired
+    private OutboxEventRepository outboxEventRepository;
 
     @Test
-    void 예약_취소시_빈자리_이벤트를_발행한다() {
+    void 예약_취소시_빈자리_이벤트를_outbox에_저장한다() {
         ReservationSetup setup = createPendingReservationWithTicket();
 
         reservationService.cancelReservationById(setup.memberId(), setup.reservationId());
 
-        ArgumentCaptor<SeatAvailableEvent> captor = ArgumentCaptor.forClass(SeatAvailableEvent.class);
-        verify(publishSeatAvailableEventPort, atLeastOnce()).publish(captor.capture());
-
-        SeatAvailableEvent event = captor.getValue();
-        assertThat(event.eventId()).isEqualTo(setup.eventId());
-        assertThat(event.availableAt()).isNotNull();
+        List<OutboxEvent> outboxEvents = outboxEventRepository.findAll();
+        assertThat(outboxEvents).hasSize(1);
+        assertThat(outboxEvents.get(0).getEventType()).isEqualTo(OutboxEventType.SEAT_AVAILABLE);
+        assertThat(outboxEvents.get(0).getStatus()).isEqualTo(OutboxEventStatus.PENDING);
     }
 
     @Test
-    void 미결제_예약_자동취소시_빈자리_이벤트를_발행한다() {
+    void 미결제_예약_자동취소시_빈자리_이벤트를_outbox에_저장한다() {
         createPendingReservationWithTicket();
 
         reservationService.cancelUnpaidReservations(LocalDateTime.now().plusMinutes(1));
 
-        ArgumentCaptor<SeatAvailableEvent> captor = ArgumentCaptor.forClass(SeatAvailableEvent.class);
-        verify(publishSeatAvailableEventPort, atLeastOnce()).publish(captor.capture());
-
-        assertThat(captor.getAllValues())
-                .extracting(SeatAvailableEvent::seatId)
-                .isNotEmpty();
+        assertThat(outboxEventRepository.findAll()).isNotEmpty();
     }
 
     private ReservationSetup createPendingReservationWithTicket() {
