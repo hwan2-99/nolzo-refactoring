@@ -1,22 +1,19 @@
 spring:
-  config.activate.on-profile: "test"
   kafka:
-    bootstrap-servers: localhost:9092
-    admin:
-      auto-create: false
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     producer:
       acks: all
-      retries: 1
+      retries: 10
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         enable.idempotence: true
         max.in.flight.requests.per.connection: 5
-        delivery.timeout.ms: 30000
-        request.timeout.ms: 10000
+        delivery.timeout.ms: 120000
+        request.timeout.ms: 30000
         spring.json.add.type.headers: false
     consumer:
-      group-id: test-seat-available-group
+      group-id: ${KAFKA_CONSUMER_GROUP_ID:seat-available-notification-group}
       auto-offset-reset: earliest
       enable-auto-commit: false
       max-poll-records: 100
@@ -25,41 +22,15 @@ spring:
       properties:
         spring.json.trusted.packages: com.noljo.nolzo.notification.adapter.message
     listener:
-      auto-startup: false
-  data:
-    redis:
-      host: localhost
-      port: 6379
-  datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:nolzo;MODE=MYSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    username: sa
-    password:
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: create-drop
-    properties:
-      hibernate:
-        format_sql: true
-    open-in-view: false
-
-logging:
-  level:
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-
-security:
-  jwt:
-    secret-key: "alfknmeanfgaeownfewalf.afklneaflneaiofnaeoifnewanfea.afofineaoifnanfeakngalneg"
-    expire-length: 36000
+      missing-topics-fatal: false
 
 app:
   kafka:
     admin:
-      enabled: false
+      enabled: true
     consumer:
       enabled: false
-      group-id: test-seat-available-group
+      group-id: seat-available-notification-group
     topics:
       seat-available: seat-available-events
       notification-batch-request: notification-batch-requests
@@ -76,15 +47,15 @@ app:
         notification-batch-request: 1
         dlt: 1
     error:
-      retry-attempts: 1
-      initial-interval-ms: 100
+      retry-attempts: 3
+      initial-interval-ms: 1000
       multiplier: 2.0
-      max-interval-ms: 500
+      max-interval-ms: 10000
   notification:
-    batch-size: 2
+    batch-size: 100
     cooldown-minutes: 10
     retry-attempts: 3
   outbox:
     publish:
-      batch-size: 10
+      batch-size: 100
       fixed-delay-ms: 3000
