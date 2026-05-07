@@ -79,20 +79,26 @@ public class KafkaConfig {
         ConcurrentKafkaListenerContainerFactory<Object, Object> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
 
+        // Kafka consumer가 사용할 기본 factory 설정
         factory.setConsumerFactory(consumerFactory);
+        // 레코드 단위 커밋 설정 - 메시지별 처리 성공/실패 기준으로 offset 관리
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
 
+        // 처리 실패한 메시지를 DLT로 발행하기 위한 recoverer 설정
         DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(
                 kafkaTemplate,
                 (record, exception) -> new TopicPartition(resolveDltTopic(record.topic()), record.partition())
         );
 
+        // 재시도 간격을 점진적으로 늘리는 지수 백오프 설정
         ExponentialBackOffWithMaxRetries backOff = new ExponentialBackOffWithMaxRetries(retryAttempts);
         backOff.setInitialInterval(initialIntervalMs);
         backOff.setMultiplier(backoffMultiplier);
         backOff.setMaxInterval(maxIntervalMs);
 
+        // 공통 에러 핸들러 설정 - 재시도 후에도 실패하면 DLT로 전달
         DefaultErrorHandler errorHandler = new DefaultErrorHandler(recoverer, backOff);
+        // 비즈니스 유효성 예외는 재시도해도 의미가 없으므로 즉시 실패 처리
         errorHandler.addNotRetryableExceptions(IllegalArgumentException.class);
         factory.setCommonErrorHandler(errorHandler);
 
