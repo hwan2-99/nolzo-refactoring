@@ -1,0 +1,11 @@
+cloud:
+  aws:
+    s3:
+      bucketName: ${AWS_S3_BUCKET_NAME:nolzobucket}
+    credentials:
+      access-key: ${AWS_ACCESS_KEY:}
+      secret-key: ${AWS_SECRET_KEY:}
+    region:
+      static: ${AWS_REGION:ap-northeast-2}
+    stack:
+      auto: ${AWS_STACK_AUTO:false}

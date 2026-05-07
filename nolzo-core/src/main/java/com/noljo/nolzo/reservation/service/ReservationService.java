@@ -1,12 +1,16 @@
 package com.noljo.nolzo.reservation.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.noljo.nolzo.event.entity.Event;
 import com.noljo.nolzo.event.application.port.out.EventPersistencePort;
 import com.noljo.nolzo.global.aop.idempotent.Idempotent;
 import com.noljo.nolzo.member.entity.Member;
 import com.noljo.nolzo.member.application.port.out.MemberPersistencePort;
-import com.noljo.nolzo.notification.application.port.out.PublishSeatAvailableEventPort;
 import com.noljo.nolzo.notification.domain.event.SeatAvailableEvent;
+import com.noljo.nolzo.outbox.application.port.out.SaveOutboxEventPort;
+import com.noljo.nolzo.outbox.domain.OutboxEvent;
+import com.noljo.nolzo.outbox.domain.OutboxEventType;
 import com.noljo.nolzo.payment.entity.Payment;
 import com.noljo.nolzo.payment.application.port.out.PaymentPersistencePort;
 import com.noljo.nolzo.reservation.application.port.in.ReservationUseCase;
@@ -51,7 +55,8 @@ public class ReservationService implements ReservationUseCase {
     private final PaymentPersistencePort paymentPersistencePort;
     private final TicketUseCase ticketUseCase;
     private final ReservationQueuePort reservationQueuePort;
-    private final PublishSeatAvailableEventPort publishSeatAvailableEventPort;
+    private final SaveOutboxEventPort saveOutboxEventPort;
+    private final ObjectMapper objectMapper;
 
 //    @Transactional
 //    @Idempotent(prefix = "reservation:succeed:", key = "#memberId")
@@ -227,6 +232,19 @@ public class ReservationService implements ReservationUseCase {
             ));
         }
 
-        events.forEach(publishSeatAvailableEventPort::publish);
+        events.forEach(this::saveOutboxEvent);
+    }
+
+    private void saveOutboxEvent(SeatAvailableEvent event) {
+        try {
+            saveOutboxEventPort.save(new OutboxEvent(
+                    "RESERVATION",
+                    event.seatId(),
+                    OutboxEventType.SEAT_AVAILABLE,
+                    objectMapper.writeValueAsString(event)
+            ));
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Outbox payload 직렬화에 실패했습니다.", e);
+        }
     }
 }
