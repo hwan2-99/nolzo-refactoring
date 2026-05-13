@@ -2,7 +2,6 @@ package com.noljo.nolzo.event.service;
 
 import com.noljo.nolzo.event.application.port.in.EventUseCase;
 import com.noljo.nolzo.event.application.port.out.EventImageUploadPort;
-import com.noljo.nolzo.event.dto.EventRecommendCondition;
 import com.noljo.nolzo.event.dto.EventRequest;
 import com.noljo.nolzo.event.dto.EventRecommendRequest;
 import com.noljo.nolzo.event.dto.EventRecommendResponse;
@@ -38,7 +37,7 @@ public class EventService implements EventUseCase {
     private final EventPersistencePort eventPersistencePort;
     private final SeatUseCase seatUseCase;
     private final EventImageUploadPort eventImageUploadPort;
-    private final EventRecommendQueryInterpreter eventRecommendQueryInterpreter;
+    private final EventRecommendService eventRecommendService;
     private final EntityManager em;
 
     @Transactional(readOnly = true)
@@ -151,12 +150,6 @@ public class EventService implements EventUseCase {
 
     @Transactional(readOnly = true)
     public EventRecommendResponse recommendEvents(EventRecommendRequest request) {
-        EventRecommendCondition condition = eventRecommendQueryInterpreter.interpret(request.query());
-
-        return EventRecommendResponse.of(
-                request.query(),
-                condition,
-                List.of()
-        );
+        return eventRecommendService.recommend(request);
     }
 }
