@@ -41,8 +41,28 @@ public class EventRecommendService {
                 ))
                 .toList();
 
+        if (recommendations.isEmpty() && hasSearchCondition(condition)) {
+            List<EventRecommendItemResponse> fallbackRecommendations = eventPersistencePort.findTop6ByOrderByViewCountDesc().stream()
+                    .limit(5)
+                    .map(event -> EventRecommendItemResponse.of(
+                            event,
+                            eventRecommendReasonGenerator.generateFallback(event)
+                    ))
+                    .toList();
+
+            return EventRecommendResponse.of(
+                    request.query(),
+                    "입력한 조건과 정확히 일치하는 공연이 없어 인기 공연을 대신 추천합니다.",
+                    condition,
+                    fallbackRecommendations
+            );
+        }
+
         return EventRecommendResponse.of(
                 request.query(),
+                recommendations.isEmpty()
+                        ? "현재 추천할 수 있는 공연이 없습니다."
+                        : "입력한 조건에 맞는 공연을 추천합니다.",
                 condition,
                 recommendations
         );

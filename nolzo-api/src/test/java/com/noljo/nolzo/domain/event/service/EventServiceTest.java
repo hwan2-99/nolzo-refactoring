@@ -207,6 +207,7 @@ class EventServiceTest {
 
         Assertions.assertThat(response.condition().region()).isEqualTo("서울");
         Assertions.assertThat(response.condition().category()).isEqualTo("MUSICAL");
+        Assertions.assertThat(response.message()).isEqualTo("입력한 조건에 맞는 공연을 추천합니다.");
         Assertions.assertThat(response.recommendations())
                 .isNotEmpty()
                 .allSatisfy(item -> {
@@ -233,7 +234,11 @@ class EventServiceTest {
         );
 
         Assertions.assertThat(response.condition().maxPrice()).isEqualTo(70_000);
-        Assertions.assertThat(response.recommendations()).isEmpty();
+        Assertions.assertThat(response.message()).isEqualTo("입력한 조건과 정확히 일치하는 공연이 없어 인기 공연을 대신 추천합니다.");
+        Assertions.assertThat(response.recommendations()).isNotEmpty();
+        Assertions.assertThat(response.recommendations())
+                .allSatisfy(item ->
+                        Assertions.assertThat(item.recommendationReason()).contains("정확히 일치하는 공연이 없어"));
     }
 
     @Test
@@ -261,10 +266,35 @@ class EventServiceTest {
         );
 
         Assertions.assertThat(response.condition().dateRange()).isEqualTo("이번 주말");
+        Assertions.assertThat(response.message()).isEqualTo("입력한 조건에 맞는 공연을 추천합니다.");
         Assertions.assertThat(response.recommendations())
                 .extracting(item -> item.title())
                 .contains("주말 공연")
                 .doesNotContain("다음 주 공연");
+    }
+
+    @Test
+    void 조건에_맞는_공연이_없으면_인기_공연을_fallback으로_추천한다() {
+        LocalDate saturday = LocalDate.now().with(java.time.DayOfWeek.SATURDAY);
+        EventResponse popularEvent = eventService.save(추천용_이벤트_요청(
+                "인기 공연",
+                "서울 아트홀",
+                "많이 찾는 공연",
+                saturday,
+                saturday.plusDays(1),
+                EventCategory.CONCERT
+        ), null);
+        eventService.findById(popularEvent.getId());
+        eventService.findById(popularEvent.getId());
+
+        EventRecommendResponse response = eventService.recommendEvents(
+                new EventRecommendRequest(null, "광주에서 7만원 이하 연극 추천해줘")
+        );
+
+        Assertions.assertThat(response.message()).isEqualTo("입력한 조건과 정확히 일치하는 공연이 없어 인기 공연을 대신 추천합니다.");
+        Assertions.assertThat(response.recommendations()).isNotEmpty();
+        Assertions.assertThat(response.recommendations().get(0).recommendationReason())
+                .contains("정확히 일치하는 공연이 없어");
     }
 
     private EventRequest 추천용_이벤트_요청(

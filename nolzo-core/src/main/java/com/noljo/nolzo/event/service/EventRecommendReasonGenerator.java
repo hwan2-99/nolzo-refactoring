@@ -39,6 +39,10 @@ public class EventRecommendReasonGenerator {
         return String.join(" ", reasons);
     }
 
+    public String generateFallback(Event event) {
+        return "입력한 조건과 정확히 일치하는 공연이 없어 현재 인기 있거나 먼저 살펴볼 만한 공연으로 추천합니다.";
+    }
+
     private String toCategoryLabel(String category) {
         return switch (category) {
             case "MUSICAL" -> "뮤지컬";
