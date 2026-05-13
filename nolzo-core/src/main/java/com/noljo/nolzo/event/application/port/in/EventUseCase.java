@@ -1,6 +1,8 @@
 package com.noljo.nolzo.event.application.port.in;
 
 import com.noljo.nolzo.event.dto.EventRequest;
+import com.noljo.nolzo.event.dto.EventRecommendRequest;
+import com.noljo.nolzo.event.dto.EventRecommendResponse;
 import com.noljo.nolzo.event.dto.EventResponse;
 import com.noljo.nolzo.event.dto.EventUpdateRequest;
 import com.noljo.nolzo.event.entity.EventCategory;
@@ -27,4 +29,6 @@ public interface EventUseCase {
     List<EventResponse> getTop10ByCategory(EventCategory category);
 
     List<EventResponse> getTop6PopularEvents();
+
+    EventRecommendResponse recommendEvents(EventRecommendRequest request);
 }

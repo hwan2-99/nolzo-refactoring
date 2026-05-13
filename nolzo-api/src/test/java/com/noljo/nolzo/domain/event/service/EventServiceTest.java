@@ -1,6 +1,8 @@
 package com.noljo.nolzo.domain.event.service;
 
 import com.noljo.nolzo.event.dto.EventRequest;
+import com.noljo.nolzo.event.dto.EventRecommendRequest;
+import com.noljo.nolzo.event.dto.EventRecommendResponse;
 import com.noljo.nolzo.event.dto.EventResponse;
 import com.noljo.nolzo.event.dto.EventUpdateRequest;
 import com.noljo.nolzo.event.entity.Event;
@@ -17,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @ServiceTest
@@ -175,5 +179,149 @@ class EventServiceTest {
         Assertions.assertThat(result.get(0).getId()).isEqualTo(hamlet.getId());
         Assertions.assertThat(result.get(1).getId()).isEqualTo(cats.getId());
         Assertions.assertThat(result.get(0).getViewCount()).isGreaterThan(result.get(1).getViewCount());
+    }
+
+    @Test
+    void 추천_질의에서_지역과_카테고리를_해석해_조건에_맞는_공연을_추천한다() {
+        LocalDate weekendStart = LocalDate.now().with(java.time.DayOfWeek.SATURDAY);
+        eventService.save(추천용_이벤트_요청(
+                "서울 주말 뮤지컬",
+                "서울 공연장",
+                "데이트하기 좋은 뮤지컬 공연",
+                weekendStart,
+                weekendStart.plusDays(1),
+                EventCategory.MUSICAL
+        ), null);
+        eventService.save(추천용_이벤트_요청(
+                "부산 콘서트",
+                "부산 공연장",
+                "신나는 콘서트 공연",
+                weekendStart,
+                weekendStart.plusDays(1),
+                EventCategory.CONCERT
+        ), null);
+
+        EventRecommendResponse response = eventService.recommendEvents(
+                new EventRecommendRequest(null, "서울에서 뮤지컬 추천해줘")
+        );
+
+        Assertions.assertThat(response.condition().region()).isEqualTo("서울");
+        Assertions.assertThat(response.condition().category()).isEqualTo("MUSICAL");
+        Assertions.assertThat(response.message()).isEqualTo("입력한 조건에 맞는 공연을 추천합니다.");
+        Assertions.assertThat(response.recommendations())
+                .isNotEmpty()
+                .allSatisfy(item -> {
+                    Assertions.assertThat(item.venue()).contains("서울");
+                    Assertions.assertThat(item.category()).isEqualTo(EventCategory.MUSICAL);
+                    Assertions.assertThat(item.recommendationReason()).contains("서울");
+                });
+    }
+
+    @Test
+    void 추천_질의의_가격_상한보다_최저_좌석가가_비싸면_추천하지_않는다() {
+        LocalDate weekendStart = LocalDate.now().with(java.time.DayOfWeek.SATURDAY);
+        eventService.save(추천용_이벤트_요청(
+                "서울 가격 테스트 공연",
+                "서울 테스트홀",
+                "가격 조건 테스트용 공연",
+                weekendStart,
+                weekendStart.plusDays(1),
+                EventCategory.CONCERT
+        ), null);
+
+        EventRecommendResponse response = eventService.recommendEvents(
+                new EventRecommendRequest(null, "서울에서 7만원 이하 공연 추천해줘")
+        );
+
+        Assertions.assertThat(response.condition().maxPrice()).isEqualTo(70_000);
+        Assertions.assertThat(response.message()).isEqualTo("입력한 조건과 정확히 일치하는 공연이 없어 인기 공연을 대신 추천합니다.");
+        Assertions.assertThat(response.recommendations()).isNotEmpty();
+        Assertions.assertThat(response.recommendations())
+                .allSatisfy(item ->
+                        Assertions.assertThat(item.recommendationReason()).contains("정확히 일치하는 공연이 없어"));
+    }
+
+    @Test
+    void 이번_주말_조건이면_주말에_열리는_공연만_추천한다() {
+        LocalDate saturday = LocalDate.now().with(java.time.DayOfWeek.SATURDAY);
+        eventService.save(추천용_이벤트_요청(
+                "주말 공연",
+                "서울 아트홀",
+                "이번 주말에 열리는 공연",
+                saturday,
+                saturday.plusDays(1),
+                EventCategory.PLAY
+        ), null);
+        eventService.save(추천용_이벤트_요청(
+                "다음 주 공연",
+                "서울 아트홀",
+                "다음 주에 열리는 공연",
+                saturday.plusDays(3),
+                saturday.plusDays(4),
+                EventCategory.PLAY
+        ), null);
+
+        EventRecommendResponse response = eventService.recommendEvents(
+                new EventRecommendRequest(null, "이번 주말 공연 추천해줘")
+        );
+
+        Assertions.assertThat(response.condition().dateRange()).isEqualTo("이번 주말");
+        Assertions.assertThat(response.message()).isEqualTo("입력한 조건에 맞는 공연을 추천합니다.");
+        Assertions.assertThat(response.recommendations())
+                .extracting(item -> item.title())
+                .contains("주말 공연")
+                .doesNotContain("다음 주 공연");
+    }
+
+    @Test
+    void 조건에_맞는_공연이_없으면_인기_공연을_fallback으로_추천한다() {
+        LocalDate saturday = LocalDate.now().with(java.time.DayOfWeek.SATURDAY);
+        EventResponse popularEvent = eventService.save(추천용_이벤트_요청(
+                "인기 공연",
+                "서울 아트홀",
+                "많이 찾는 공연",
+                saturday,
+                saturday.plusDays(1),
+                EventCategory.CONCERT
+        ), null);
+        eventService.findById(popularEvent.getId());
+        eventService.findById(popularEvent.getId());
+
+        EventRecommendResponse response = eventService.recommendEvents(
+                new EventRecommendRequest(null, "광주에서 7만원 이하 연극 추천해줘")
+        );
+
+        Assertions.assertThat(response.message()).isEqualTo("입력한 조건과 정확히 일치하는 공연이 없어 인기 공연을 대신 추천합니다.");
+        Assertions.assertThat(response.recommendations()).isNotEmpty();
+        Assertions.assertThat(response.recommendations().get(0).recommendationReason())
+                .contains("정확히 일치하는 공연이 없어");
+    }
+
+    private EventRequest 추천용_이벤트_요청(
+            String title,
+            String venue,
+            String description,
+            LocalDate startDate,
+            LocalDate endDate,
+            EventCategory category
+    ) {
+        return EventRequest.builder()
+                .title(title)
+                .venue(venue)
+                .description(description)
+                .startDate(startDate)
+                .endDate(endDate)
+                .eventCategory(category)
+                .runtime(120)
+                .ageLimit(12)
+                .schedules(List.of(
+                        new com.noljo.nolzo.schedule.dto.internal.ScheduleInfo(
+                                startDate,
+                                LocalTime.of(19, 0),
+                                LocalDateTime.now().minusDays(1),
+                                LocalDateTime.now().plusDays(30)
+                        )
+                ))
+                .build();
     }
 }
