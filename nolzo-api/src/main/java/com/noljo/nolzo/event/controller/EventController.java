@@ -2,6 +2,8 @@ package com.noljo.nolzo.event.controller;
 
 import com.noljo.nolzo.auth.security.CustomUserDetails;
 import com.noljo.nolzo.event.dto.EventRequest;
+import com.noljo.nolzo.event.dto.EventRecommendRequest;
+import com.noljo.nolzo.event.dto.EventRecommendResponse;
 import com.noljo.nolzo.event.dto.EventResponse;
 import com.noljo.nolzo.event.dto.EventUpdateRequest;
 import com.noljo.nolzo.event.entity.EventCategory;
@@ -63,6 +65,13 @@ public class EventController {
     @GetMapping("/popular")
     public ResponseEntity<List<EventResponse>> getTop6PopularEvents() {
         return ResponseEntity.ok(eventUseCase.getTop6PopularEvents());
+    }
+
+    @PostMapping("/recommend")
+    public ResponseEntity<EventRecommendResponse> recommendEvents(
+            @RequestBody @Valid EventRecommendRequest request
+    ) {
+        return ResponseEntity.ok(eventUseCase.recommendEvents(request));
     }
 
     @PatchMapping(value = "/{id}",
