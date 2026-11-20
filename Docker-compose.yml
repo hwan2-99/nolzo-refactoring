@@ -36,6 +36,9 @@ services:
       - "8080:8080"
     networks:
       - monitoring
+    environment:
+      QUEUE_RECOVERY_TEST_ENABLED: ${QUEUE_RECOVERY_TEST_ENABLED:-false}
+      JAVA_TOOL_OPTIONS: ${JAVA_TOOL_OPTIONS:-}
     healthcheck:
       test: [ "CMD-SHELL", "curl -s http://localhost:8080 > /dev/null" ]
       interval: 5s
@@ -78,6 +81,26 @@ services:
       - K6_OUT=influxdb=http://influxdb:8086/k6
     volumes:
       - ./k6/test.js:/test.js
+
+  k6-queue-recovery-gc:
+    image: loadimpact/k6
+    container_name: k6-queue-recovery-gc
+    platform: linux/amd64
+    profiles:
+      - gc-test
+    depends_on:
+      springboot:
+        condition: service_healthy
+    networks:
+      - monitoring
+    command: [ "run", "/scripts/queue-recovery-gc-test.js" ]
+    environment:
+      BASE_URL: http://springboot:8080
+      TRAFFIC_VUS: ${TRAFFIC_VUS:-20}
+      TRAFFIC_DURATION: ${TRAFFIC_DURATION:-60s}
+      K6_OUT: influxdb=http://influxdb:8086/k6
+    volumes:
+      - ./k6:/scripts
 
   redis:
     image: redis
