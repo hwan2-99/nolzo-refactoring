@@ -49,7 +49,8 @@ jobs:
             --exclude=.env.production \
             --exclude='*/build' \
             --exclude='*.tar.gz' \
-            -czf nolzo-deploy.tar.gz .
+            -czf "${RUNNER_TEMP}/nolzo-deploy.tar.gz" .
+          mv "${RUNNER_TEMP}/nolzo-deploy.tar.gz" nolzo-deploy.tar.gz
 
       - name: Upload deployment source
         uses: appleboy/scp-action@v1
