@@ -27,9 +27,9 @@ spring:
 app:
   kafka:
     admin:
-      enabled: true
+      enabled: ${KAFKA_ADMIN_ENABLED:false}
     consumer:
-      enabled: false
+      enabled: ${KAFKA_CONSUMER_ENABLED:false}
       group-id: seat-available-notification-group
     topics:
       seat-available: seat-available-events

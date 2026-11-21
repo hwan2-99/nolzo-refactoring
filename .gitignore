@@ -9,6 +9,7 @@ build/
 .env
 .env-local
 .env-prod
+.env.production
 
 ### STS ###
 .apt_generated
@@ -45,6 +46,4 @@ out/
 .log
 
 ### YML files ###
-src/main/resources/application.yml
-nolzo-api/src/main/resources/application.yml
 nolzo-api/src/main/resources/application-*-local.yml
