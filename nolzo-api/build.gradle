@@ -29,6 +29,6 @@ dependencies {
     testImplementation 'org.springframework.kafka:spring-kafka'
     testImplementation 'org.mockito:mockito-inline:2.13.0'
     testImplementation 'org.springframework.boot:spring-boot-testcontainers'
-    testImplementation 'org.testcontainers:testcontainers'
+    testImplementation 'org.testcontainers:testcontainers:1.21.4'
     testRuntimeOnly 'com.h2database:h2'
 }

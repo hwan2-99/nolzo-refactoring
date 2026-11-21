@@ -1,0 +1,12 @@
+.git
+.github
+.gradle
+.idea
+.env
+.env.*
+**/build
+docs
+k6
+node_modules
+*.log
+*.tar.gz

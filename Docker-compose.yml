@@ -3,6 +3,7 @@ version: '3.8'
 services:
   influxdb:
     image: influxdb:1.8
+    profiles: ["load-test"]
     networks:
       - monitoring
     ports:
@@ -15,8 +16,10 @@ services:
     container_name: mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: rlaxoghks12  # root 비밀번호 설정
-      MYSQL_DATABASE: nolzo
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-local-dev-root-password}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-nolzo}
+      MYSQL_USER: ${MYSQL_USERNAME:-nolzo}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-local-dev-password}
     ports:
       - "3307:3306"
     networks:
@@ -39,6 +42,10 @@ services:
     environment:
       QUEUE_RECOVERY_TEST_ENABLED: ${QUEUE_RECOVERY_TEST_ENABLED:-false}
       JAVA_TOOL_OPTIONS: ${JAVA_TOOL_OPTIONS:-}
+      MYSQL_DATABASE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-nolzo}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=utf8
+      MYSQL_USERNAME: ${MYSQL_USERNAME:-nolzo}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-local-dev-password}
+      JWT_SECRET: ${JWT_SECRET:-local-development-jwt-secret-that-must-not-be-used-in-production-123456}
     healthcheck:
       test: [ "CMD-SHELL", "curl -s http://localhost:8080 > /dev/null" ]
       interval: 5s
@@ -71,6 +78,7 @@ services:
     image: loadimpact/k6
     container_name: k6
     platform: linux/amd64
+    profiles: ["load-test"]
     depends_on:
       springboot:
         condition: service_healthy
