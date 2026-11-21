@@ -33,47 +33,24 @@ jobs:
   deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, nolzo-prod]
+    timeout-minutes: 30
     environment: production
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      - name: Package deployment source
+      - name: Sync deployment source
         run: |
-          tar \
-            --exclude=.git \
-            --exclude=.github \
-            --exclude=.gradle \
+          rsync -a --delete \
+            --exclude=.git/ \
+            --exclude=.github/ \
+            --exclude=.gradle/ \
             --exclude=.env \
             --exclude=.env.production \
-            --exclude='*/build' \
-            --exclude='*.tar.gz' \
-            -czf "${RUNNER_TEMP}/nolzo-deploy.tar.gz" .
-          mv "${RUNNER_TEMP}/nolzo-deploy.tar.gz" nolzo-deploy.tar.gz
-
-      - name: Upload deployment source
-        uses: appleboy/scp-action@v1
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          fingerprint: ${{ secrets.EC2_HOST_FINGERPRINT }}
-          source: nolzo-deploy.tar.gz
-          target: /tmp
+            --exclude='*/build/' \
+            ./ /opt/nolzo/
 
       - name: Deploy on EC2
-        uses: appleboy/ssh-action@v1.2.5
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          fingerprint: ${{ secrets.EC2_HOST_FINGERPRINT }}
-          script_stop: true
-          command_timeout: 20m
-          script: |
-            mkdir -p /opt/nolzo
-            tar -xzf /tmp/nolzo-deploy.tar.gz -C /opt/nolzo
-            rm -f /tmp/nolzo-deploy.tar.gz
-            cd /opt/nolzo
-            bash scripts/deploy.sh
+        working-directory: /opt/nolzo
+        run: bash scripts/deploy.sh
